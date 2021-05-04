@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta name="description" content="" />
   <meta name="author" content="" />
-  <title>Login || {{ $title ?? 'Aplikasi Percepat' }}</title>
+  <title>Login || {{ $title ?? 'PERCEPAT' }}</title>
   <!-- loader-->
   <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
   <script src="{{ asset('vendor/assets/js/pace.min.js') }}"></script>
@@ -54,7 +54,7 @@
             <img src="{{ asset('vendor/assets/images/logo-icon.png') }}" alt="logo icon">
           </div>
           <div class="card-title text-uppercase text-center py-3">Sign In</div>
-          @error('email')
+          @error('failed')
           <div class="alert alert-danger">{{ $message }}</div>
           @enderror
           <form action="{{ route('login') }}" method="POST">
@@ -62,8 +62,8 @@
             <div class="form-group">
               <label for="email" class="sr-only">Email</label>
               <div class="position-relative has-icon-right">
-                <input type="text" id="email" name="email" class="form-control input-shadow"
-                  placeholder="Enter Username">
+                <input type="email" id="email" name="email" value="{{ old('email') }}" class="form-control input-shadow"
+                  placeholder="Enter Email">
                 <div class="form-control-position">
                   <i class="icon-user"></i>
                 </div>
@@ -109,7 +109,7 @@
         </div>
       </div>
       <div class="card-footer text-center py-3">
-        <p class="text-warning mb-0">Do not have an account? <a href="register.html"> Sign Up here</a></p>
+        <p class="text-warning mb-0">{{ env('APP_NAME_LONG') }}</p>
       </div>
     </div>
 
