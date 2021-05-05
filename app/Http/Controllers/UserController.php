@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use RealRashid\SweetAlert\Facades\Alert;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -43,7 +44,7 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => 'email|unique:users,email',
+            'email' => 'required|email|unique:users',
         ]);
 
         $data = new User();
@@ -53,12 +54,14 @@ class UserController extends Controller
         $data->password = Hash::make('password');
 
         if ($data->save()) {
-            $signed = $request->signed;
-            $encoded_image = explode(",", $signed)[1];
-            $decoded_image = base64_decode($encoded_image);
-            Storage::put('signatures/' . $data->id . '.png', $decoded_image);
-            $data->signature = 'signatures/' . $data->id . '.png';
-            $data->save();
+            if($request->signed){
+                $signed = $request->signed;
+                $encoded_image = explode(",", $signed)[1];
+                $decoded_image = base64_decode($encoded_image);
+                Storage::put('signatures/' . $data->id . '.png', $decoded_image);
+                $data->signature = 'signatures/' . $data->id . '.png';
+                $data->save();
+            }
 
             if ($request->photo) {
                 $path = $request->photo->storeAs('profile_photos', $data->id . '.' . $request->photo->getClientOriginalExtension());
@@ -89,7 +92,9 @@ class UserController extends Controller
      */
     public function edit($id)
     {
-        //
+        $header = 'Users Data';
+        $user = User::find($id);
+        return view('user.form', compact('header', 'user'));
     }
 
     /**
@@ -101,7 +106,37 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'name' => 'required',
+            'email' => ['required','email', Rule::unique('users')->ignore($id)],
+        ]);
+
+        $data = User::find($id);
+        $data->name = $request->name;
+        $data->email = $request->email;
+        $data->position = $request->position;
+
+        if ($data->save()) {
+            if($request->signed){
+                Storage::delete($data->signature);
+
+                $encoded_image = explode(",", $request->signed)[1];
+                $decoded_image = base64_decode($encoded_image);
+                Storage::put('signatures/' . $data->id . '.png', $decoded_image);
+                $data->signature = 'signatures/' . $data->id . '.png';
+                $data->save();
+            }
+
+            if ($request->photo) {
+                Storage::delete($data->photo);
+
+                $path = $request->photo->storeAs('profile_photos', $data->id . '.' . $request->photo->getClientOriginalExtension());
+                $data->photo = $path;
+                $data->save();
+            }
+        }
+
+        return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
     }
 
     /**
