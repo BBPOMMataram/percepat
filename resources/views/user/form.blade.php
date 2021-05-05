@@ -18,7 +18,9 @@
         <hr>
         <form id="form-user" enctype="multipart/form-data">
           @csrf
+          @isset($user)
           @method('PUT')
+          @endisset
           <div class="form-group">
             <label for="name">Name</label>
             <input required type="text" class="form-control form-control-rounded" id="name" name="name"
@@ -88,14 +90,9 @@
         if (!signaturePad.isEmpty()) {
           fd.append('signed', signaturePad.toDataURL());
         }
-
-        const url = "{{ $user ? route('users.update', $user->id) : route('users.store') }}"
-        const method = "{{ $user ? 'PUT' : 'POST' }}"
-
-        if(method === 'PUT'){
-          fd.append('_token', "{{ csrf_token() }}");
-        }
         
+        const url = "@isset($user) {{ route('users.update', $user->id) }} @else {{ route('users.store') }} @endisset"
+        const method = "@isset($user) PUT @else POST @endisset"
         $.ajax({
           type: 'post',
           url: url,
@@ -110,7 +107,7 @@
                 text: response.msg,
                 icon: 'success'
               })
-              if(method === 'POST'){
+              if(method === ' POST '){
                 ResetForm();
               }
             }
