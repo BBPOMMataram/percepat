@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('users', UserController::class);
     Route::get('dtusers', [UserController::class, 'dt_users'])->name('dt_users');
+
+    Route::resource('profile', ProfileController::class);
+
+    Route::get('/test', function(){
+        dd(auth()->user());
+    });
 });
 
 Route::view('login', 'login')->name('login');

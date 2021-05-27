@@ -42,12 +42,12 @@
           <div>
             <label for="signature">Signature</label> <br />
             <canvas name="signature" id="signature" class="bg-light"></canvas>
+            <button type="button" id="clear-signature" class="w-25 d-block bg-light">clear</button>
             @isset($user->signature)
             <br />
             <small class="text-warning"> * ) Draw a new signature for changing your current signature</small>
             <img src="{{ Storage::url($user->signature) }}" alt="profile photo">
             @endisset
-            <button type="button" id="clear-signature" class="w-25 d-block bg-light">clear</button>
           </div>
           <div class="form-group">
             <label for="position">Position</label>

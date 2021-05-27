@@ -38,7 +38,7 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
-                    <span class="user-profile"><img src="https://via.placeholder.com/110x110" class="img-circle"
+                    <span class="user-profile"><img src="{{ auth()->user()->photo ? Storage::url(auth()->user()->photo) : 'https://via.placeholder.com/110x110' }}" class="img-circle"
                             alt="user avatar"></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-right">
@@ -46,7 +46,7 @@
                         <a href="javaScript:void();">
                             <div class="media">
                                 <div class="avatar"><img class="align-self-start mr-3"
-                                        src="https://via.placeholder.com/110x110" alt="user avatar"></div>
+                                        src="{{ auth()->user()->photo ? Storage::url(auth()->user()->photo) : 'https://via.placeholder.com/110x110' }}" alt="user avatar"></div>
                                 <div class="media-body">
                                     <h6 class="mt-2 user-title">{{ auth()->user()->name }}</h6>
                                     <p class="user-subtitle">{{ auth()->user()->email }}</p>
@@ -55,12 +55,12 @@
                         </a>
                     </li>
                     <li class="dropdown-divider"></li>
-                    <li class="dropdown-item"><i class="icon-envelope mr-2"></i> Inbox</li>
+                    {{-- <li class="dropdown-item"><i class="icon-envelope mr-2"></i> Inbox</li>
                     <li class="dropdown-divider"></li>
                     <li class="dropdown-item"><i class="icon-wallet mr-2"></i> Account</li>
                     <li class="dropdown-divider"></li>
                     <li class="dropdown-item"><i class="icon-settings mr-2"></i> Setting</li>
-                    <li class="dropdown-divider"></li>
+                    <li class="dropdown-divider"></li> --}}
                     <a href="{{ route('logout') }}">
                         <li class="dropdown-item"><i class="icon-power mr-2"></i> Logout</li>
                     </a>
