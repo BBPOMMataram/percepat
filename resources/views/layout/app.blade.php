@@ -29,7 +29,7 @@
     <link href="{{ asset('vendor/assets/css/app-style.css') }}" rel="stylesheet" />
     {{-- Datatables --}}
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.24/r-2.2.7/datatables.min.css"/>
- 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     @stack('styles')
 </head>
 
@@ -134,6 +134,8 @@
     <script src="{{ asset('vendor/assets/plugins/Chart.js/Chart.min.js') }}"></script>
     {{-- Datatables --}}
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/r-2.2.7/datatables.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @stack('scripts')
 

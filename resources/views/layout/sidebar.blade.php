@@ -21,19 +21,19 @@
         </li>
 
         <li>
-            <a href="#">
+            <a href="{{ route('barang.index') }}">
                 <i class="zmdi zmdi-accounts"></i> <span>Master Barang</span>
             </a>
         </li>
 
         <li>
-            <a href="#">
+            <a href="{{ route('pembelian.index') }}">
                 <i class="zmdi zmdi-shopping-cart-plus"></i> <span>Pembelian</span>
             </a>
         </li>
 
         <li>
-            <a href="#">
+            <a href="{{ route('permintaan.index') }}">
                 <i class="zmdi zmdi-assignment"></i> <span>Permintaan</span>
             </a>
         </li>

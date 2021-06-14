@@ -1,6 +1,9 @@
 <?php
 
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +32,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/test', function(){
         dd(auth()->user());
     });
+
+    Route::resource('barang', BarangController::class);
+    Route::get('dtbarang', [BarangController::class, 'dt_barang'])->name('dt_barang');
+
+    Route::resource('pembelian', PembelianController::class);
+    Route::get('dtpembelian', [PembelianController::class, 'dt_pembelian'])->name('dt_pembelian');
+
+    Route::resource('permintaan', PermintaanController::class);
+    Route::get('dtpermintaan', [PermintaanController::class, 'dt_permintaan'])->name('dt_permintaan');
 });
 
 Route::view('login', 'login')->name('login');
