@@ -40,7 +40,7 @@
           @endisset
         </div>
         <hr>
-        <form id="form" enctype="multipart/form-data">
+        <form id="form">
           @csrf
           @isset($editeddata)
           @method('PUT')
@@ -51,43 +51,33 @@
               @endisset>
               <option value="">==Select an item==</option>
               @foreach ($barang as $item)
-              <option @isset($editeddata) @if ($item->id === $editeddata->barangs_id) selected @endif @endisset
+              <option @isset($editeddata) @if ($item->id === $editeddata->barang_id) selected @endif @endisset
                 value="{{ $item->id }}">{{ $item->name }} (ex: @isset($item->expired)
                 {{ $item->expired->isoFormat('D MMM Y') }} @endisset)</option>
               @endforeach
             </select>
-
-            @isset($editeddata)
-            <select name="barang_id" id="barang_id" class="form-control  d-none">
-              <option value="">==Select an item==</option>
-              @foreach ($barang as $item)
-              <option @isset($editeddata) @if ($item->id === $editeddata->barangs_id) selected @endif @endisset
-                value="{{ $item->id }}">{{ $item->name }} (ex: @isset($item->expired)
-                {{ $item->expired->isoFormat('D MMM Y') }} @endisset)</option>
-              @endforeach
-            </select>
-            @endisset
           </div>
           <div class="form-group">
-            <label for="expired">Expired</label>
-            <input type="date" class="form-control " id="expired" name="expired" placeholder="Satuan"
-              @isset($editeddata) value="{{ $editeddata->expired ? $editeddata->expired->format('Y-m-d') : '' }}"
-              @endisset>
+            <label for="jumlahpermintaan">Jumlah Permintaan</label>
+            <input required type="number" class="form-control " id="jumlahpermintaan" name="jumlahpermintaan" placeholder="Jumlah"
+              value="{{ $editeddata->jumlahpermintaan ?? 0 }}" min="0" @isset($editeddata) readonly @endisset>
           </div>
+          @isset($editeddata)
           <div class="form-group">
-            <label for="jumlah">Jumlah</label>
-            <input required type="number" class="form-control " id="jumlah" name="jumlah" placeholder="Jumlah"
-              value="{{ $editeddata->jumlah ?? 0 }}" min="0">
+            <label for="jumlahrealisasi">Jumlah Realisasi</label>
+            <input required type="number" class="form-control " id="jumlahrealisasi" name="jumlahrealisasi" placeholder="Jumlah"
+            value="{{ $editeddata->jumlahpermintaan ?? 0 }}" min="0">
           </div>
+          @endisset
           <div class="form-group">
-            <label for="vendor">Vendor</label>
-            <input type="text" class="form-control " id="vendor" name="vendor" placeholder="Vendor"
-              value="{{ $editeddata->vendor ?? '' }}">
+            <label for="keterangan">Keterangan</label>
+            <input type="text" class="form-control " id="keterangan" name="keterangan" placeholder="Keterangan"
+              value="{{ $editeddata->keterangan ?? '' }}" @isset($editeddata) readonly @endisset>
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
-            <a href="{{ route('pembelian.index') }}"><button type="button"
-                class="btn btn-secondary btn-round px-5">Cancel</button></a>
+            <a href="{{ route('permintaanlist.index', $data->id) }}"><button type="button"
+                class="btn btn-secondary btn-round px-5">Done</button></a>
           </div>
         </form>
       </div>
@@ -96,23 +86,21 @@
 </div>
 @endsection
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
 <script>
   $(function(){
 
     $('.select2').select2();
 
       function ResetForm(){
-        $('.select2').val('').trigger('change')
-        $('#vendor').val('')
-        $('#expired').val('')
-        $('#jumlah').val(0);
+        $('#barang_id').val('').trigger('change')
+        $('#jumlahpermintaan').val(0);
+        $('#keterangan').val('')
       }
 
       $('#form').on('submit', function(e){
         let fd = new FormData($('#form')[0]);
         
-        const url = "@isset($editeddata) {{ route('pembelian.update', $editeddata->id) }} @else {{ route('pembelian.store') }} @endisset"
+        const url = "@isset($editeddata) {{ route('permintaanlist.update', [$editeddata->permintaan_id, $editeddata->barang_id]) }} @else {{ route('permintaanlist.store', $data->id) }} @endisset"
         const method = "@isset($editeddata) PUT @else POST @endisset"
 
         $.ajax({

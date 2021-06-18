@@ -14,11 +14,13 @@
             </a>
         </li>
 
+        @if (auth()->user()->level === 'admin')
         <li>
             <a href="{{ route('users.index') }}">
                 <i class="zmdi zmdi-accounts"></i> <span>Users</span>
             </a>
         </li>
+        @endif
 
         <li>
             <a href="{{ route('barang.index') }}">
@@ -38,7 +40,7 @@
             </a>
         </li>
 
-        <li class="sidebar-header">SETTNGS</li>        
+        <li class="sidebar-header">SETTNGS</li>
 
         <li>
             <a href="{{ route('profile.index') }}">

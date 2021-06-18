@@ -4,8 +4,10 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PermintaanController;
+use App\Http\Controllers\PermintaanListController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Models\Permintaan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +43,19 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('permintaan', PermintaanController::class);
     Route::get('dtpermintaan', [PermintaanController::class, 'dt_permintaan'])->name('dt_permintaan');
+    Route::get('print-permintaan/{idpermintaan}', [PermintaanController::class, 'print_permintaan'])->name('print_permintaan');
+
+    Route::patch('kabidaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'kabid_accpermintaan'])->name('kabid_accpermintaan');
+    Route::patch('penyerahaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
+    Route::patch('kasubbagumumaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'kasubbagumum_accpermintaan'])->name('kasubbagumum_accpermintaan');
+    
+    Route::get('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_index'])->name('permintaanlist.index');
+    Route::get('permintaanlist/create/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_create'])->name('permintaanlist.create');
+    Route::put('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_update'])->name('permintaanlist.update');
+    Route::get('permintaanlist/{idpermintaan}/{idbarang}/edit',[ PermintaanController::class, 'permintaanlist_edit'])->name('permintaanlist.edit');
+    Route::post('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
+    Route::delete('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
+    Route::get('dt_permintaanlist/{idpermintaan}', [PermintaanController::class, 'dt_permintaanlist'])->name('dt_permintaanlist');
 });
 
 Route::view('login', 'login')->name('login');

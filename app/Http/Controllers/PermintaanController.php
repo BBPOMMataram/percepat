@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Barang;
+use App\Models\Permintaan;
+use App\Models\PermintaanList;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class PermintaanController extends Controller
 {
@@ -24,9 +30,9 @@ class PermintaanController extends Controller
      */
     public function create()
     {
-        $header = 'Data Pembelian';
-        $barang = Barang::all();
-        return view('permintaan.form', compact('header', 'barang'));
+        $header = 'Data Permintaan';
+        $kabid = User::where('position', 'penyelia')->get();
+        return view('permintaan.form', compact('header', 'kabid'));
     }
 
     /**
@@ -38,38 +44,30 @@ class PermintaanController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'barang_id' => 'required',
-            'jumlah' => 'numeric|min:1',
+            'bidang' => 'required',
+            'kabid_id' => 'required',
         ], [], [
-            'barang_id' => 'Name'
+            'kabid_id' => 'Kabid'
         ]);
 
-        $data = new Pembelian();
-        $data->barangs_id = $request->barang_id;
-        $data->expired = $request->expired;
-        $data->jumlah = $request->jumlah;
-        $data->vendor = $request->vendor;
-        if ($data->save()) {
-            $barang = Barang::find($request->barang_id);
-            if (isset($barang->expired)) {
-                $barangExpired = $barang->expired->format('Y-m-d');
-            } else {
-                $barangExpired = $barang->expired;
-            }
-            if ($request->expired === $barangExpired) {
-                $barang->stock = $barang->stock + $request->jumlah;
-                $barang->save();
-            } else {
-                $newBarang = new Barang();
+        $data = new Permintaan();
+        $data->bidang = $request->bidang;
+        $data->kabid_id = $request->kabid_id;
+        $data->created_by = auth()->user()->id;
 
-                $newBarang->code = $barang->code;
-                $newBarang->name = $barang->name;
-                $newBarang->satuan = $barang->satuan;
-                $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
-                $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
-                $newBarang->save();
+        $last_data = Permintaan::latest()->first();
+
+        if ($last_data) {
+            if (now()->month !== $last_data->created_at->month) {
+                $data->nourut = 1;
+            } else {
+                $data->nourut = $last_data->nourut + 1;
             }
+        } else {
+            $data->nourut = 1;
         }
+
+        $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
     }
@@ -94,9 +92,9 @@ class PermintaanController extends Controller
     public function edit($id)
     {
         $header = 'Data Pembelian';
-        $barang = Barang::all();
-        $editeddata = Pembelian::find($id);
-        return view('permintaan.form', compact('header', 'editeddata', 'barang'));
+        $kabid = User::where('position', 'penyelia')->get();
+        $editeddata = Permintaan::find($id);
+        return view('permintaan.form', compact('header', 'editeddata', 'kabid'));
     }
 
     /**
@@ -109,113 +107,191 @@ class PermintaanController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'barang_id' => 'required',
-            'jumlah' => 'numeric|min:1',
+            'bidang' => 'required',
+            'kabid_id' => 'required',
         ], [], [
-            'barang_id' => 'Name'
+            'kabid_id' => 'Kabid'
         ]);
 
-        $data = Pembelian::find($id);
-        // $data->barangs_id = $request->barang_id;
-        $data->expired = $request->expired;
-        $data->vendor = $request->vendor;
-        if ($data->save()) {
-            $barang = Barang::find($data->barangs_id);
-            if (isset($barang->expired)) {
-                $barangExpired = $barang->expired->format('Y-m-d');
-            } else {
-                $barangExpired = $barang->expired;
-            }
-
-            if ($request->expired === $barangExpired) {
-                $barang->stock = $barang->stock - $data->jumlah + $request->jumlah;
-                $barang->save();
-            } else {
-                $otherBarang = Barang::where('name', $barang->name)->get();
-                $countItem = count($otherBarang);
-                $i = 0;
-                if ($otherBarang) {
-                    foreach ($otherBarang as $value) {
-                        $barang1 = Barang::find($value->id);
-                        if (isset($barang1->expired)) {
-                            $barangExpired1 = $barang1->expired->format('Y-m-d');
-                        } else {
-                            $barangExpired1 = $barang1->expired;
-                        }
-
-                        if ($request->expired === $barangExpired1) {
-                            $barang->stock = $barang->stock - $data->jumlah;
-                            $barang1->stock = $barang1->stock + $request->jumlah;
-                            $barang->save();
-                            $barang1->save();
-                            $data->barangs_id = $barang1->id;
-                        }
-                        else{
-                            if(++$i === $countItem){
-                                $newBarang = new Barang();
-                                
-                                $newBarang->code = $barang->code;
-                                $newBarang->name = $barang->name;
-                                $newBarang->satuan = $barang->satuan;
-                                $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
-                                $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
-                                $newBarang->save();
-                                $data->barangs_id = $newBarang->id;
-                            }
-                        }
-                    }
-                } else {
-                    $newBarang = new Barang();
-
-                    $newBarang->code = $barang->code;
-                    $newBarang->name = $barang->name;
-                    $newBarang->satuan = $barang->satuan;
-                    $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
-                    $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
-                    $newBarang->save();
-                    $data->barangs_id = $newBarang->id;
-                }
-            }
-
-            $data->jumlah = $request->jumlah;
-            $data->save();
-        }
+        $data = Permintaan::find($id);
+        $data->bidang = $request->bidang;
+        $data->kabid_id = $request->kabid_id;
+        $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function print_permintaan($id)
     {
-        $data = Pembelian::find($id);
-
-        $barang = Barang::find($data->barangs_id);
-        $barang->stock -= $data->jumlah;
-        $barang->save();
-
-        $data->delete();
-
-        return response()->json(['status' => 1, 'msg' => 'Deleted successfully']);
+        $datapermintaan = Permintaan::find($id);
+        $datapermintaanlist = PermintaanList::where('permintaan_id', $id)->get();
+        $penyerah = User::where('position', 'penyerah')->first();
+        $kasub = User::where('position', 'kasubbagumum')->first();
+        $pemohon = User::find($datapermintaan->created_by);
+        $kabid = User::find($datapermintaan->kabid_id);
+        // dd($ttdpenyerah);
+        // return view('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah'));
+        $pdf = PDF::loadView('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah', 'kasub', 'pemohon', 'kabid'));
+        return $pdf->stream();
     }
 
-    public function dt_pembelian()
+    public function kabid_accpermintaan($id)
     {
-        $data = Pembelian::with('barang')->get();
+        $data = Permintaan::find($id);
+        $data->status_id = 2;
+        $data->save();
+
+        return response(['status' => 1, 'data' => $data, 'msg' => 'Permintaan berhasil diverifikasi!']);
+    }
+
+    public function penyerah_accpermintaan($id)
+    {
+        $data = Permintaan::find($id);
+        $data->status_id = 3;
+        $data->save();
+
+        return response(['status' => 1, 'data' => $data, 'msg' => 'Permintaan berhasil diverifikasi!']);
+    }
+
+    public function kasubbagumum_accpermintaan($id)
+    {
+        $data = Permintaan::find($id);
+        $data->status_id = 4;
+        $data->tgl_penyerahan = now();
+        $data->save();
+
+        return response(['status' => 1, 'data' => $data, 'msg' => 'Permintaan berhasil diverifikasi!']);
+    }
+
+    public function dt_permintaan()
+    {
+        $data = Permintaan::with('kabid', 'peminta', 'status')->get();
+
+        if (auth()->user()->position === 'penyelia') {
+            $data = $data->where('kabid_id', auth()->user()->id);
+        } elseif (auth()->user()->position === 'pemohon') {
+            $data = $data->where('created_by', auth()->user()->id);
+        }
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
-                $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit mr-3" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
-                $actions .= '<a href="#" value="a1" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
+                $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                $actions .= '<a href="' . route('permintaanlist.index', $data->id) . '" class="permintaanlist mx-2" title="List Permintaan"><i class="zmdi zmdi-attachment text-success"></i></a>';
+                $actions .= '<a href="' . route('print_permintaan', $data->id) . '" title="Cetak Permintaan" target="_blank"><i class="zmdi zmdi-print text-secondary"></i></a>';
+                if(auth()->user()->position === 'penyelia'){
+                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="kabidacc zmdi zmdi-check text-danger ml-2"></i></a>';
+                }elseif(auth()->user()->position === 'penyerah'){
+                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="penyerahacc zmdi zmdi-check text-danger ml-2"></i></a>';
+                }elseif(auth()->user()->position === 'kasubbagumum'){
+                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="kasubbagumumacc zmdi zmdi-check text-danger ml-2"></i></a>';
+                }
+
                 return $actions;
             })
-            ->addColumn('expired', function ($data) {
-                return $data->expired ? $data->expired->isoFormat('D MMM Y') : null;
+            ->addColumn('tgl_pembelian', function ($data) {
+                return $data->tgl_pembelian ? $data->tgl_pembelian->isoFormat('D MMM Y') : null;
+            })
+            ->addColumn('tgl_permintaan', function ($data) {
+                return $data->tgl_permintaan ? $data->tgl_permintaan->isoFormat('D MMM Y') : null;
+            })
+            ->rawColumns(['actions'])
+            ->toJson();
+    }
+
+    public function permintaanlist_index($idpermintaan)
+    {
+        $data = Permintaan::find($idpermintaan);
+        $header = 'List Permintaan no ' . $data->nourut;
+
+        return view('permintaanlist.index', compact('header', 'data'));
+    }
+
+    public function permintaanlist_edit($idpermintaan, $idbarang)
+    {
+        $editeddata = PermintaanList::where('permintaan_id', $idpermintaan)
+            ->where('barang_id', $idbarang)->first();
+        $header = 'List Permintaan no ' . $editeddata->nourut;
+        $barang = Barang::all();
+        $data = Permintaan::find($idpermintaan);
+
+        return view('permintaanlist.form', compact('header', 'editeddata', 'barang', 'data'));
+    }
+
+    public function permintaanlist_update(Request $request, $idpermintaan, $idbarang)
+    {
+        $this->validate($request, [
+            'jumlahrealisasi' => 'required'
+        ]);
+
+        $existingData = PermintaanList::where('permintaan_id', $idpermintaan)
+            ->where('barang_id', $idbarang)->first();
+
+        $existingData->jumlahrealisasi = $request->jumlahrealisasi;
+        $existingData->save();
+
+        return response(['status' => 1, 'msg' => 'Data is added successfully!']);
+    }
+
+    public function permintaanlist_create($idpermintaan)
+    {
+        $data = Permintaan::find($idpermintaan);
+        $header = 'List Permintaan no ' . $data->nourut;
+        $barang = Barang::all();
+
+        return view('permintaanlist.form', compact('header', 'barang', 'data'));
+    }
+
+    public function permintaanlist_store(Request $request, $idpermintaan)
+    {
+        $this->validate($request, [
+            'barang_id' => 'required',
+            'jumlahpermintaan' => 'numeric|min:1',
+        ], [], [
+            'barang_id' => 'Nama barang'
+        ]);
+
+        $existingData = PermintaanList::where('permintaan_id', $idpermintaan)
+            ->where('barang_id', $request->barang_id)->first();
+
+        if ($existingData) {
+            $existingData->jumlahpermintaan += $request->jumlahpermintaan;
+            $existingData->keterangan = $request->keterangan;
+            $existingData->save();
+        } else {
+            $data = new PermintaanList();
+            $data->permintaan_id = $idpermintaan;
+            $data->barang_id = $request->barang_id;
+            $data->jumlahpermintaan = $request->jumlahpermintaan;
+            $data->keterangan = $request->keterangan;
+            $data->save();
+        }
+
+        return response(['status' => 1, 'msg' => 'Data is added successfully!']);
+    }
+
+    public function Permintaanlist_destroy($idpermintaan, $idbarang)
+    {
+        PermintaanList::where('permintaan_id', $idpermintaan)
+            ->where('barang_id', $idbarang)->delete();
+
+        return response()->json(['status' => 1, 'msg' => 'Deleted successfully']);
+    }
+
+    public function dt_permintaanlist($idpermintaan)
+    {
+        $data = PermintaanList::with('barang')
+            ->where('permintaan_id', $idpermintaan)
+            ->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('actions', function ($data) {
+                $actions = '';
+                $actions .= '<a href="#" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger mx-2"></i></a>';
+                if(auth()->user()->position === 'penyerah' || auth()->user()->level === 'admin' ){
+                    $actions .= '<a href="' . route('permintaanlist.edit', [$data->permintaan_id, $data->barang_id]) . '" class="edit" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                }
+                return $actions;
             })
             ->rawColumns(['actions'])
             ->toJson();

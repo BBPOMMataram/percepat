@@ -40,54 +40,30 @@
           @endisset
         </div>
         <hr>
-        <form id="form" enctype="multipart/form-data">
+        <form id="form">
           @csrf
           @isset($editeddata)
           @method('PUT')
           @endisset
           <div class="form-group">
-            <label for="name">Name</label>
-            <select name="barang_id" id="barang_id" class="form-control  select2" @isset ($editeddata) disabled
-              @endisset>
+            <label for="bidang">Bidang atau Seksi</label>
+            <input required type="text" class="form-control " id="bidang" name="bidang" placeholder="Bidang"
+              value="{{ $editeddata->bidang ?? ''}}">
+          </div>
+          <div class="form-group">
+            <label for="kabid_id">Kabid / Kasie / Penyelia</label>
+            <select required name="kabid_id" id="kabid_id" class="form-control  select2">
               <option value="">==Select an item==</option>
-              @foreach ($barang as $item)
-              <option @isset($editeddata) @if ($item->id === $editeddata->barangs_id) selected @endif @endisset
-                value="{{ $item->id }}">{{ $item->name }} (ex: @isset($item->expired)
-                {{ $item->expired->isoFormat('D MMM Y') }} @endisset)</option>
+              @foreach ($kabid as $item)
+              <option @isset($editeddata) @if ($item->id === $editeddata->kabid_id) selected @endif @endisset
+                value="{{ $item->id }}">{{ $item->name }} </option>
               @endforeach
             </select>
-
-            @isset($editeddata)
-            <select name="barang_id" id="barang_id" class="form-control  d-none">
-              <option value="">==Select an item==</option>
-              @foreach ($barang as $item)
-              <option @isset($editeddata) @if ($item->id === $editeddata->barangs_id) selected @endif @endisset
-                value="{{ $item->id }}">{{ $item->name }} (ex: @isset($item->expired)
-                {{ $item->expired->isoFormat('D MMM Y') }} @endisset)</option>
-              @endforeach
-            </select>
-            @endisset
-          </div>
-          <div class="form-group">
-            <label for="expired">Expired</label>
-            <input type="date" class="form-control " id="expired" name="expired" placeholder="Satuan"
-              @isset($editeddata) value="{{ $editeddata->expired ? $editeddata->expired->format('Y-m-d') : '' }}"
-              @endisset>
-          </div>
-          <div class="form-group">
-            <label for="jumlah">Jumlah</label>
-            <input required type="number" class="form-control " id="jumlah" name="jumlah" placeholder="Jumlah"
-              value="{{ $editeddata->jumlah ?? 0 }}" min="0">
-          </div>
-          <div class="form-group">
-            <label for="vendor">Vendor</label>
-            <input type="text" class="form-control " id="vendor" name="vendor" placeholder="Vendor"
-              value="{{ $editeddata->vendor ?? '' }}">
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
-            <a href="{{ route('pembelian.index') }}"><button type="button"
-                class="btn btn-secondary btn-round px-5">Cancel</button></a>
+            <a href="{{ route('permintaan.index') }}"><button type="button"
+                class="btn btn-secondary btn-round px-5">Exit</button></a>
           </div>
         </form>
       </div>
@@ -103,16 +79,14 @@
     $('.select2').select2();
 
       function ResetForm(){
-        $('#name').val('')
-        $('#satuan').val('')
-        $('#expired').val('')
-        $('#stock').val(0);
+        $('#bidang').val('')
+        $('#kabid_id').val('').trigger('change')
       }
 
       $('#form').on('submit', function(e){
         let fd = new FormData($('#form')[0]);
         
-        const url = "@isset($editeddata) {{ route('pembelian.update', $editeddata->id) }} @else {{ route('pembelian.store') }} @endisset"
+        const url = "@isset($editeddata) {{ route('permintaan.update', $editeddata->id) }} @else {{ route('permintaan.store') }} @endisset"
         const method = "@isset($editeddata) PUT @else POST @endisset"
 
         $.ajax({
