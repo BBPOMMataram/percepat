@@ -189,8 +189,11 @@ class PermintaanController extends Controller
 
                 return $actions;
             })
-            ->addColumn('tgl_pembelian', function ($data) {
-                return $data->tgl_pembelian ? $data->tgl_pembelian->isoFormat('D MMM Y') : null;
+            // ->addColumn('tgl_pembelian', function ($data) {
+            //     return $data->tgl_pembelian ? $data->tgl_pembelian->isoFormat('D MMM Y') : null;
+            // })
+            ->addColumn('tgl_penyerahan', function ($data) {
+                return $data->tgl_penyerahan ? $data->tgl_penyerahan->isoFormat('D MMM Y') : null;
             })
             ->addColumn('tgl_permintaan', function ($data) {
                 return $data->tgl_permintaan ? $data->tgl_permintaan->isoFormat('D MMM Y') : null;
