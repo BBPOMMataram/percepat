@@ -4,7 +4,7 @@
 <div class="row mt-3">
   <div class="col-12">
     <h6>Tanggal Permintaan : {{ $data->tgl_permintaan->isoFormat('D MMM Y') }}</h6>
-    @if (auth()->user()->level === 'admin')
+    @if (auth()->user()->level === 'admin' || auth()->user()->position === 'pemohon')
     <a href="{{ route('permintaanlist.create', $data->id) }}" class="btn btn-light mb-3">ADD</a>
     @endif
     <div class="table-responsive">
