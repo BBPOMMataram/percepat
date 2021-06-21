@@ -215,8 +215,10 @@ class PembelianController extends Controller
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
-                $actions .= '<a href="' . route('pembelian.edit', $data->id) . '" class="edit mr-3" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
-                $actions .= '<a href="#" value="a1" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
+                if (auth()->user()->level === 'admin') {
+                    $actions .= '<a href="' . route('pembelian.edit', $data->id) . '" class="edit mr-3" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                    $actions .= '<a href="#" value="a1" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
+                }
                 return $actions;
             })
             ->addColumn('expired', function ($data) {
