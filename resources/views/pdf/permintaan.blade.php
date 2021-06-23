@@ -134,7 +134,7 @@
             </tr>
             <tr>
                 <td>
-                    @if ($datapermintaan->status_id === 2)
+                    @if ($datapermintaan->status_id >= 2)
                     @if ($kabid)
                     <span style="padding-left: -20px;">@if ($kabid->signature) <img src="{{ 'storage/'. $kabid->signature }}" alt="ttd kabid" width="150px"> @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kabid->name }}</span>
@@ -142,7 +142,7 @@
                     @endif
                 </td>
                 <td style="text-align: right; margin-right: 20px">
-                    @if ($datapermintaan->status_id === 1)
+                    @if ($datapermintaan->status_id >= 1)
                     @if ($pemohon)
                     <span>@if($pemohon->signature) <img src="{{ 'storage/'. $pemohon->signature }}" alt="ttd pemohon" width="150px">@endif</span><br />
                     <span>{{ $pemohon->name }}</span>
@@ -166,7 +166,7 @@
             </tr>
             <tr>
                 <td>
-                    @if ($datapermintaan->status_id === 4)
+                    @if ($datapermintaan->status_id >= 4)
                     @if ($kasub)
                     <span style="padding-left: -20px;">@if ($kasub->signature) <img src="{{ 'storage/'. $kasub->signature }}" alt="ttd kasub" width="150px"> @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kasub->name }}</span>
@@ -174,7 +174,7 @@
                     @endif
                 </td>
                 <td style="text-align: right; margin-right: 20px">
-                    @if ($datapermintaan->status_id === 3)
+                    @if ($datapermintaan->status_id >= 3)
                     @if ($penyerah)
                     <span>@if($penyerah->signature) <img src="{{ 'storage/'. $penyerah->signature }}" alt="ttd penyerah" width="150px">@endif</span><br />
                     <span>{{ $penyerah->name }}</span>
