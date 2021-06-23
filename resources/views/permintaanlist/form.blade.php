@@ -76,7 +76,7 @@
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
-            <a href="{{ route('permintaanlist.index', $data->id) }}"><button type="button"
+            <a href="{{ route('permintaanlist.done', $data->id) }}"><button type="button"
                 class="btn btn-secondary btn-round px-5">Done</button></a>
           </div>
         </form>

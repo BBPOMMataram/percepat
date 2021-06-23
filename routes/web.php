@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('penyerahaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
     Route::patch('kasubbagumumaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'kasubbagumum_accpermintaan'])->name('kasubbagumum_accpermintaan');
     
+    Route::get('permintaanlistdone/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_done'])->name('permintaanlist.done');
     Route::get('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_index'])->name('permintaanlist.index');
     Route::get('permintaanlist/create/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_create'])->name('permintaanlist.create');
     Route::put('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_update'])->name('permintaanlist.update');

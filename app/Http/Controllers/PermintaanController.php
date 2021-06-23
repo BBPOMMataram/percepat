@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PermohonanEmail;
 use App\Models\Barang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
 use App\Models\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Yajra\DataTables\Facades\DataTables;
 
 class PermintaanController extends Controller
@@ -80,7 +82,9 @@ class PermintaanController extends Controller
      */
     public function show($id)
     {
-        //
+        $data = Permintaan::find($id);
+        $header = 'Data Permintaan no ' . $data->nourut;
+        return view('permintaan.detail', compact( 'data', 'header'));
     }
 
     /**
@@ -129,44 +133,52 @@ class PermintaanController extends Controller
         $kasub = User::where('position', 'kasubbagumum')->first();
         $pemohon = User::find($datapermintaan->created_by);
         $kabid = User::find($datapermintaan->kabid_id);
-        // dd($ttdpenyerah);
-        // return view('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah'));
         $pdf = PDF::loadView('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah', 'kasub', 'pemohon', 'kabid'));
         return $pdf->stream();
     }
 
     public function kabid_accpermintaan($id)
     {
-        $data = Permintaan::find($id);
-        $data->status_id = 2;
-        $data->save();
+        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
+        $datapermintaan->status_id = 2;
+        if($datapermintaan->save()){
+            $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+            $kepada = User::where('position', 'penyerah')->first();
+            Mail::to($kepada)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada->name));
+        }
 
-        return response(['status' => 1, 'data' => $data, 'msg' => 'Permintaan berhasil diverifikasi!']);
+        return response(['status' => 1, 'msg' => 'Permintaan berhasil diverifikasi!']);
     }
 
     public function penyerah_accpermintaan($id)
     {
-        $data = Permintaan::find($id);
-        $data->status_id = 3;
-        $data->save();
+        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
+        $datapermintaan->status_id = 3;
+        if($datapermintaan->save()){
+            $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+            $kepada = User::where('position', 'kasubbagumum')->first();
+            Mail::to($kepada)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada->name));
+        }
 
-        return response(['status' => 1, 'data' => $data, 'msg' => 'Permintaan berhasil diverifikasi!']);
+        return response(['status' => 1, 'msg' => 'Permintaan berhasil diterima!']);
     }
 
     public function kasubbagumum_accpermintaan($id)
     {
-        $data = Permintaan::find($id);
-        $data->status_id = 4;
-        $data->tgl_penyerahan = now();
-        $data->save();
+        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
+        $datapermintaan->status_id = 4;
+        if($datapermintaan->save()){
+            $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+            $kepada = User::where('position', 'penyerah')->first();
+            // Mail::to('arfanihidayat@gmail.com')->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));
+        }
 
-        return response(['status' => 1, 'data' => $data, 'msg' => 'Permintaan berhasil diverifikasi!']);
+        return response(['status' => 1, 'msg' => 'Permintaan berhasil diselesaikan!']);
     }
 
     public function dt_permintaan()
     {
-        $data = Permintaan::with('kabid', 'peminta', 'status')->get();
-
+        $data = Permintaan::with('kabid', 'peminta', 'status')->orderByDesc('created_at')->get();
         if (auth()->user()->position === 'penyelia') {
             $data = $data->where('kabid_id', auth()->user()->id);
         } elseif (auth()->user()->position === 'pemohon') {
@@ -176,6 +188,7 @@ class PermintaanController extends Controller
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
+                $actions .= '<a href="' . route('permintaan.show', $data->id) . '" class="mr-2" title="Detail Data"><i class="zmdi zmdi-eye text-primary"></i></a>';
                 $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
                 $actions .= '<a href="' . route('permintaanlist.index', $data->id) . '" class="permintaanlist mx-2" title="List Permintaan"><i class="zmdi zmdi-attachment text-success"></i></a>';
                 $actions .= '<a href="' . route('print_permintaan', $data->id) . '" title="Cetak Permintaan" target="_blank"><i class="zmdi zmdi-print text-secondary"></i></a>';
@@ -189,9 +202,6 @@ class PermintaanController extends Controller
 
                 return $actions;
             })
-            // ->addColumn('tgl_pembelian', function ($data) {
-            //     return $data->tgl_pembelian ? $data->tgl_pembelian->isoFormat('D MMM Y') : null;
-            // })
             ->addColumn('tgl_penyerahan', function ($data) {
                 return $data->tgl_penyerahan ? $data->tgl_penyerahan->isoFormat('D MMM Y') : null;
             })
@@ -200,6 +210,19 @@ class PermintaanController extends Controller
             })
             ->rawColumns(['actions'])
             ->toJson();
+    }
+
+    public function permintaanlist_done($idpermintaan)
+    {
+        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($idpermintaan);
+        $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+        $kepada = $datapermintaan->kabid->name;
+        Mail::to($datapermintaan->kabid)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));
+
+        return redirect()->route('permintaanlist.index', $datapermintaan->id)->with([
+            'data' => $datapermintaan
+        ]);
+        // return view('permintaanlist.index', compact('header', 'data'));
     }
 
     public function permintaanlist_index($idpermintaan)

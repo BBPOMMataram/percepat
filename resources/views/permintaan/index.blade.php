@@ -27,6 +27,7 @@
       const dttable = $('#dttable').DataTable({
           responsive: true,
           serverSide: true,
+          ordering: false,
           ajax: {
             url: "{{ route('dt_permintaan') }}"
           },
