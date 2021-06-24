@@ -167,7 +167,15 @@ class PermintaanController extends Controller
     {
         $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
         $datapermintaan->status_id = 4;
+        
         if($datapermintaan->save()){
+            $permintaanlist = PermintaanList::where('permintaan_id', $id)->get();
+            foreach ($permintaanlist as $value) {
+                $barang = Barang::find($value->barang_id);
+                $barang->stock -= $value->jumlahrealisasi;
+                $barang->save();
+            }
+
             $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
             $kepada = User::where('position', 'penyerah')->first();
             // Mail::to('arfanihidayat@gmail.com')->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));

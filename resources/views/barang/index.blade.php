@@ -33,7 +33,7 @@
           columns: [
             { data: 'actions', className: 'text-center' },
             { data: 'DT_RowIndex' },
-            { data: 'name' },
+            { data: 'name', className: 'text-wrap' },
             { data: 'satuan' },
             { data: 'expired', render: function($data){ return $data ? $data : '-' ;}  },
             { data: 'stock' },

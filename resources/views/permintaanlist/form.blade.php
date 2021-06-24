@@ -52,8 +52,8 @@
               <option value="">==Select an item==</option>
               @foreach ($barang as $item)
               <option @isset($editeddata) @if ($item->id === $editeddata->barang_id) selected @endif @endisset
-                value="{{ $item->id }}">{{ $item->name }} (ex: @isset($item->expired)
-                {{ $item->expired->isoFormat('D MMM Y') }} @endisset)</option>
+                value="{{ $item->id }}">{{ $item->name }} - ex: @isset($item->expired)
+                {{ $item->expired->isoFormat('D MMM Y') }} @endisset - stock: {{ $item->stock }}</option>
               @endforeach
             </select>
           </div>

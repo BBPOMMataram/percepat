@@ -7,9 +7,13 @@ use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PermintaanListController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
+use App\Models\Barang;
+use App\Models\Pembelian;
 use App\Models\Permintaan;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use SebastianBergmann\Type\ObjectType;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,17 +27,27 @@ use Illuminate\Support\Facades\Route;
 */
 Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
-        return view('dashboard');
+        $data = (object)[];
+        
+        $jmlpembelian = Pembelian::count();
+        $jmlpermintaan = Permintaan::count();
+        $jmlbarang = Barang::count();
+        $jmluser = User::count() - 1;
+
+        $data->jmlpembelian = $jmlpembelian;
+        $data->jmlpermintaan = $jmlpermintaan;
+        $data->jmlbarang = $jmlbarang;
+        $data->jmluser = $jmluser;
+
+        $recentpermintaan = Permintaan::with('status', 'kabid')->orderBy('created_at', 'desc')->limit(10)->get();
+        
+        return view('dashboard', compact('data', 'recentpermintaan'));
     })->name('dashboard');
 
     Route::resource('users', UserController::class);
     Route::get('dtusers', [UserController::class, 'dt_users'])->name('dt_users');
 
     Route::resource('profile', ProfileController::class);
-
-    Route::get('/test', function(){
-        dd(auth()->user());
-    });
 
     Route::resource('barang', BarangController::class);
     Route::get('dtbarang', [BarangController::class, 'dt_barang'])->name('dt_barang');

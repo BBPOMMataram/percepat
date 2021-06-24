@@ -127,7 +127,7 @@
     <!-- sidebar-menu js -->
     <script src="{{ asset('vendor/assets/js/sidebar-menu.js') }}"></script>
     <!-- loader scripts -->
-    <script src="{{ asset('vendor/assets/js/jquery.loading-indicator.js') }}"></script>
+    {{-- <script src="{{ asset('vendor/assets/js/jquery.loading-indicator.js') }}"></script> --}}
     <!-- Custom scripts -->
     <script src="{{ asset('vendor/assets/js/app-script.js') }}"></script>
     <!-- Chart js -->
