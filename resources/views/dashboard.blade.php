@@ -39,7 +39,7 @@
             <div class="col-12 col-lg-6 col-xl-3 border-light">
                 <div class="card-body">
                     <h5 class="text-white mb-0">{{ $data->jmluser ?? '0'}} <span class="float-right"><i
-                                class="fa fa-eye"></i></span></h5>
+                                class="fa fa-users"></i></span></h5>
                     <div class="progress my-3" style="height:3px;">
                         <div class="progress-bar" style="width:100%"></div>
                     </div>
@@ -167,7 +167,7 @@
 <div class="row">
     <div class="col-12 col-lg-12">
         <div class="card">
-            <div class="card-header">Recent Order Tables
+            <div class="card-header">Permintaan terbaru
                 {{-- <div class="card-action">
                             <div class="dropdown">
                                 <a href="javascript:void();" class="dropdown-toggle dropdown-toggle-nocaret"
@@ -201,12 +201,12 @@
                         @foreach ($recentpermintaan as $item)
                             <tr>
                                 <td>{{ $item->nourut ?? '-' }}</td>
-                                <td>{{ $item->tgl_permintaan ?? '-' }}</td>
+                                <td>{{ $item->tgl_permintaan ? $item->tgl_permintaan->isoFormat('D MMM Y') : '-' }}</td>
                                 <td>{{ $item->peminta->name ?? '-' }}</td>
                                 <td>{{ $item->bidang ?? '-' }}</td>
                                 <td>{{ $item->kabid->name ?? '-' }}</td>
                                 <td>{{ $item->status->name ?? '-' }}</td>
-                                <td>{{ $item->tgl_penyerahan ?? '-' }}</td>
+                                <td>{{ $item->tgl_penyerahan ? $item->tgl_penyerahan->isoFormat('D MMM Y') : '-' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
