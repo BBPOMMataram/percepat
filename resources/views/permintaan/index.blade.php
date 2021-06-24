@@ -35,7 +35,7 @@
             { data: 'actions', className: 'text-center' },
             { data: 'nourut' },
             { data: 'tgl_permintaan' },
-            { data: 'peminta.name' },
+            { data: 'namapeminta' },
             { data: 'bidang' },
             { data: 'kabid.name' },
             { data: 'status.name' },

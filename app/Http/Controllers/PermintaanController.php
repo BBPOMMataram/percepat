@@ -216,6 +216,12 @@ class PermintaanController extends Controller
             ->addColumn('tgl_permintaan', function ($data) {
                 return $data->tgl_permintaan ? $data->tgl_permintaan->isoFormat('D MMM Y') : null;
             })
+            ->addColumn('namapeminta', function($data){
+                return $data->peminta->name ?? '-' ;
+            })
+            ->addColumn('kabid.name', function($data){
+                return $data->kabid->name ?? '-' ;
+            })
             ->rawColumns(['actions'])
             ->toJson();
     }
