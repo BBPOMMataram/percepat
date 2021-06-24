@@ -223,5 +223,5 @@
 
 @push('scripts')
 <!-- Index js -->
-<script src="{{ asset('vendor/assets/js/index.js') }}"></script>
+{{-- <script src="{{ asset('vendor/assets/js/index.js') }}"></script> --}}
 @endpush
