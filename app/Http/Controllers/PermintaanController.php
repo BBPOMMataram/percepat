@@ -197,7 +197,11 @@ class PermintaanController extends Controller
             ->addColumn('actions', function ($data) {
                 $actions = '';
                 $actions .= '<a href="' . route('permintaan.show', $data->id) . '" class="mr-2" title="Detail Data"><i class="zmdi zmdi-eye text-primary"></i></a>';
-                $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                
+                if(auth()->user()->position === 'pemohon' || auth()->user()->level === 'admin'){
+                    $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                }
+                
                 $actions .= '<a href="' . route('permintaanlist.index', $data->id) . '" class="permintaanlist mx-2" title="List Permintaan"><i class="zmdi zmdi-attachment text-success"></i></a>';
                 $actions .= '<a href="' . route('print_permintaan', $data->id) . '" title="Cetak Permintaan" target="_blank"><i class="zmdi zmdi-print text-secondary"></i></a>';
                 if(auth()->user()->position === 'penyelia'){

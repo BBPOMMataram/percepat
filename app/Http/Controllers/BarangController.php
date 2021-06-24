@@ -135,4 +135,15 @@ class BarangController extends Controller
             ->rawColumns(['actions'])
             ->toJson();
     }
+
+    public function dt_barang_tanpalogin()
+    {
+        $data = Barang::all();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('expired', function($data){
+                return $data->expired ? $data->expired->isoFormat('D MMM Y') : null;
+            })
+            ->toJson();
+    }
 }

@@ -35,7 +35,7 @@
           columns: [
             { data: 'actions', className: 'text-center' },
             { data: 'DT_RowIndex' },
-            { data: 'barang.name' },
+            { data: 'barang.name', className: 'text-wrap' },
             { data: 'barang.satuan', className: 'text-center' },
             { data: 'jumlahpermintaan', className: 'text-center' },
             { data: 'jumlahrealisasi', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},

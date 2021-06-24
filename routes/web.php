@@ -25,8 +25,18 @@ use SebastianBergmann\Type\ObjectType;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/', function(){
+    if(Auth::check()){
+        return redirect()->route('dashboard');
+    }
+    return view('barang.tanpalogin');
+})->name('home');
+
+Route::get('dtbarangtanpalogin', [BarangController::class, 'dt_barang_tanpalogin'])->name('dt_barang_tanpalogin');
+
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
+    Route::get('/dashboard', function () {
         $data = (object)[];
         
         $jmlpembelian = Pembelian::count();
