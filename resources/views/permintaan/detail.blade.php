@@ -54,12 +54,12 @@
           <div class="form-group">
             <label for="bidang">Bidang atau Seksi</label>
             <input required type="text" class="form-control " id="bidang" name="bidang" placeholder="Bidang"
-              value="{{ $data->bidang ?? ''}}" readonly>
+              value="{{ $data->bidang->name ?? ''}}" readonly>
           </div>
           <div class="form-group">
             <label for="kabid_id">Kabid / Kasie / Penyelia</label>
             <input required type="text" class="form-control " id="kabid" name="kabid" placeholder="kabid"
-              value="{{ $data->kabid->name ?? ''}}" readonly>
+              value="{{ $data->bidang->user->name ?? ''}}" readonly>
           </div>
           <div class="form-group">
             <a href="{{ route('permintaanlist.index', $data->id) }}" target="_blank"><button type="button"

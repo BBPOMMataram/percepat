@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\PermohonanEmail;
 use App\Models\Barang;
+use App\Models\Bidang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
 use App\Models\User;
@@ -33,8 +34,9 @@ class PermintaanController extends Controller
     public function create()
     {
         $header = 'Data Permintaan';
-        $kabid = User::where('position', 'penyelia')->get();
-        return view('permintaan.form', compact('header', 'kabid'));
+        // $kabid = User::where('position', 'penyelia')->get();
+        $bidang = Bidang::all();
+        return view('permintaan.form', compact('header', 'bidang'));
     }
 
     /**
@@ -46,15 +48,12 @@ class PermintaanController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'bidang' => 'required',
-            'kabid_id' => 'required',
-        ], [], [
-            'kabid_id' => 'Kabid'
+            'bidang_id' => 'required',
         ]);
 
         $data = new Permintaan();
-        $data->bidang = $request->bidang;
-        $data->kabid_id = $request->kabid_id;
+        $data->bidang_id = $request->bidang_id;
+        // $data->kabid_id = $request->kabid_id;
         $data->created_by = auth()->user()->id;
 
         $last_data = Permintaan::latest()->first();
@@ -96,9 +95,10 @@ class PermintaanController extends Controller
     public function edit($id)
     {
         $header = 'Data Pembelian';
-        $kabid = User::where('position', 'penyelia')->get();
+        // $kabid = User::where('position', 'penyelia')->get();
+        $bidang = Bidang::all();
         $editeddata = Permintaan::find($id);
-        return view('permintaan.form', compact('header', 'editeddata', 'kabid'));
+        return view('permintaan.form', compact('header', 'editeddata', 'bidang'));
     }
 
     /**
@@ -111,15 +111,11 @@ class PermintaanController extends Controller
     public function update(Request $request, $id)
     {
         $this->validate($request, [
-            'bidang' => 'required',
-            'kabid_id' => 'required',
-        ], [], [
-            'kabid_id' => 'Kabid'
+            'bidang_id' => 'required',
         ]);
 
         $data = Permintaan::find($id);
-        $data->bidang = $request->bidang;
-        $data->kabid_id = $request->kabid_id;
+        $data->bidang_id = $request->bidang_id;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
@@ -132,14 +128,14 @@ class PermintaanController extends Controller
         $penyerah = User::where('position', 'penyerah')->first();
         $kasub = User::where('position', 'kasubbagumum')->first();
         $pemohon = User::find($datapermintaan->created_by);
-        $kabid = User::find($datapermintaan->kabid_id);
+        $kabid = User::find($datapermintaan->bidang->user->id);
         $pdf = PDF::loadView('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah', 'kasub', 'pemohon', 'kabid'));
         return $pdf->stream();
     }
 
     public function kabid_accpermintaan($id)
     {
-        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
+        $datapermintaan = Permintaan::with('peminta')->find($id);
         $datapermintaan->status_id = 2;
         if($datapermintaan->save()){
             $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
@@ -152,7 +148,7 @@ class PermintaanController extends Controller
 
     public function penyerah_accpermintaan($id)
     {
-        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
+        $datapermintaan = Permintaan::with('peminta')->find($id);
         $datapermintaan->status_id = 3;
         if($datapermintaan->save()){
             $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
@@ -165,7 +161,7 @@ class PermintaanController extends Controller
 
     public function kasubbagumum_accpermintaan($id)
     {
-        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($id);
+        $datapermintaan = Permintaan::with('peminta')->find($id);
         $datapermintaan->status_id = 4;
         
         if($datapermintaan->save()){
@@ -186,11 +182,15 @@ class PermintaanController extends Controller
 
     public function dt_permintaan()
     {
-        $data = Permintaan::with('kabid', 'peminta', 'status')->orderByDesc('created_at')->get();
+        $data = Permintaan::with('bidang.user', 'peminta', 'status')->orderByDesc('created_at')->get();
         if (auth()->user()->position === 'penyelia') {
-            $data = $data->where('kabid_id', auth()->user()->id);
+            $data = $data->where('bidang.user.id', auth()->user()->id);
         } elseif (auth()->user()->position === 'pemohon') {
             $data = $data->where('created_by', auth()->user()->id);
+        } elseif (auth()->user()->position === 'penyerah') {
+            $data = $data->where('status', 2);
+        } elseif (auth()->user()->position === 'kasubbagumum') {
+            $data = $data->where('status', 3);
         }
         return DataTables::of($data)
             ->addIndexColumn()
@@ -223,19 +223,19 @@ class PermintaanController extends Controller
             ->addColumn('namapeminta', function($data){
                 return $data->peminta->name ?? '-' ;
             })
-            ->addColumn('kabid.name', function($data){
-                return $data->kabid->name ?? '-' ;
-            })
+            // ->addColumn('kabid.name', function($data){
+            //     return $data->kabid->name ?? '-' ;
+            // })
             ->rawColumns(['actions'])
             ->toJson();
     }
 
     public function permintaanlist_done($idpermintaan)
     {
-        $datapermintaan = Permintaan::with('kabid', 'peminta')->find($idpermintaan);
+        $datapermintaan = Permintaan::with('bidang.user', 'peminta')->find($idpermintaan);
         $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
-        $kepada = $datapermintaan->kabid->name;
-        Mail::to($datapermintaan->kabid)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));
+        $kepada = $datapermintaan->bidang->user->name;
+        Mail::to($datapermintaan->bidang->user)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));
 
         return redirect()->route('permintaanlist.index', $datapermintaan->id)->with([
             'data' => $datapermintaan

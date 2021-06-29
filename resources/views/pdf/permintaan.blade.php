@@ -94,7 +94,7 @@
                 <tr>
                     <td style="text-align: left;" colspan="3">Tanggal Permintaan :
                         {{ $datapermintaan->tgl_permintaan->isoFormat('D MMMM Y') }}</td>
-                    <td style="text-align: left;" colspan="3">Bidang atau Seksi : {{ $datapermintaan->bidang }}</td>
+                    <td style="text-align: left;" colspan="3">Bidang atau Seksi : {{ $datapermintaan->bidang->name }}</td>
                 </tr>
                 <tr>
                     <td style="text-align: left;" colspan="6">Jenis Permintaan : {{ $datapermintaan->jenis }}</td>

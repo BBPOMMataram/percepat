@@ -17,8 +17,9 @@ class CreatePermintaansTable extends Migration
             $table->id();
             $table->integer('nourut')->unsigned();
             $table->dateTime('tgl_permintaan')->useCurrent();
-            $table->string('bidang', 100);
-            $table->bigInteger('kabid_id')->unsigned();
+            // $table->string('bidang', 100);
+            // $table->bigInteger('kabid_id')->unsigned();
+            $table->bigInteger('bidang_id')->unsigned();
             $table->bigInteger('status_id')->unsigned()->default(1);
             $table->dateTime('tgl_penyerahan')->nullable();
             $table->string('jenis', 100)->default('Reagen dan Bahan Laboratorium Lain');

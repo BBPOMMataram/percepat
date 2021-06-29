@@ -203,8 +203,8 @@
                                 <td>{{ $item->nourut ?? '-' }}</td>
                                 <td>{{ $item->tgl_permintaan ? $item->tgl_permintaan->isoFormat('D MMM Y') : '-' }}</td>
                                 <td>{{ $item->peminta->name ?? '-' }}</td>
-                                <td>{{ $item->bidang ?? '-' }}</td>
-                                <td>{{ $item->kabid->name ?? '-' }}</td>
+                                <td>{{ $item->bidang->name ?? '-' }}</td>
+                                <td>{{ $item->bidang->user->name ?? '-' }}</td>
                                 <td>{{ $item->status->name ?? '-' }}</td>
                                 <td>{{ $item->tgl_penyerahan ? $item->tgl_penyerahan->isoFormat('D MMM Y') : '-' }}</td>
                             </tr>

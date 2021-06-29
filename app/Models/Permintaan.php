@@ -19,10 +19,10 @@ class Permintaan extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function kabid()
-    {
-        return $this->hasOne(User::class, 'id', 'kabid_id');
-    }
+    // public function kabid()
+    // {
+    //     return $this->hasOne(User::class, 'id', 'bidang_id');
+    // }
 
     public function peminta()
     {
@@ -37,6 +37,11 @@ class Permintaan extends Model
     public function barang()
     {
         return $this->hasOne(Status::class, 'id', 'barang_id');
+    }
+
+    public function bidang()
+    {
+        return $this->hasOne(Bidang::class, 'id', 'bidang_id');
     }
 
 

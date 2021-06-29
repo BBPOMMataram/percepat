@@ -34,35 +34,35 @@
       <div class="card-body">
         <div class="card-title">
           @isset($editeddata)
-          <i class="zmdi zmdi-account"></i> Edit data
+          <i class="zmdi zmdi-account"></i> Edit user
           @else
           <i class="zmdi zmdi-account-add"></i> Add a new data
           @endisset
         </div>
         <hr>
-        <form id="form">
+        <form id="form" enctype="multipart/form-data">
           @csrf
           @isset($editeddata)
           @method('PUT')
           @endisset
-          {{-- <div class="form-group">
-            <label for="bidang_id">Bidang atau Seksi</label>
-            <input required type="text" class="form-control " id="bidang_id" name="bidang_id" placeholder="Bidang"
-              value="{{ $editeddata->bidang_id ?? ''}}">
-          </div> --}}
           <div class="form-group">
-            <label for="bidang_id">Bidang atau Seksi</label>
-            <select required name="bidang_id" id="bidang_id" class="form-control  select2">
+            <label for="name">Name</label>
+            <input required type="text" class="form-control form-control-rounded" id="name" name="name"
+              placeholder="Name" value="{{ $editeddata->name ?? '' }}" autofocus>
+          </div>
+          <div class="form-group">
+            <label for="kabid">Kabid</label>
+            <select name="kabid" id="kabid" class="form-control select2">
               <option value="">==Select an item==</option>
-              @foreach ($bidang as $item)
-              <option @isset($editeddata) @if ($item->id === $editeddata->bidang_id) selected @endif @endisset
-                value="{{ $item->id }}">{{ $item->name }} </option>
+              @foreach ($users as $item)
+              <option @isset($editeddata) @if ($item->id === $editeddata->kabid) selected @endif @endisset
+                value="{{ $item->id }}">{{ $item->name }}</option>
               @endforeach
             </select>
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
-            <a href="{{ route('permintaan.index') }}"><button type="button"
+            <a href="{{ route('bidang.index') }}"><button type="button"
                 class="btn btn-secondary btn-round px-5">Exit</button></a>
           </div>
         </form>
@@ -72,21 +72,20 @@
 </div>
 @endsection
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>
 <script>
   $(function(){
 
     $('.select2').select2();
 
       function ResetForm(){
-        $('#bidang').val('')
-        $('#kabid_id').val('').trigger('change')
+        $('#name').val('')
+        $('.select2').val('').trigger('change')
       }
 
       $('#form').on('submit', function(e){
         let fd = new FormData($('#form')[0]);
         
-        const url = "@isset($editeddata) {{ route('permintaan.update', $editeddata->id) }} @else {{ route('permintaan.store') }} @endisset"
+        const url = "@isset($editeddata) {{ route('bidang.update', $editeddata->id) }} @else {{ route('bidang.store') }} @endisset"
         const method = "@isset($editeddata) PUT @else POST @endisset"
 
         $.ajax({

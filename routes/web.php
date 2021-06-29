@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\BidangController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PermintaanController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\PermintaanListController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Models\Barang;
+use App\Models\Bidang;
 use App\Models\Pembelian;
 use App\Models\Permintaan;
 use App\Models\User;
@@ -49,7 +51,7 @@ Route::middleware(['auth'])->group(function () {
         $data->jmlbarang = $jmlbarang;
         $data->jmluser = $jmluser;
 
-        $recentpermintaan = Permintaan::with('status', 'kabid')->orderBy('created_at', 'desc')->limit(10)->get();
+        $recentpermintaan = Permintaan::with('status', 'bidang.user')->orderBy('created_at', 'desc')->limit(10)->get();
         
         return view('dashboard', compact('data', 'recentpermintaan'));
     })->name('dashboard');
@@ -81,6 +83,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
     Route::delete('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
     Route::get('dt_permintaanlist/{idpermintaan}', [PermintaanController::class, 'dt_permintaanlist'])->name('dt_permintaanlist');
+
+    Route::resource('bidang', BidangController::class);
+    Route::get('dtbidang', [BidangController::class, 'dt_bidang'])->name('dt_bidang');
 });
 
 Route::view('login', 'login')->name('login');
