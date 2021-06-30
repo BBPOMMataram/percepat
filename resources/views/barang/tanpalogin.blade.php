@@ -149,6 +149,7 @@
           const dttable = $('#dttable').DataTable({
               responsive: true,
               serverSide: true,
+              order: [[1, 'asc']],
               ajax: {
                 url: "{{ route('dt_barang_tanpalogin') }}"
               },

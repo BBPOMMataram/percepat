@@ -27,6 +27,7 @@
       const dttable = $('#dttable').DataTable({
           responsive: true,
           serverSide: true,
+          order: [[2, 'asc']],
           ajax: {
             url: "{{ route('dt_barang') }}"
           },
