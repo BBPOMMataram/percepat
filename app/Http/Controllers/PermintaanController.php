@@ -188,9 +188,9 @@ class PermintaanController extends Controller
         } elseif (auth()->user()->position === 'pemohon') {
             $data = $data->where('created_by', auth()->user()->id);
         } elseif (auth()->user()->position === 'penyerah') {
-            $data = $data->where('status', 2);
+            $data = $data->where('status_id', 2);
         } elseif (auth()->user()->position === 'kasubbagumum') {
-            $data = $data->where('status', 3);
+            $data = $data->where('status_id', 3);
         }
         return DataTables::of($data)
             ->addIndexColumn()
