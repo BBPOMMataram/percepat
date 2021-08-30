@@ -171,6 +171,9 @@ class UserController extends Controller
                 }
                 return '<span class="text-danger">not available</span>';
             })
+            ->addColumn('position', function($data){
+                return $data->position === 'penyerah' ? 'petugas gudang' : $data->position ;
+            })
             ->addColumn('actions', function ($data) {
                 $actions = '';
                 $actions .= '<a href="' . route('users.edit', $data->id) . '" class="edit mr-3" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';

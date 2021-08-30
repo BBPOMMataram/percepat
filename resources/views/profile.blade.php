@@ -2,13 +2,13 @@
 @section('content')
 @parent
 @if ($errors->any())
-    <div class="alert alert-danger p-3">
-        <ul>
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
+<div class="alert alert-danger p-3">
+  <ul>
+    @foreach ($errors->all() as $error)
+    <li>{{ $error }}</li>
+    @endforeach
+  </ul>
+</div>
 @elseif (session('msg'))
 <div class="alert alert-success p-3">
   {{ session('msg') }}
@@ -35,7 +35,15 @@
 
       <div class="card-body border-top border-light">
         <div class="media align-items-center text-capitalize">
-          {{ auth()->user()->position ?? '-' }}
+          @if(auth()->user()->position)
+          @if (auth()->user()->position === 'penyerah')
+          petugas gudang
+          @else
+          {{ auth()->user()->postion }}
+          @endif
+          @else
+          -
+          @endif
         </div>
 
       </div>
@@ -71,11 +79,19 @@
                 </p>
                 <h6>Position</h6>
                 <p>
-                  {{ auth()->user()->position ?? '-' }}
+                  @if(auth()->user()->position)
+                  @if (auth()->user()->position === 'penyerah')
+                  petugas gudang
+                  @else
+                  {{ auth()->user()->postion }}
+                  @endif
+                  @else
+                  -
+                  @endif
                 </p>
                 <h6>Signature</h6>
                 @if (auth()->user()->signature)
-                  <img src="{{ Storage::url(auth()->user()->signature) }}" alt="signature">
+                <img src="{{ Storage::url(auth()->user()->signature) }}" alt="signature">
                 @else
                 <p class="text-danger">Not available</p>
                 @endif
@@ -84,7 +100,8 @@
             <!--/row-->
           </div>
           <div class="tab-pane" id="edit">
-            <form action="{{ route('profile.update', auth()->user()->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('profile.update', auth()->user()->id) }}" method="POST"
+              enctype="multipart/form-data">
               @csrf
               @method('PUT')
               <div class="form-group row">
@@ -96,7 +113,8 @@
               <div class="form-group row">
                 <label class="col-lg-3 col-form-label form-control-label">Email</label>
                 <div class="col-lg-9">
-                  <input class="form-control" name="email" type="email" value="{{ old('email', auth()->user()->email) }}">
+                  <input class="form-control" name="email" type="email"
+                    value="{{ old('email', auth()->user()->email) }}">
                 </div>
               </div>
               <div class="form-group row">

@@ -54,7 +54,7 @@
             <select name="position" id="position" class="form-control form-control-rounded">
               <option value="pemohon" @isset($user) @if($user->position === 'pemohon') selected @endif @endisset>Pemohon</option>
               <option value="penyelia" @isset($user) @if($user->position === 'penyelia') selected @endif @endisset>Kabid / Penyelia</option>
-              <option value="penyerah" @isset($user) @if($user->position === 'penyerah') selected @endif @endisset>Penyerah</option>
+              <option value="penyerah" @isset($user) @if($user->position === 'penyerah') selected @endif @endisset>Petugas Gudang</option>
               <option value="kasubbagumum" @isset($user) @if($user->position === 'kasubbagumum') selected @endif @endisset>Ka. Sub. Bag. Umum</option>
             </select>
           </div>
