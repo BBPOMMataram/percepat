@@ -3,7 +3,7 @@
 @parent
 <div class="row mt-3">
   <div class="col-12">
-    <a href="{{ route('permintaan.create') }}" class="btn btn-light mb-3">ADD</a>
+    <a href="{{ route('permintaan.create') }}"><button class="btn btn-light mb-3" @if (auth()->user()->position !== 'pemohon') disabled @endif>ADD</button></a>
     <div class="table-responsive">
       <table class="table table-striped" id="dttable">
         <thead>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bidang;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -31,7 +32,8 @@ class UserController extends Controller
     public function create()
     {
         $header = 'Users Data';
-        return view('user.form', compact('header'));
+        $bidangs = Bidang::all();
+        return view('user.form', compact('header', 'bidangs'));
     }
 
     /**
@@ -52,6 +54,7 @@ class UserController extends Controller
         $data->email = $request->email;
         $data->position = $request->position;
         $data->password = Hash::make('password');
+        $data->bidang_id = $request->bidang ?? 0;
 
         if ($data->save()) {
             if($request->signed){
@@ -94,7 +97,8 @@ class UserController extends Controller
     {
         $header = 'Users Data';
         $user = User::find($id);
-        return view('user.form', compact('header', 'user'));
+        $bidangs = Bidang::all();
+        return view('user.form', compact('header', 'user', 'bidangs'));
     }
 
     /**
@@ -115,6 +119,7 @@ class UserController extends Controller
         $data->name = $request->name;
         $data->email = $request->email;
         $data->position = $request->position;
+        $data->bidang_id = $request->bidang ?? 0;
 
         if ($data->save()) {
             if($request->signed){
@@ -155,7 +160,7 @@ class UserController extends Controller
 
     public function dt_users()
     {
-        $data = User::where('level', '<>', 'admin')->get();
+        $data = User::with('bidang')->where('level', '<>', 'admin')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('created_at', function ($data) {
@@ -173,6 +178,9 @@ class UserController extends Controller
             })
             ->addColumn('position', function($data){
                 return $data->position === 'penyerah' ? 'petugas gudang' : $data->position ;
+            })
+            ->addColumn('bidang.name', function($data){
+                return $data->bidang->name ?? '-';
             })
             ->addColumn('actions', function ($data) {
                 $actions = '';

@@ -29,7 +29,7 @@
           <div class="form-group">
             <label for="email">Email</label>
             <input required type="email" class="form-control form-control-rounded" id="email" name="email"
-              placeholder="Enter Your Email Address"  value="{{ $user->email ?? '' }}">
+              placeholder="Enter Your Email Address" value="{{ $user->email ?? '' }}">
           </div>
           <div class="form-group">
             <label for="photo">Photo</label>
@@ -39,7 +39,7 @@
             <img src="{{ Storage::url($user->photo) }}" alt="profile photo" class="w-100">
             @endisset
           </div>
-          <div>
+          <div class="mb-3">
             <label for="signature">Signature</label> <br />
             <canvas name="signature" id="signature" class="bg-light"></canvas>
             <button type="button" id="clear-signature" class="w-25 d-block bg-light">clear</button>
@@ -52,16 +52,28 @@
           <div class="form-group">
             <label for="position">Position</label>
             <select name="position" id="position" class="form-control form-control-rounded">
-              <option value="pemohon" @isset($user) @if($user->position === 'pemohon') selected @endif @endisset>Pemohon</option>
-              <option value="penyelia" @isset($user) @if($user->position === 'penyelia') selected @endif @endisset>Kabid / Penyelia</option>
-              <option value="penyerah" @isset($user) @if($user->position === 'penyerah') selected @endif @endisset>Petugas Gudang</option>
-              <option value="kasubbagumum" @isset($user) @if($user->position === 'kasubbagumum') selected @endif @endisset>Ka. Sub. Bag. Umum</option>
+              <option value="pemohon" @isset($user) @if($user->position === 'pemohon') selected @endif @endisset>Pemohon
+              </option>
+              <option value="penyelia" @isset($user) @if($user->position === 'penyelia') selected @endif @endisset>Kabid
+                / Penyelia</option>
+              <option value="penyerah" @isset($user) @if($user->position === 'penyerah') selected @endif
+                @endisset>Petugas Gudang</option>
+              <option value="kasubbagumum" @isset($user) @if($user->position === 'kasubbagumum') selected @endif
+                @endisset>Ka. Sub. Bag. Umum</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bidang">Bidang</label>
+            <select name="bidang" id="bidang" class="form-control form-control-rounded">
+              @foreach ($bidangs as $item)
+              <option value="{{ $item->id }}" @if ($item->id === $user->bidang_id) selected @endif>{{ $item->name }}</option>
+              @endforeach
             </select>
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
             <a href="{{ route('users.index') }}"><button type="button"
-                class="btn btn-secondary btn-round px-5">Cancel</button></a>
+                class="btn btn-secondary btn-round px-5">Exit</button></a>
           </div>
         </form>
       </div>
@@ -134,6 +146,21 @@
       $('#clear-signature').click(function(){
         signaturePad.clear();
       })
+
+      updateBidang();
+
+      function updateBidang(){
+        if($('#position').val() === 'pemohon'){
+          $('#bidang').attr('disabled', false);
+        }else{
+          $('#bidang').attr('disabled', true);
+        }
+      }
+
+      $('#position').change(function (e) { 
+        e.preventDefault();
+        updateBidang();
+      });
 
     })
 </script>

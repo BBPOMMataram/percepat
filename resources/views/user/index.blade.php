@@ -14,6 +14,7 @@
           <th>Photo</th>
           <th>Signature</th>
           <th>Position</th>
+          <th>Bidang</th>
           <th>Created at</th>
         </thead>
       </table>
@@ -38,6 +39,7 @@
             { data: 'photo' },
             { data: 'signature' },
             { data: 'position', render: function($data){ return $data ? $data : '-' ;} },
+            { data: 'bidang.name' },
             { data: 'created_at' },
             { data: 'id', visible: false}
           ]

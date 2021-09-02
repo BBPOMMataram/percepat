@@ -33,6 +33,9 @@ class PermintaanController extends Controller
      */
     public function create()
     {
+        if(auth()->user()->position !== 'pemohon'){
+            return redirect()->route('permintaan.index');
+        }
         $header = 'Data Permintaan';
         // $kabid = User::where('position', 'penyelia')->get();
         $bidang = Bidang::all();
@@ -223,9 +226,12 @@ class PermintaanController extends Controller
             ->addColumn('namapeminta', function($data){
                 return $data->peminta->name ?? '-' ;
             })
-            // ->addColumn('kabid.name', function($data){
-            //     return $data->kabid->name ?? '-' ;
-            // })
+            ->addColumn('bidang.user.name', function($data){
+                return $data->bidang->user->name ?? '-' ;
+            })
+            ->addColumn('bidang.name', function($data){
+                return $data->bidang->name ?? '-' ;
+            })
             ->rawColumns(['actions'])
             ->toJson();
     }
