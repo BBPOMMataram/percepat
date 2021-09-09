@@ -87,7 +87,7 @@
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
             <a href="{{ route('pembelian.index') }}"><button type="button"
-                class="btn btn-secondary btn-round px-5">Cancel</button></a>
+                class="btn btn-secondary btn-round px-5">Exit</button></a>
           </div>
         </form>
       </div>

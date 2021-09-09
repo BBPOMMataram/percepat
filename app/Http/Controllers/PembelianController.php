@@ -164,7 +164,10 @@ class PembelianController extends Controller
                                 $newBarang->satuan = $barang->satuan;
                                 $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
                                 $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
-                                $newBarang->save();
+                                if($newBarang->save()){
+                                    $barang->stock = $barang->stock - $data->jumlah;
+                                    $barang->save();
+                                }
                                 $data->barangs_id = $newBarang->id;
                             }
                         }
@@ -200,8 +203,10 @@ class PembelianController extends Controller
         $data = Pembelian::find($id);
 
         $barang = Barang::find($data->barangs_id);
-        $barang->stock -= $data->jumlah;
-        $barang->save();
+        if(isset($barang)){
+            $barang->stock -= $data->jumlah;
+            $barang->save();
+        }
 
         $data->delete();
 
@@ -223,6 +228,9 @@ class PembelianController extends Controller
             })
             ->addColumn('expired', function ($data) {
                 return $data->expired ? $data->expired->isoFormat('D MMM Y') : null;
+            })
+            ->addColumn('created_at', function ($data) {
+                return $data->created_at ? $data->created_at->isoFormat('D MMM Y') : null;
             })
             ->rawColumns(['actions'])
             ->toJson();

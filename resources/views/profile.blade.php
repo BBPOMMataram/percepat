@@ -83,12 +83,20 @@
                   @if (auth()->user()->position === 'penyerah')
                   petugas gudang
                   @else
-                  {{ auth()->user()->postion }}
+                  {{ auth()->user()->position }}
                   @endif
                   @else
                   -
                   @endif
                 </p>
+
+                @if (auth()->user()->position === 'pemohon')
+                <h6>Pemohon bidang</h6>
+                <p>
+                  {{ auth()->user()->bidang->name ?? '-' }}
+                </p>
+                @endif
+
                 <h6>Signature</h6>
                 @if (auth()->user()->signature)
                 <img src="{{ Storage::url(auth()->user()->signature) }}" alt="signature">

@@ -116,6 +116,38 @@
             });
         });
 
+        $('#dttable').on('click', '.delete', function(e){
+          e.preventDefault();
+          const rowData = dttable.row($(this).parents('tr')).data();
+          const id = rowData['id'];
+          Swal.fire({
+            title: 'Deletion Confirmation',
+            text: 'Really to delete this item ?',
+            icon: 'question',
+            showCancelButton: true,
+          }).then(function(val){
+            if(val.isConfirmed){
+              $.ajax({
+                type: "delete",
+                url: "permintaan/" + id,
+                data: {
+                  _token: "{{ csrf_token() }}"
+                },
+                success: function (response) {
+                  if(response.status){
+                    Swal.fire({
+                      title: 'Success',
+                      text: response.msg,
+                      icon: 'success',
+                    })
+                  }
+                  dttable.ajax.reload(null, false);
+                }
+              });
+            }
+          })
+        })
+
       });
 </script>
 @endpush

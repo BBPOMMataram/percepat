@@ -38,8 +38,28 @@ class PermintaanController extends Controller
         }
         $header = 'Data Permintaan';
         // $kabid = User::where('position', 'penyelia')->get();
-        $bidang = Bidang::all();
-        return view('permintaan.form', compact('header', 'bidang'));
+        // $bidang = Bidang::all();
+        // return view('permintaan.form', compact('header', 'bidang'));
+        $data = new Permintaan();
+        $user = User::with('bidang')->find(auth()->user()->id);
+        $data->bidang_id = $user->bidang->id;
+        // $data->kabid_id = $request->kabid_id;
+        $data->created_by = $user->id;
+
+        $last_data = Permintaan::latest()->first();
+
+        if ($last_data) {
+            if (now()->month !== $last_data->created_at->month) {
+                $data->nourut = 1;
+            } else {
+                $data->nourut = $last_data->nourut + 1;
+            }
+        } else {
+            $data->nourut = 1;
+        }
+
+        $data->save();
+        return redirect()->route('permintaanlist.index', $data->id);
     }
 
     /**
@@ -72,6 +92,8 @@ class PermintaanController extends Controller
         }
 
         $data->save();
+
+        // return redirect()->route('permintaanlist.index', $data->id);
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
     }
@@ -122,6 +144,12 @@ class PermintaanController extends Controller
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
+    }
+
+    public function destroy($id)
+    {
+        Permintaan::destroy($id);
+        return response()->json(['status' => 1, 'msg' => 'Deleted successfully']);
     }
 
     public function print_permintaan($id)
@@ -206,6 +234,11 @@ class PermintaanController extends Controller
                 }
                 
                 $actions .= '<a href="' . route('permintaanlist.index', $data->id) . '" class="permintaanlist mx-2" title="List Permintaan"><i class="zmdi zmdi-attachment text-success"></i></a>';
+
+                if(auth()->user()->position === 'pemohon' || auth()->user()->level === 'admin' && $data->status->id === 1){
+                    $actions .= '<a href="#" class="delete mr-2" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
+                }
+
                 $actions .= '<a href="' . route('print_permintaan', $data->id) . '" title="Cetak Permintaan" target="_blank"><i class="zmdi zmdi-print text-secondary"></i></a>';
                 if(auth()->user()->position === 'penyelia'){
                     $actions .= '<a href="#" title="ACC Permintaan" ><i class="kabidacc zmdi zmdi-check text-danger ml-2"></i></a>';

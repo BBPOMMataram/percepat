@@ -15,6 +15,7 @@
           <th>Expired</th>
           <th>Jumlah</th>
           <th>Vendor</th>
+          <th>Tgl Pembelian</th>
         </thead>
       </table>
     </div>
@@ -37,6 +38,7 @@
             { data: 'expired', render: function($data){ return $data ? $data : '-' ;}  },
             { data: 'jumlah' },
             { data: 'vendor' },
+            { data: 'created_at' },
             { data: 'id', visible: false}
           ]
         })
