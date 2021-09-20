@@ -32,7 +32,7 @@
             url: "{{ route('dt_permintaan') }}"
           },
           columns: [
-            { data: 'actions', className: 'text-center' },
+            { data: 'actions' },
             { data: 'nourut' },
             { data: 'tgl_permintaan' },
             { data: 'namapeminta' },

@@ -132,7 +132,14 @@ class BarangController extends Controller
             ->addColumn('expired', function($data){
                 return $data->expired ? $data->expired->isoFormat('D MMM Y') : null;
             })
-            ->rawColumns(['actions'])
+            ->addColumn('jumlahpermintaan', function($data){
+                return '<input type="number" value="0" min="0" name="jumlahpermintaan" class="w-50" />';
+            })
+            ->addColumn('addBtn', function($data){
+                    $actions = '<a href="#" value="a1" class="add" title="Add"><i class="zmdi zmdi-check text-danger"></i></a>';
+                    return $actions;
+            })
+            ->rawColumns(['actions', 'jumlahpermintaan', 'addBtn'])
             ->toJson();
     }
 

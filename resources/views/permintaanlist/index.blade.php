@@ -4,8 +4,10 @@
 <div class="row mt-3">
   <div class="col-12">
     <h6>Tanggal Permintaan : {{ $data->tgl_permintaan->isoFormat('D MMM Y') }}</h6>
-    @if (auth()->user()->level === 'admin' || auth()->user()->position === 'pemohon')
+    @if (auth()->user()->position === 'pemohon')
     <a href="{{ route('permintaanlist.create', $data->id) }}" class="btn btn-light mb-3">ADD</a>
+    @else
+    <a href="#"><button class="btn btn-light mb-3" disabled>ADD</button></a>
     @endif
     <div class="table-responsive">
       <table class="table table-striped" id="dttable">
@@ -14,6 +16,7 @@
           <th>No</th>
           <th>Nama Barang</th>
           <th>Satuan</th>
+          <th>Expired</th>
           <th>Jumlah Permintaan</th>
           <th>Jumlah Realisasi</th>
           <th>Keterangan</th>
@@ -37,6 +40,7 @@
             { data: 'DT_RowIndex' },
             { data: 'barang.name', className: 'text-wrap' },
             { data: 'barang.satuan', className: 'text-center' },
+            { data: 'barang.expired', className: 'text-center' },
             { data: 'jumlahpermintaan', className: 'text-center' },
             { data: 'jumlahrealisasi', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
             { data: 'keterangan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},

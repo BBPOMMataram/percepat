@@ -33,7 +33,7 @@ class PermintaanController extends Controller
      */
     public function create()
     {
-        if(auth()->user()->position !== 'pemohon'){
+        if (auth()->user()->position !== 'pemohon') {
             return redirect()->route('permintaan.index');
         }
         $header = 'Data Permintaan';
@@ -108,7 +108,7 @@ class PermintaanController extends Controller
     {
         $data = Permintaan::find($id);
         $header = 'Data Permintaan no ' . $data->nourut;
-        return view('permintaan.detail', compact( 'data', 'header'));
+        return view('permintaan.detail', compact('data', 'header'));
     }
 
     /**
@@ -148,6 +148,7 @@ class PermintaanController extends Controller
 
     public function destroy($id)
     {
+        PermintaanList::where('permintaan_id', $id)->delete();
         Permintaan::destroy($id);
         return response()->json(['status' => 1, 'msg' => 'Deleted successfully']);
     }
@@ -168,8 +169,8 @@ class PermintaanController extends Controller
     {
         $datapermintaan = Permintaan::with('peminta')->find($id);
         $datapermintaan->status_id = 2;
-        if($datapermintaan->save()){
-            $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+        if ($datapermintaan->save()) {
+            $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
             $kepada = User::where('position', 'penyerah')->first();
             Mail::to($kepada)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada->name));
         }
@@ -181,8 +182,8 @@ class PermintaanController extends Controller
     {
         $datapermintaan = Permintaan::with('peminta')->find($id);
         $datapermintaan->status_id = 3;
-        if($datapermintaan->save()){
-            $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+        if ($datapermintaan->save()) {
+            $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
             $kepada = User::where('position', 'kasubbagumum')->first();
             Mail::to($kepada)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada->name));
         }
@@ -194,8 +195,8 @@ class PermintaanController extends Controller
     {
         $datapermintaan = Permintaan::with('peminta')->find($id);
         $datapermintaan->status_id = 4;
-        
-        if($datapermintaan->save()){
+
+        if ($datapermintaan->save()) {
             $permintaanlist = PermintaanList::where('permintaan_id', $id)->get();
             foreach ($permintaanlist as $value) {
                 $barang = Barang::find($value->barang_id);
@@ -203,7 +204,7 @@ class PermintaanController extends Controller
                 $barang->save();
             }
 
-            $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+            $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
             $kepada = User::where('position', 'penyerah')->first();
             // Mail::to('arfanihidayat@gmail.com')->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));
         }
@@ -219,33 +220,34 @@ class PermintaanController extends Controller
         } elseif (auth()->user()->position === 'pemohon') {
             $data = $data->where('created_by', auth()->user()->id);
         } elseif (auth()->user()->position === 'penyerah') {
-            $data = $data->where('status_id', 2);
+            $data = $data->where('status_id', '>=', 2);
         } elseif (auth()->user()->position === 'kasubbagumum') {
-            $data = $data->where('status_id', 3);
+            $data = $data->where('status_id', '>=', 3);
         }
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
+
                 $actions .= '<a href="' . route('permintaan.show', $data->id) . '" title="Detail Data"><i class="zmdi zmdi-eye text-primary"></i></a>';
-                
-                if(auth()->user()->position === 'pemohon' || auth()->user()->level === 'admin'){
-                    $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit ml-2" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
-                }
-                
+
+                // if (auth()->user()->position === 'pemohon' || auth()->user()->level === 'admin') {
+                //     $actions .= '<a href="' . route('permintaan.edit', $data->id) . '" class="edit ml-2" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                // }
+
                 $actions .= '<a href="' . route('permintaanlist.index', $data->id) . '" class="permintaanlist mx-2" title="List Permintaan"><i class="zmdi zmdi-attachment text-success"></i></a>';
 
-                if(auth()->user()->position === 'pemohon' || auth()->user()->level === 'admin' && $data->status->id === 1){
-                    $actions .= '<a href="#" class="delete mr-2" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
+                $actions .= '<a href="' . route('print_permintaan', $data->id) . '" title="Cetak Permintaan" target="_blank"><i class="zmdi zmdi-print text-secondary"></i></a>';
+                if (auth()->user()->position === 'penyelia') {
+                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="kabidacc zmdi zmdi-check text-info ml-2"></i></a>';
+                } elseif (auth()->user()->position === 'penyerah') {
+                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="penyerahacc zmdi zmdi-check text-info ml-2"></i></a>';
+                } elseif (auth()->user()->position === 'kasubbagumum') {
+                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="kasubbagumumacc zmdi zmdi-check text-info ml-2"></i></a>';
                 }
 
-                $actions .= '<a href="' . route('print_permintaan', $data->id) . '" title="Cetak Permintaan" target="_blank"><i class="zmdi zmdi-print text-secondary"></i></a>';
-                if(auth()->user()->position === 'penyelia'){
-                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="kabidacc zmdi zmdi-check text-danger ml-2"></i></a>';
-                }elseif(auth()->user()->position === 'penyerah'){
-                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="penyerahacc zmdi zmdi-check text-danger ml-2"></i></a>';
-                }elseif(auth()->user()->position === 'kasubbagumum'){
-                    $actions .= '<a href="#" title="ACC Permintaan" ><i class="kasubbagumumacc zmdi zmdi-check text-danger ml-2"></i></a>';
+                if (auth()->user()->position === 'pemohon' || auth()->user()->level === 'admin' && $data->status->id < 4) {
+                    $actions .= '<a href="#" class="delete ml-2" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
                 }
 
                 return $actions;
@@ -256,14 +258,14 @@ class PermintaanController extends Controller
             ->addColumn('tgl_permintaan', function ($data) {
                 return $data->tgl_permintaan ? $data->tgl_permintaan->isoFormat('D MMM Y') : null;
             })
-            ->addColumn('namapeminta', function($data){
-                return $data->peminta->name ?? '-' ;
+            ->addColumn('namapeminta', function ($data) {
+                return $data->peminta->name ?? '-';
             })
-            ->addColumn('bidang.user.name', function($data){
-                return $data->bidang->user->name ?? '-' ;
+            ->addColumn('bidang.user.name', function ($data) {
+                return $data->bidang->user->name ?? '-';
             })
-            ->addColumn('bidang.name', function($data){
-                return $data->bidang->name ?? '-' ;
+            ->addColumn('bidang.name', function ($data) {
+                return $data->bidang->name ?? '-';
             })
             ->rawColumns(['actions'])
             ->toJson();
@@ -272,7 +274,7 @@ class PermintaanController extends Controller
     public function permintaanlist_done($idpermintaan)
     {
         $datapermintaan = Permintaan::with('bidang.user', 'peminta')->find($idpermintaan);
-        $databarang = PermintaanList::with('barang')->where('permintaan_id' ,$datapermintaan->id)->get();
+        $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
         $kepada = $datapermintaan->bidang->user->name;
         Mail::to($datapermintaan->bidang->user)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada));
 
@@ -318,6 +320,10 @@ class PermintaanController extends Controller
 
     public function permintaanlist_create($idpermintaan)
     {
+        if (auth()->user()->position !== 'pemohon') {
+            return redirect()->back();
+        }
+
         $data = Permintaan::find($idpermintaan);
         $header = 'List Permintaan no ' . $data->nourut;
         $barang = Barang::all();
@@ -363,18 +369,22 @@ class PermintaanController extends Controller
 
     public function dt_permintaanlist($idpermintaan)
     {
-        $data = PermintaanList::with('barang')
+        $data = PermintaanList::with('barang', 'permintaan')
             ->where('permintaan_id', $idpermintaan)
             ->get();
-        return DataTables::of($data)
+            return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
-                $actions .= '<a href="#" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger mx-2"></i></a>';
-                if(auth()->user()->position === 'penyerah' || auth()->user()->level === 'admin' ){
-                    $actions .= '<a href="' . route('permintaanlist.edit', [$data->permintaan_id, $data->barang_id]) . '" class="edit" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                if (auth()->user()->level === 'admin' || auth()->user()->position === 'pemohon') {
+                    $actions .= '<a href="#" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger mx-2"></i></a>';
+                }elseif(auth()->user()->position === 'penyerah' && $data->permintaan->status_id < 3){
+                    $actions .= '<a href="' . route('permintaanlist.edit', [$data->permintaan_id, $data->barang_id]) . '" class="edit" title="Edit realisasi"><i class="zmdi zmdi-edit text-info"></i></a>';
                 }
                 return $actions;
+            })
+            ->addColumn('barang.expired', function ($data) {
+                return $data->barang->expired ? $data->barang->expired->isoFormat('D MMM Y') : '-';
             })
             ->rawColumns(['actions'])
             ->toJson();

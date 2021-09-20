@@ -18,4 +18,14 @@ class PermintaanList extends Model
     {
         return $this->hasOne(Barang::class, 'id', 'barang_id');
     }
+
+    /**
+     * Get the permintaan associated with the PermintaanList
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function permintaan()
+    {
+        return $this->hasOne(Permintaan::class, 'id', 'permintaan_id');
+    }
 }
