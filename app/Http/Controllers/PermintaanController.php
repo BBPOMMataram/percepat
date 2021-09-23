@@ -372,19 +372,52 @@ class PermintaanController extends Controller
         $data = PermintaanList::with('barang', 'permintaan')
             ->where('permintaan_id', $idpermintaan)
             ->get();
-            return DataTables::of($data)
+        return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
                 if (auth()->user()->level === 'admin' || auth()->user()->position === 'pemohon') {
                     $actions .= '<a href="#" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger mx-2"></i></a>';
-                }elseif(auth()->user()->position === 'penyerah' && $data->permintaan->status_id < 3){
+                } elseif (auth()->user()->position === 'penyerah' && $data->permintaan->status_id < 3) {
                     $actions .= '<a href="' . route('permintaanlist.edit', [$data->permintaan_id, $data->barang_id]) . '" class="edit" title="Edit realisasi"><i class="zmdi zmdi-edit text-info"></i></a>';
                 }
                 return $actions;
             })
             ->addColumn('barang.expired', function ($data) {
                 return $data->barang->expired ? $data->barang->expired->isoFormat('D MMM Y') : '-';
+            })
+            ->rawColumns(['actions'])
+            ->toJson();
+    }
+
+    public function laporan()
+    {
+        $header = 'Laporan';
+
+        return view('laporan.index');
+    }
+
+    public function dt_laporan()
+    {
+        $data = PermintaanList::with('barang', 'permintaan.peminta')->get();
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('barang.expired', function ($data) {
+                if (isset($data->barang->expired)) {
+                    return $data->barang->expired ? $data->barang->expired->isoFormat('D MMM Y') : '-';
+                }
+            })
+            ->addColumn('barang.name', function ($data) {
+                return $data->barang->name ?? '<div class="text-danger">item not found</div>';
+            })
+            ->addColumn('barang.satuan', function ($data) {
+                return $data->barang->satuan ?? '<div class="text-danger">item not found</div>';
+            })
+            ->addColumn('permintaan.peminta.name', function ($data) {
+                return $data->permintaan->peminta->name ?? '<div class="text-danger">item not found</div>';
+            })
+            ->addColumn('permintaan.bidang_id', function ($data) {
+                return $data->permintaan->bidang_id ?? '<div class="text-danger">item not found</div>';
             })
             ->rawColumns(['actions'])
             ->toJson();

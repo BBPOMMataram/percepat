@@ -30,7 +30,13 @@
 
         <li>
             <a href="{{ route('permintaan.index') }}">
-                <i class="zmdi zmdi-assignment"></i> <span>Permintaan</span>
+                <i class="zmdi zmdi-receipt"></i> <span>Permintaan</span>
+            </a>
+        </li>
+
+        <li>
+            <a href="{{ route('laporan') }}">
+                <i class="zmdi zmdi-assignment"></i> <span>Laporan</span>
             </a>
         </li>
         <li class="sidebar-header">MASTER</li>
