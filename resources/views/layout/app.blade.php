@@ -9,8 +9,8 @@
     <meta name="author" content="" />
     <title>{{ $title ?? 'PERCEPAT' }}</title>
     <!-- loader-->
-    <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
-    <script src="{{ asset('vendor/assets/js/pace.min.js') }}"></script>
+    {{-- <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
+    <script src="{{ asset('vendor/assets/js/pace.min.js') }}"></script> --}}
     <!--favicon-->
     <link rel="icon" href="{{ asset('vendor/assets/images/favicon.ico') }}" type="image/x-icon">
     <!-- Vector CSS -->

@@ -184,6 +184,12 @@ class PermintaanController extends Controller
         $datapermintaan->status_id = 3;
         if ($datapermintaan->save()) {
             $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
+            foreach ($databarang as $value) {
+                if(!$value->jumlahrealisasi){
+                    $value->jumlahrealisasi = $value->jumlahpermintaan;
+                    $value->save();
+                }
+            }
             $kepada = User::where('position', 'kasubbagumum')->first();
             Mail::to($kepada)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada->name));
         }
@@ -383,8 +389,18 @@ class PermintaanController extends Controller
                 }
                 return $actions;
             })
+            ->addColumn('barang.name', function ($data) {
+                return $data->barang->name ?? '<div class="text-danger">item not found</div>';
+            })
+            ->addColumn('barang.satuan', function ($data) {
+                return $data->barang->satuan ?? '<div class="text-danger">item not found</div>';
+            })
             ->addColumn('barang.expired', function ($data) {
-                return $data->barang->expired ? $data->barang->expired->isoFormat('D MMM Y') : '-';
+                if(isset($data->barang->expired)){
+                    return $data->barang->expired->isoFormat('D MMM Y');
+                }else{
+                    return '-';
+                }
             })
             ->rawColumns(['actions'])
             ->toJson();
@@ -392,6 +408,9 @@ class PermintaanController extends Controller
 
     public function laporan()
     {
+        if(auth()->user()->level !== 'admin'){
+            return redirect()->route('dashboard');
+        }
         $header = 'Laporan';
 
         return view('laporan.index');

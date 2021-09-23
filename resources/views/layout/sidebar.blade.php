@@ -34,11 +34,13 @@
             </a>
         </li>
 
+        @if (auth()->user()->level === 'admin')
         <li>
             <a href="{{ route('laporan') }}">
                 <i class="zmdi zmdi-assignment"></i> <span>Laporan</span>
             </a>
         </li>
+        @endif
         <li class="sidebar-header">MASTER</li>
 
         <li>
