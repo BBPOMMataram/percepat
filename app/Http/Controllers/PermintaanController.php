@@ -321,7 +321,7 @@ class PermintaanController extends Controller
         $existingData->jumlahrealisasi = $request->jumlahrealisasi;
         $existingData->save();
 
-        return response(['status' => 1, 'msg' => 'Data is added successfully!']);
+        return response(['status' => 1, 'msg' => 'Data is updated successfully!']);
     }
 
     public function permintaanlist_create($idpermintaan)
@@ -413,12 +413,12 @@ class PermintaanController extends Controller
         }
         $header = 'Laporan';
 
-        return view('laporan.index');
+        return view('laporan.index', compact('header'));
     }
 
     public function dt_laporan()
     {
-        $data = PermintaanList::with('barang', 'permintaan.peminta')->get();
+        $data = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('barang.expired', function ($data) {
@@ -430,13 +430,26 @@ class PermintaanController extends Controller
                 return $data->barang->name ?? '<div class="text-danger">item not found</div>';
             })
             ->addColumn('barang.satuan', function ($data) {
-                return $data->barang->satuan ?? '<div class="text-danger">item not found</div>';
+                return $data->barang->satuan ?? '-';
             })
             ->addColumn('permintaan.peminta.name', function ($data) {
                 return $data->permintaan->peminta->name ?? '<div class="text-danger">item not found</div>';
             })
-            ->addColumn('permintaan.bidang_id', function ($data) {
-                return $data->permintaan->bidang_id ?? '<div class="text-danger">item not found</div>';
+            ->addColumn('permintaan.bidang.name', function ($data) {
+                return $data->permintaan->bidang->name ?? '-';
+            })
+            ->addColumn('permintaan.status.name', function ($data) {
+                return $data->permintaan->status->name ?? '-';
+            })
+            ->addColumn('permintaan.tgl_penyerahan', function ($data) {
+                if (isset($data->permintaan->tgl_penyerahan)) {
+                    return $data->permintaan->tgl_penyerahan ? $data->permintaan->tgl_penyerahan->isoFormat('D MMM Y') : null;
+                }
+            })
+            ->addColumn('permintaan.tgl_permintaan', function ($data) {
+                if (isset($data->permintaan->tgl_permintaan)) {
+                    return $data->permintaan->tgl_permintaan ? $data->permintaan->tgl_permintaan->isoFormat('D MMM Y') : null;
+                }
             })
             ->rawColumns(['actions'])
             ->toJson();

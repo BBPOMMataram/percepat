@@ -3,8 +3,8 @@
 @parent
 <div class="row mt-3">
   <div class="col-12">
-    <h6>Laporan</h6>
     <div class="table-responsive">
+      
       <table class="table table-striped" id="dttable">
         <thead>
           <th>No</th>
@@ -15,6 +15,9 @@
           <th>Jumlah Realisasi</th>
           <th>Peminta</th>
           <th>Bidang</th>
+          <th>Status</th>
+          <th>Tgl Permintaan</th>
+          <th>Tgl Penyerahan</th>
           <th>Keterangan</th>
         </thead>
       </table>
@@ -40,7 +43,10 @@
             { data: 'jumlahpermintaan', className: 'text-center' },
             { data: 'jumlahrealisasi', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
             { data: 'permintaan.peminta.name', className: 'text-center'},
-            { data: 'permintaan.bidang_id', className: 'text-center'},
+            { data: 'permintaan.bidang.name', className: 'text-center'},
+            { data: 'permintaan.status.name', className: 'text-center'},
+            { data: 'permintaan.tgl_permintaan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
+            { data: 'permintaan.tgl_penyerahan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
             { data: 'keterangan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
           ]
         })
