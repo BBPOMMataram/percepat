@@ -83,6 +83,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
     Route::delete('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
     Route::get('dt_permintaanlist/{idpermintaan}', [PermintaanController::class, 'dt_permintaanlist'])->name('dt_permintaanlist');
+    Route::get('print-laporan/{id?}', [PermintaanController::class, 'print_laporan'])->name('print_laporan');
 
     Route::get('laporan', [PermintaanController::class, 'laporan'])->name('laporan');
     Route::get('dt_laporan', [PermintaanController::class, 'dt_laporan'])->name('dt_laporan');

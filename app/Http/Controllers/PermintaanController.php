@@ -185,7 +185,7 @@ class PermintaanController extends Controller
         if ($datapermintaan->save()) {
             $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
             foreach ($databarang as $value) {
-                if(!$value->jumlahrealisasi){
+                if (!$value->jumlahrealisasi) {
                     $value->jumlahrealisasi = $value->jumlahpermintaan;
                     $value->save();
                 }
@@ -396,9 +396,9 @@ class PermintaanController extends Controller
                 return $data->barang->satuan ?? '<div class="text-danger">item not found</div>';
             })
             ->addColumn('barang.expired', function ($data) {
-                if(isset($data->barang->expired)){
+                if (isset($data->barang->expired)) {
                     return $data->barang->expired->isoFormat('D MMM Y');
-                }else{
+                } else {
                     return '-';
                 }
             })
@@ -408,12 +408,28 @@ class PermintaanController extends Controller
 
     public function laporan()
     {
-        if(auth()->user()->level !== 'admin'){
+        if (auth()->user()->level !== 'admin') {
             return redirect()->route('dashboard');
         }
         $header = 'Laporan';
 
         return view('laporan.index', compact('header'));
+    }
+
+    public function print_laporan($id='')
+    {
+        $datapermintaanlist = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
+        if($id){
+            $datapermintaanlist = $datapermintaanlist->where('barang.id', $id);
+        }
+        // $kabid = User::find(auth()->user()->id);
+        $pdf = PDF::loadView(
+            'pdf/laporan',
+            compact(
+                'datapermintaanlist',
+            )
+        );
+        return $pdf->stream();
     }
 
     public function dt_laporan()

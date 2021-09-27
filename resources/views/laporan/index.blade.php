@@ -11,8 +11,8 @@
           <th>Nama Barang</th>
           <th>Satuan</th>
           <th>Expired</th>
-          <th>Jumlah Permintaan</th>
-          <th>Jumlah Realisasi</th>
+          <th>Jml Permintaan</th>
+          <th>Jml Realisasi</th>
           <th>Peminta</th>
           <th>Bidang</th>
           <th>Status</th>
@@ -23,6 +23,9 @@
       </table>
     </div>
   </div>
+  
+  <a href="{{ route('print_laporan') }}" title="Export PDF" target="_blank" ><button class="btn btn-secondary mt-3 ml-3">Export PDF <i class="zmdi zmdi-print"></i></button></a>
+  
 </div>
 @endsection
 @push('scripts')
@@ -43,11 +46,11 @@
             { data: 'jumlahpermintaan', className: 'text-center' },
             { data: 'jumlahrealisasi', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
             { data: 'permintaan.peminta.name', className: 'text-center'},
-            { data: 'permintaan.bidang.name', className: 'text-center'},
-            { data: 'permintaan.status.name', className: 'text-center'},
-            { data: 'permintaan.tgl_permintaan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
-            { data: 'permintaan.tgl_penyerahan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
-            { data: 'keterangan', className: 'text-center', render: function($data){ return $data ? $data : '-'; }},
+            { data: 'permintaan.bidang.name'},
+            { data: 'permintaan.status.name'},
+            { data: 'permintaan.tgl_permintaan', render: function($data){ return $data ? $data : '-'; }},
+            { data: 'permintaan.tgl_penyerahan', render: function($data){ return $data ? $data : '-'; }},
+            { data: 'keterangan', render: function($data){ return $data ? $data : '-'; }},
           ]
         })
 
