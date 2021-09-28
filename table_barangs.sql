@@ -1,0 +1,108 @@
+-- phpMyAdmin SQL Dump
+-- version 4.9.7
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost:3306
+-- Generation Time: Sep 28, 2021 at 09:51 AM
+-- Server version: 5.7.35
+-- PHP Version: 7.3.30
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `bbpommat_percepat`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barangs`
+--
+
+CREATE TABLE `barangs` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `satuan` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `expired` datetime DEFAULT NULL,
+  `stock` int(10) UNSIGNED NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `barangs`
+--
+
+INSERT INTO `barangs` (`id`, `code`, `name`, `satuan`, `expired`, `stock`, `created_at`, `updated_at`) VALUES
+(34, NULL, '1-PHENYLETHANOL for syntetis [ 8.05858.1000 ]', '1000mL', NULL, 1, '2021-08-19 19:41:50', '2021-08-19 19:41:50'),
+(35, NULL, 'DIISOPHROPHYLAMINE for syntetis [ 8.03646.0100 ]', '100mL', NULL, 1, '2021-08-19 19:42:23', '2021-08-19 19:42:23'),
+(36, NULL, 'DIISOPHROPHYLAMINE for syntetis [ 8.03646.1000 ]', '1000mL', NULL, 1, '2021-08-19 19:42:45', '2021-08-19 19:42:45'),
+(37, NULL, 'FORMIC ACID GR for analysis (98-100%) [ 1.00264.1000 ]', '1000mL', '2023-10-31 00:00:00', 2, '2021-08-19 19:43:30', '2021-08-19 19:43:30'),
+(38, NULL, 'HYDROGEN PEROXIDA 30% [ 1.07209.1000 ]', '1000mL', NULL, 3, '2021-08-19 19:45:04', '2021-08-19 19:47:34'),
+(39, NULL, 'METHYL ACETATE for syntetis [ 8.09711.2500 ]', '2500mL', NULL, 3, '2021-08-19 19:45:39', '2021-08-19 19:45:39'),
+(40, NULL, 'ORTHO PHOSPORIC ACID 85% [ 1.00573.2500 ]', '2500mL', NULL, 2, '2021-08-19 19:46:04', '2021-08-19 19:46:04'),
+(41, NULL, 'Paraffin viscous 1000 ml (1.07160.1000)', '1000mL', NULL, 1, '2021-08-19 19:46:38', '2021-08-19 19:46:38'),
+(42, NULL, 'ETHYL ACETATE FOR ANALYSIS EMSURE [1.09623.2500]', '2500mL', NULL, 2, '2021-08-19 19:47:08', '2021-08-19 19:47:08'),
+(43, NULL, '2 BUTANOL [ 1.09630.2500 ]', '2500mL', '2023-02-28 00:00:00', 1, '2021-08-19 19:51:05', '2021-08-19 19:51:05'),
+(44, NULL, '2 PROPANOLfor analysis [ 1.09634.2500 ]', '2500mL', '2023-10-31 00:00:00', 3, '2021-08-19 19:52:12', '2021-08-19 19:52:12'),
+(45, NULL, '1 PROPANOL for analysis [ 1.00997.2500 ]', '2500mL', '2023-03-01 00:00:00', 1, '2021-08-19 19:53:05', '2021-08-19 19:53:05'),
+(47, NULL, 'Combi Methanol dried methanol [1.88009.2500]', '2500mL', '2022-02-28 00:00:00', 4, '2021-08-19 19:58:49', '2021-08-19 19:58:49'),
+(48, NULL, 'DIETHYLAMINE [ 8.03010.1000 ]', '1000mL', NULL, 2, '2021-08-19 19:59:34', '2021-08-19 19:59:34'),
+(49, NULL, 'Nitric Acid 65% 2,5 liter ( 1,00456,2500 )', '2500mL', NULL, 4, '2021-08-19 20:01:02', '2021-08-19 20:01:02'),
+(50, NULL, 'Nitric acid Suprapure (1.00441.1000)', '1000mL', NULL, 2, '2021-08-19 20:01:52', '2021-08-19 20:01:52'),
+(51, NULL, 'Sulfuric Acid 95-97% 2,5 liter (1,00731,2500)', '2500mL', NULL, 7, '2021-08-19 20:02:11', '2021-08-19 20:02:11'),
+(52, NULL, 'CALCIUM STANDARD SOLUTION 100mL (1.19778.0100)', '100mL', '2022-02-28 00:00:00', 1, '2021-08-19 20:02:54', '2021-08-19 20:06:33'),
+(53, NULL, 'METHYL SALICYLATE 250 ML (119.36.8)', '250mL', NULL, 1, '2021-08-19 20:09:04', '2021-08-19 20:09:04'),
+(54, NULL, 'Eucalyptol 100 mL (C80601-100ML)', '100mL', NULL, 2, '2021-08-19 20:09:35', '2021-08-19 20:09:35'),
+(55, NULL, 'Eugenol reagent plus 500 gr (E51791-500G)', '500Gram', NULL, 1, '2021-08-19 20:10:03', '2021-08-19 20:10:03'),
+(56, NULL, 'DIBUTYLAMINE for sinthesis [ 8.03222.1000 ]', '1000mL', NULL, 1, '2021-08-19 20:15:59', '2021-08-19 20:15:59'),
+(57, NULL, 'DIMETHYL SULFOXIDE 1L (1.02952.1000)', '1000mL', '2021-11-30 00:00:00', 1, '2021-08-19 20:16:28', '2021-08-19 20:16:28'),
+(58, NULL, 'N-ETHYL DIISOPROPYLAMINE [ 8.00894.0250 ]', '250mL', NULL, 1, '2021-08-19 20:16:55', '2021-08-19 20:16:55'),
+(59, NULL, 'N-BUTYL ACETATE [ 1.09652.1000 ]', '1000mL', '2023-01-31 00:00:00', 1, '2021-08-19 20:17:26', '2021-08-19 20:17:26'),
+(60, NULL, 'TWEEN 80, BOTOL 1 LITER', '1000mL', NULL, 1, '2021-08-19 20:17:52', '2021-08-19 20:17:52'),
+(61, NULL, 'TERT-BUTANOL 500 mL (1.09629.0500)', '500mL', '2023-02-28 00:00:00', 2, '2021-08-19 20:18:41', '2021-08-19 20:18:41'),
+(62, NULL, 'Heptafluorobutyric Acid, For Ion Chromatography [52411-25ML-F]', '25mL', NULL, 1, '2021-08-19 20:25:54', '2021-08-19 20:25:54'),
+(63, NULL, '1,4-Dioxane, Anhydous, 99,8% [ 296309-250ML ]', '250mL', NULL, 1, '2021-08-19 20:26:13', '2021-08-19 20:26:13'),
+(64, NULL, 'N,N-DIMETHYLACETAMIDE 1 L (8.03235.1000)', '1000mL', '2022-02-28 00:00:00', 1, '2021-08-19 20:27:45', '2021-08-19 20:27:45'),
+(65, NULL, 'N-HEXANE GR for analysis [ 1.04367.2500 ]', '2500mL', '2022-05-31 00:00:00', 2, '2021-08-19 20:28:34', '2021-08-19 20:28:34'),
+(66, NULL, 'N-HEXANE GR for analysis [ 1.04367.2500 ]', '2500mL', '2022-05-31 00:00:00', 2, '2021-08-19 20:30:29', '2021-08-19 20:30:29'),
+(67, NULL, 'DICHLOROMETHANE [ 1.06050.2500 ]', '2500mL', NULL, 5, '2021-08-19 20:31:49', '2021-08-19 20:31:49'),
+(68, NULL, 'Diethylene Glycol 1 liter (8,03131,1000)', '1000mL', NULL, 1, '2021-08-19 20:33:17', '2021-08-19 20:33:17'),
+(69, NULL, 'tetrahydrofuran for LC (1.08101.2500)', '2500mL', '2023-02-28 00:00:00', 1, '2021-08-19 20:34:09', '2021-08-19 20:34:09'),
+(70, NULL, 'Xylene 2,5 L (1.08297.2500)', '2500mL', '2024-08-31 00:00:00', 1, '2021-08-19 20:36:33', '2021-08-19 20:36:33'),
+(71, NULL, 'XYLENE GR (8681) (1 L)', '1000mL', NULL, 1, '2021-08-19 20:37:01', '2021-08-19 20:37:01');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `barangs`
+--
+ALTER TABLE `barangs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `barangs`
+--
+ALTER TABLE `barangs`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
