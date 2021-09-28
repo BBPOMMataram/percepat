@@ -66,7 +66,7 @@
             <label for="bidang">Bidang</label>
             <select name="bidang" id="bidang" class="form-control form-control-rounded">
               @foreach ($bidangs as $item)
-              <option value="{{ $item->id }}" @if ($item->id === $user->bidang_id) selected @endif>{{ $item->name }}</option>
+              <option value="{{ $item->id }}" @isset($user) @if ($item->id === $user->bidang_id) selected @endif @endisset>{{ $item->name }}</option>
               @endforeach
             </select>
           </div>
