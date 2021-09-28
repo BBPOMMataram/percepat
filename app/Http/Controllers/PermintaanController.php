@@ -411,16 +411,17 @@ class PermintaanController extends Controller
         if (auth()->user()->level !== 'admin') {
             return redirect()->route('dashboard');
         }
-        $header = 'Laporan';
 
-        return view('laporan.index', compact('header'));
+        $header = 'Laporan';
+        $barang = Barang::all();
+        return view('laporan.index', compact('header', 'barang'));
     }
 
-    public function print_laporan($id='')
+    public function print_laporan($id=0)
     {
         $datapermintaanlist = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
         if($id){
-            $datapermintaanlist = $datapermintaanlist->where('barang.id', $id);
+            $datapermintaanlist = $datapermintaanlist->where('barang_id', $id);
         }
         // $kabid = User::find(auth()->user()->id);
         $pdf = PDF::loadView(
@@ -432,9 +433,12 @@ class PermintaanController extends Controller
         return $pdf->stream();
     }
 
-    public function dt_laporan()
+    public function dt_laporan($id=null)
     {
         $data = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
+        if($id){
+            $data = $data->where('barang_id', $id);
+        }
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('barang.expired', function ($data) {

@@ -86,7 +86,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('print-laporan/{id?}', [PermintaanController::class, 'print_laporan'])->name('print_laporan');
 
     Route::get('laporan', [PermintaanController::class, 'laporan'])->name('laporan');
-    Route::get('dt_laporan', [PermintaanController::class, 'dt_laporan'])->name('dt_laporan');
+    Route::get('dt_laporan/{id?}', [PermintaanController::class, 'dt_laporan'])->name('dt_laporan');
 
     Route::resource('bidang', BidangController::class);
     Route::get('dtbidang', [BidangController::class, 'dt_bidang'])->name('dt_bidang');
