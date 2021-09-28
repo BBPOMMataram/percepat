@@ -90,7 +90,7 @@
           </thead>
         </table>
       </div>
-      <a href="{{ route('permintaanlist.index', $data->id) }}"><button type="button"
+      <a href="{{ route('permintaanlist.done', $data->id) }}"><button type="button"
           class="btn btn-secondary px-5 mt-2">Done</button></a>
       @endisset
     </div>

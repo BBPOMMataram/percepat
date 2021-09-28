@@ -23,6 +23,7 @@
         </thead>
       </table>
     </div>
+    <a href="{{ route('permintaan.index') }}" class="btn btn-light mb-3">< Kembali</a>
   </div>
 </div>
 @endsection
