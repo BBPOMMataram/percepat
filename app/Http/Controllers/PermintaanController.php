@@ -181,6 +181,7 @@ class PermintaanController extends Controller
     public function penyerah_accpermintaan($id)
     {
         $datapermintaan = Permintaan::with('peminta')->find($id);
+        $datapermintaan->tgl_penyerahan = now();
         $datapermintaan->status_id = 3;
         if ($datapermintaan->save()) {
             $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
