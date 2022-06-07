@@ -40,6 +40,11 @@
               placeholder="Stock" value="{{ $editeddata->stock ?? 0 }}" min="0">
           </div>
           <div class="form-group">
+            <label for="msds">MSDS</label>
+            <input required type="text" class="form-control form-control-rounded" id="msds" name="msds"
+              placeholder="MSDS" value="{{ $editeddata->msds ?? '' }}">
+          </div>
+          <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
             <a href="{{ route('barang.index') }}"><button type="button"
                 class="btn btn-secondary btn-round px-5">Exit</button></a>
@@ -59,6 +64,7 @@
         $('#name').val('')
         $('#satuan').val('')
         $('#expired').val('')
+        $('#msds').val('')
         $('#stock').val(0);
       }
 

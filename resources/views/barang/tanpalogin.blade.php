@@ -54,6 +54,7 @@
                 <th>Satuan</th>
                 <th>Expired</th>
                 <th>Stock</th>
+                <th>MSDS</th>
               </thead>
             </table>
           </div>
@@ -159,6 +160,7 @@
                 { data: 'satuan' },
                 { data: 'expired', render: function($data){ return $data ? $data : '-' ;}  },
                 { data: 'stock' },
+                { data: 'msds' },
                 { data: 'id', visible: false}
               ]
             })

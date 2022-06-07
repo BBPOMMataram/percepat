@@ -49,6 +49,7 @@ class BarangController extends Controller
         $data->satuan = $request->satuan;
         $data->expired = $request->expired;
         $data->stock = $request->stock;
+        $data->msds = $request->msds;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
@@ -98,6 +99,7 @@ class BarangController extends Controller
         $data->satuan = $request->satuan;
         $data->expired = $request->expired;
         $data->stock = $request->stock;
+        $data->msds = $request->msds;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
@@ -139,7 +141,10 @@ class BarangController extends Controller
                     $actions = '<a href="#" value="a1" class="add" title="Add"><i class="zmdi zmdi-check text-danger"></i></a>';
                     return $actions;
             })
-            ->rawColumns(['actions', 'jumlahpermintaan', 'addBtn'])
+            ->addColumn('msds', function($data){
+                return $data->msds ? '<a href="'.$data->msds.'" target="_blank"><i class="zmdi zmdi-link text-success"></i></a>' : null;
+            })
+            ->rawColumns(['actions', 'jumlahpermintaan', 'addBtn', 'msds'])
             ->toJson();
     }
 
@@ -151,6 +156,10 @@ class BarangController extends Controller
             ->addColumn('expired', function($data){
                 return $data->expired ? $data->expired->isoFormat('D MMM Y') : null;
             })
+            ->addColumn('msds', function($data){
+                return $data->msds ? '<a href="'.$data->msds.'" target="_blank"><i class="zmdi zmdi-link text-success"></i></a>' : null;
+            })
+            ->rawColumns(['msds'])
             ->toJson();
     }
 }

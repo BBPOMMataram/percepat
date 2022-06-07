@@ -34,7 +34,7 @@
 </head>
 
 <body class="bg-theme bg-theme1">
-<div id="loading" class="p-sticky align-center w-full h-full"><span class="fa fa-trash"></span></div>
+{{-- <div id="loading" class="p-sticky align-center w-full h-full"><span class="fa fa-trash"></span></div> --}}
     <!-- Start wrapper-->
     <div id="wrapper">
 
