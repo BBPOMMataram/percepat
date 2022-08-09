@@ -73,6 +73,8 @@ class PembelianController extends Controller
                 $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
                 $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
                 $newBarang->save();
+                $data->barangs_id = $newBarang->id;
+                $data->save();
             }
         }
 
