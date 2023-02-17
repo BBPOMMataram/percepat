@@ -147,7 +147,7 @@
         signaturePad.clear();
       })
 
-      updateBidang();
+      // updateBidang();
 
       function updateBidang(){
         if($('#position').val() === 'pemohon'){
@@ -159,7 +159,7 @@
 
       $('#position').change(function (e) { 
         e.preventDefault();
-        updateBidang();
+        // updateBidang();
       });
 
     })

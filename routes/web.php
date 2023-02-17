@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\BarangLabController;
 use App\Http\Controllers\BidangController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\PembelianController;
@@ -13,6 +14,7 @@ use App\Models\Bidang;
 use App\Models\Pembelian;
 use App\Models\Permintaan;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\Type\ObjectType;
@@ -27,6 +29,10 @@ use SebastianBergmann\Type\ObjectType;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/storagelink', function(){
+    return Artisan::call('storage:link');
+});
 
 Route::get('/', function(){
     if(Auth::check()){
@@ -70,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('permintaan', PermintaanController::class);
     Route::get('dtpermintaan', [PermintaanController::class, 'dt_permintaan'])->name('dt_permintaan');
     Route::get('print-permintaan/{idpermintaan}', [PermintaanController::class, 'print_permintaan'])->name('print_permintaan');
+    Route::patch('changetglpermintaan', [PermintaanController::class, 'changetglpermintaan'])->name('changetglpermintaan');
 
     Route::patch('kabidaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'kabid_accpermintaan'])->name('kabid_accpermintaan');
     Route::patch('penyerahaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
@@ -90,6 +97,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('bidang', BidangController::class);
     Route::get('dtbidang', [BidangController::class, 'dt_bidang'])->name('dt_bidang');
+
+    // tambahan data barang
+    Route::resource('baranglab', BarangLabController::class);
+    Route::get('dtbaranglab', [BarangLabController::class, 'dt_baranglab'])->name('dt_baranglab');
 });
 
 Route::view('login', 'login')->name('login');

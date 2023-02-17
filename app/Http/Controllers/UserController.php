@@ -121,6 +121,7 @@ class UserController extends Controller
         $data->position = $request->position;
         $data->bidang_id = $request->bidang ?? 0;
 
+        // dd($request->all());
         if ($data->save()) {
             if($request->signed){
                 Storage::delete($data->signature);

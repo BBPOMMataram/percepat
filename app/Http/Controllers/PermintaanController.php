@@ -146,6 +146,16 @@ class PermintaanController extends Controller
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
     }
 
+    public function changetglpermintaan(Request $request)
+    {
+        // dd($request->all());
+        $data = Permintaan::find($request->id_permintaan);
+        $data->tgl_permintaan = $request->tgl_permintaan;
+        $data->save();
+
+        return response(['status' => 1, 'data' => $data, 'msg' => 'Date is updated successfully!']);
+    }
+
     public function destroy($id)
     {
         PermintaanList::where('permintaan_id', $id)->delete();

@@ -45,6 +45,16 @@
           @isset($editeddata)
           @method('PUT')
           @endisset
+          
+          <div class="form-group">
+            <label for="created_at">Tanggal Pembelian</label>
+            <input type="date" class="form-control " id="created_at" name="created_at" placeholder="Satuan"
+              @isset($editeddata) 
+              value="{{ $editeddata->created_at ? $editeddata->created_at->format('Y-m-d') : '' }}"
+              @else
+              value="{{ now()->format('Y-m-d') }}"
+              @endisset>
+          </div>
           <div class="form-group">
             <label for="barang_id">Name</label>
             <select name="barang_id" id="barang_id" class="form-control  select2" @isset ($editeddata) disabled

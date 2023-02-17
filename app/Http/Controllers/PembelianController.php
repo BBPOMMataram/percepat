@@ -54,6 +54,7 @@ class PembelianController extends Controller
         $data->expired = $request->expired;
         $data->jumlah = $request->jumlah;
         $data->vendor = $request->vendor;
+        $data->created_at = $request->created_at; //new tgl pembelian
         if ($data->save()) {
             $barang = Barang::find($request->barang_id);
             if (isset($barang->expired)) {

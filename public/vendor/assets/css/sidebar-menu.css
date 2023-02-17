@@ -49,7 +49,7 @@
 .sidebar-menu>li>a>.fa {
 	width: 20px;
 }
-.sidebar-menu>li:hover>a, .sidebar-menu>li.active>a {
+.sidebar-menu>li:hover>a, .sidebar-menu>li.active>a, .sidebar-menu li.active>a {
 	color: #ffffff;
     background: rgba(255, 255, 255, 0.15);
     border-left-color: #ffffff;
@@ -184,4 +184,14 @@
 }
 .sidebar-menu-rtl .sidebar-submenu>li.active>a, .sidebar-menu-rtl .sidebar-submenu>li>a:hover {
 	color: #fff;
+}
+
+
+/* custome sidebar */
+#menuBarang li a {
+	padding: 8px;
+}
+
+#menuBarang li a {
+	display: block;
 }

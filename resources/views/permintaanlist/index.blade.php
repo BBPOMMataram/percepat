@@ -3,7 +3,7 @@
 @parent
 <div class="row mt-3">
   <div class="col-12">
-    <h6>Tanggal Permintaan : {{ $data->tgl_permintaan->isoFormat('D MMM Y') }}</h6>
+    <h6 class="d-inline">Tanggal Permintaan :</h6><input id="idpermintaan" type="hidden" value="{{ $data->id }}"> <input id="tgl_permintaan" class="d-inline" type="date" value="{{ $data->tgl_permintaan->format('Y-m-d') }}"><br />
     @if (auth()->user()->position === 'pemohon')
     <a href="{{ route('permintaanlist.create', $data->id) }}" class="btn btn-light mb-3">ADD</a>
     @else
@@ -77,6 +77,30 @@
                 }
               });
             }
+          })
+        });
+
+        $('#tgl_permintaan').on('change', function(e){
+          const idPermintaan = $('#idpermintaan').val()
+          const tglPermintaan = $(this).val()
+
+          $.ajax({
+            type: "PATCH",
+            url: "{{ route('changetglpermintaan') }}",
+            data: {
+              id_permintaan: idPermintaan,
+              tgl_permintaan: tglPermintaan,
+              _token: "{{ csrf_token() }}"
+            },
+            success: function (response) {
+                  if(response.status){
+                    Swal.fire({
+                      title: 'Success',
+                      text: response.msg,
+                      icon: 'success',
+                    })
+                  }
+                }
           })
         })
       });
