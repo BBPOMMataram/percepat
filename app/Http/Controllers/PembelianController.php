@@ -29,7 +29,7 @@ class PembelianController extends Controller
      */
     public function create()
     {
-        $header = 'Data Pembelian';
+        $header = 'Data Penerimaan';
         $barang = Barang::all();
         return view('pembelian.form', compact('header', 'barang'));
     }
