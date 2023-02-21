@@ -45,23 +45,13 @@
 
         <li>
             {{-- <a href="{{ route('barang.index') }}" class="dropdown-toggle" id="menu-barang"> --}}
-            <a href="#" data-toggle="collapse" data-target="#menuBarang">
-                <i class="zmdi zmdi-layers"></i> <span>Barang</span>
-            </a>
-            <ul id="menuBarang" class="collapse @if(Request::segment(1) === 'barang') show @else hide @endif">
-                <li>
-                    <a href="{{ route('barang.index') }}" data-toggle="collapse" data-target="#menuReagen">
-                        Reagen
-                    </a>
-                    <ul id="menuReagen" class="collapse @if(Request::segment(1) === 'barang') show @else hide @endif">
-                        <li><a href="{{ route('barang.index') }}">Gudang</a></li>
-                        <li><a href="{{ route('baranglab.index') }}">Lab</a></li>
-                    </ul>
-                </li>
-                <li><a href="#">B.P</a></li>
-                <li><a href="#">Suku Cadang</a></li>
-                <li><a href="#">Alat Gelas</a></li>
-            </ul>
+                <a class="bg-transparent" href="#" data-toggle="collapse" data-target="#menuBarang">
+                    <i class="zmdi zmdi-layers"></i> <span>Barang</span>
+                </a>
+                <ul id="menuBarang" class="collapse @if(Request::segment(1) === 'barang') show @else hide @endif">
+                    <li><a href="{{ route('reagen.index') }}">Reagen</a></li>
+                    <li><a href="{{route('atk.index') }}">ATK</a></li>
+                </ul>
         </li>
 
         <li>

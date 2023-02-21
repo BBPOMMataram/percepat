@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Barang;
+use App\Models\Atk;
 use Illuminate\Http\Request;
 use Yajra\DataTables\Facades\DataTables;
 
-class BarangController extends Controller
+class AtkController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,8 +15,8 @@ class BarangController extends Controller
      */
     public function index()
     {
-        $header = 'Data Reagen';
-        return view('barang.index', compact('header'));
+        $header = 'Data ATK';
+        return view('barang_atk.index', compact('header'));
     }
 
     /**
@@ -26,8 +26,8 @@ class BarangController extends Controller
      */
     public function create()
     {
-        $header = 'Data Barang';
-        return view('barang.form', compact('header'));
+        $header = 'Data ATK';
+        return view('barang_atk.form', compact('header'));
     }
 
     /**
@@ -44,26 +44,13 @@ class BarangController extends Controller
             'stock' => 'numeric|min:0',
         ]);
 
-        $data = new Barang();
+        $data = new Atk();
         $data->name = $request->name;
         $data->satuan = $request->satuan;
-        $data->expired = $request->expired;
         $data->stock = $request->stock;
-        $data->msds = $request->msds;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**
@@ -74,9 +61,9 @@ class BarangController extends Controller
      */
     public function edit($id)
     {
-        $header = 'Data Barang';
-        $editeddata = Barang::find($id);
-        return view('barang.form', compact('header', 'editeddata'));
+        $header = 'Data ATK';
+        $editeddata = Atk::find($id);
+        return view('barang_atk.form', compact('header', 'editeddata'));
     }
 
     /**
@@ -94,12 +81,10 @@ class BarangController extends Controller
             'stock' => 'numeric|min:0',
         ]);
 
-        $data = Barang::find($id);
+        $data = Atk::find($id);
         $data->name = $request->name;
         $data->satuan = $request->satuan;
-        $data->expired = $request->expired;
         $data->stock = $request->stock;
-        $data->msds = $request->msds;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
@@ -113,19 +98,19 @@ class BarangController extends Controller
      */
     public function destroy($id)
     {
-        Barang::destroy($id);
+        Atk::destroy($id);
         return response()->json(['status' => 1, 'msg' => 'Deleted successfully']);
     }
 
-    public function dt_barang()
+    public function dt_barang_atk()
     {
-        $data = Barang::all();
+        $data = Atk::all();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('actions', function ($data) {
                 $actions = '';
                 if (auth()->user()->level === 'admin') {
-                    $actions .= '<a href="' . route('reagen.edit', $data->id) . '" class="edit mr-3" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
+                    $actions .= '<a href="' . route('atk.edit', $data->id) . '" class="edit mr-3" title="Edit"><i class="zmdi zmdi-edit text-info"></i></a>';
                     $actions .= '<a href="#" value="a1" class="delete" title="Delete"><i class="zmdi zmdi-close text-danger"></i></a>';
                 }
                 return $actions;
@@ -140,16 +125,13 @@ class BarangController extends Controller
                 $actions = '<a href="#" value="a1" class="add" title="Add"><i class="zmdi zmdi-check text-danger"></i></a>';
                 return $actions;
             })
-            ->addColumn('msds', function ($data) {
-                return $data->msds ? '<a href="' . $data->msds . '" target="_blank"><i class="zmdi zmdi-link text-success"></i></a>' : null;
-            })
             ->rawColumns(['actions', 'jumlahpermintaan', 'addBtn', 'msds'])
             ->toJson();
     }
 
-    public function dt_barang_tanpalogin()
+    public function dt_barang_atk_tanpalogin()
     {
-        $data = Barang::all();
+        $data = Atk::all();
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('expired', function ($data) {

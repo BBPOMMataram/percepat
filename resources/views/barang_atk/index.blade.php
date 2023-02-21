@@ -4,7 +4,7 @@
 <div class="row mt-3">
   <div class="col-12">
     @if (auth()->user()->level === 'admin')
-    <a href="{{ route('reagen.create') }}" class="btn btn-light mb-3">ADD</a>
+    <a href="{{ route('atk.create') }}" class="btn btn-light mb-3">ADD</a>
     @endif
     <div class="table-responsive">
       <table class="table table-striped" id="dttable">
@@ -13,9 +13,7 @@
           <th>No</th>
           <th>Name</th>
           <th>Satuan</th>
-          <th>Expired</th>
           <th>Stock</th>
-          <th>MSDS</th>
         </thead>
       </table>
     </div>
@@ -30,16 +28,14 @@
           serverSide: true,
           order: [[2, 'asc']],
           ajax: {
-            url: "{{ route('dt_barang') }}"
+            url: "{{ route('dt_barang_atk') }}"
           },
           columns: [
             { data: 'actions', className: 'text-center' },
             { data: 'DT_RowIndex' },
             { data: 'name', className: 'text-wrap' },
             { data: 'satuan' },
-            { data: 'expired', render: function($data){ return $data ? $data : '-' ;}  },
             { data: 'stock' },
-            { data: 'msds' },
             { data: 'id', visible: false}
           ]
         })
@@ -57,7 +53,7 @@
             if(val.isConfirmed){
               $.ajax({
                 type: "delete",
-                url: "barang/reagen/" + id,
+                url: "atk/" + id,
                 data: {
                   _token: "{{ csrf_token() }}"
                 },

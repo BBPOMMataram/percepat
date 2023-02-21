@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\BarangLabController;
 use App\Http\Controllers\BidangController;
@@ -30,12 +31,12 @@ use SebastianBergmann\Type\ObjectType;
 |
 */
 
-Route::get('/storagelink', function(){
+Route::get('/storagelink', function () {
     return Artisan::call('storage:link');
 });
 
-Route::get('/', function(){
-    if(Auth::check()){
+Route::get('/', function () {
+    if (Auth::check()) {
         return redirect()->route('dashboard');
     }
     return view('barang.tanpalogin');
@@ -46,7 +47,7 @@ Route::get('dtbarangtanpalogin', [BarangController::class, 'dt_barang_tanpalogin
 Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', function () {
         $data = (object)[];
-        
+
         $jmlpembelian = Pembelian::count();
         $jmlpermintaan = Permintaan::count();
         $jmlbarang = Barang::count();
@@ -58,7 +59,7 @@ Route::middleware(['auth'])->group(function () {
         $data->jmluser = $jmluser;
 
         $recentpermintaan = Permintaan::with('status', 'bidang.user')->orderBy('created_at', 'desc')->limit(10)->get();
-        
+
         return view('dashboard', compact('data', 'recentpermintaan'));
     })->name('dashboard');
 
@@ -67,8 +68,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('profile', ProfileController::class);
 
-    Route::resource('barang', BarangController::class);
-    Route::get('dtbarang', [BarangController::class, 'dt_barang'])->name('dt_barang');
+    Route::prefix('barang')->group(function () {
+        Route::resource('reagen', BarangController::class);
+        Route::get('dtbarang', [BarangController::class, 'dt_barang'])->name('dt_barang');
+
+        Route::resource('atk', AtkController::class);
+        Route::get('dtbarang-atk', [AtkController::class, 'dt_barang_atk'])->name('dt_barang_atk');
+    });
 
     Route::resource('pembelian', PembelianController::class);
     Route::get('dtpembelian', [PembelianController::class, 'dt_pembelian'])->name('dt_pembelian');
@@ -78,17 +84,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('print-permintaan/{idpermintaan}', [PermintaanController::class, 'print_permintaan'])->name('print_permintaan');
     Route::patch('changetglpermintaan', [PermintaanController::class, 'changetglpermintaan'])->name('changetglpermintaan');
 
-    Route::patch('kabidaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'kabid_accpermintaan'])->name('kabid_accpermintaan');
-    Route::patch('penyerahaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
-    Route::patch('kasubbagumumaccpermintaan/{idpermintaan}',[ PermintaanController::class, 'kasubbagumum_accpermintaan'])->name('kasubbagumum_accpermintaan');
-    
-    Route::get('permintaanlistdone/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_done'])->name('permintaanlist.done');
-    Route::get('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_index'])->name('permintaanlist.index');
-    Route::get('permintaanlist/create/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_create'])->name('permintaanlist.create');
-    Route::put('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_update'])->name('permintaanlist.update');
-    Route::get('permintaanlist/{idpermintaan}/{idbarang}/edit',[ PermintaanController::class, 'permintaanlist_edit'])->name('permintaanlist.edit');
-    Route::post('permintaanlist/{idpermintaan}',[ PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
-    Route::delete('permintaanlist/{idpermintaan}/{idbarang}',[ PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
+    Route::patch('kabidaccpermintaan/{idpermintaan}', [PermintaanController::class, 'kabid_accpermintaan'])->name('kabid_accpermintaan');
+    Route::patch('penyerahaccpermintaan/{idpermintaan}', [PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
+    Route::patch('kasubbagumumaccpermintaan/{idpermintaan}', [PermintaanController::class, 'kasubbagumum_accpermintaan'])->name('kasubbagumum_accpermintaan');
+
+    Route::get('permintaanlistdone/{idpermintaan}', [PermintaanController::class, 'permintaanlist_done'])->name('permintaanlist.done');
+    Route::get('permintaanlist/{idpermintaan}', [PermintaanController::class, 'permintaanlist_index'])->name('permintaanlist.index');
+    Route::get('permintaanlist/create/{idpermintaan}', [PermintaanController::class, 'permintaanlist_create'])->name('permintaanlist.create');
+    Route::put('permintaanlist/{idpermintaan}/{idbarang}', [PermintaanController::class, 'permintaanlist_update'])->name('permintaanlist.update');
+    Route::get('permintaanlist/{idpermintaan}/{idbarang}/edit', [PermintaanController::class, 'permintaanlist_edit'])->name('permintaanlist.edit');
+    Route::post('permintaanlist/{idpermintaan}', [PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
+    Route::delete('permintaanlist/{idpermintaan}/{idbarang}', [PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
     Route::get('dt_permintaanlist/{idpermintaan}', [PermintaanController::class, 'dt_permintaanlist'])->name('dt_permintaanlist');
     Route::get('print-laporan/{id?}', [PermintaanController::class, 'print_laporan'])->name('print_laporan');
 
@@ -99,14 +105,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dtbidang', [BidangController::class, 'dt_bidang'])->name('dt_bidang');
 
     // tambahan data barang
-    Route::resource('baranglab', BarangLabController::class);
-    Route::get('dtbaranglab', [BarangLabController::class, 'dt_baranglab'])->name('dt_baranglab');
+    // Route::resource('baranglab', BarangLabController::class);
+    // Route::get('dtbaranglab', [BarangLabController::class, 'dt_baranglab'])->name('dt_baranglab');
 });
 
 Route::view('login', 'login')->name('login');
 Route::post('login', [LoginController::class, 'authenticate']);
 
-Route::get('logout', function(){
+Route::get('logout', function () {
     Auth::logout();
     return redirect()->route('login');
 })->name('logout');
