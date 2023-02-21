@@ -18,7 +18,7 @@ class PembelianController extends Controller
      */
     public function index()
     {
-        $header = 'Data Pembelian';
+        $header = 'Data Penerimaan';
         return view('pembelian.index', compact('header'));
     }
 
@@ -157,17 +157,16 @@ class PembelianController extends Controller
                             $barang->save();
                             $barang1->save();
                             $data->barangs_id = $barang1->id;
-                        }
-                        else{
-                            if(++$i === $countItem){
+                        } else {
+                            if (++$i === $countItem) {
                                 $newBarang = new Barang();
-                                
+
                                 $newBarang->code = $barang->code;
                                 $newBarang->name = $barang->name;
                                 $newBarang->satuan = $barang->satuan;
                                 $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
                                 $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
-                                if($newBarang->save()){
+                                if ($newBarang->save()) {
                                     $barang->stock = $barang->stock - $data->jumlah;
                                     $barang->save();
                                 }
@@ -206,7 +205,7 @@ class PembelianController extends Controller
         $data = Pembelian::find($id);
 
         $barang = Barang::find($data->barangs_id);
-        if(isset($barang)){
+        if (isset($barang)) {
             $barang->stock -= $data->jumlah;
             $barang->save();
         }

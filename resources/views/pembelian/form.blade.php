@@ -45,15 +45,12 @@
           @isset($editeddata)
           @method('PUT')
           @endisset
-          
+
           <div class="form-group">
-            <label for="created_at">Tanggal Pembelian</label>
+            <label for="created_at">Tanggal Penerimaan</label>
             <input type="date" class="form-control " id="created_at" name="created_at" placeholder="Satuan"
-              @isset($editeddata) 
-              value="{{ $editeddata->created_at ? $editeddata->created_at->format('Y-m-d') : '' }}"
-              @else
-              value="{{ now()->format('Y-m-d') }}"
-              @endisset>
+              @isset($editeddata) value="{{ $editeddata->created_at ? $editeddata->created_at->format('Y-m-d') : '' }}"
+              @else value="{{ now()->format('Y-m-d') }}" @endisset>
           </div>
           <div class="form-group">
             <label for="barang_id">Name</label>

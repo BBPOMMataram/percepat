@@ -24,7 +24,7 @@
 
         <li>
             <a href="{{ route('pembelian.index') }}">
-                <i class="zmdi zmdi-shopping-cart-plus"></i> <span>Pembelian</span>
+                <i class="zmdi zmdi-shopping-cart-plus"></i> <span>Penerimaan</span>
             </a>
         </li>
 

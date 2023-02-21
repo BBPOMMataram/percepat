@@ -15,7 +15,7 @@
           <th>Expired</th>
           <th>Jumlah</th>
           <th>Vendor</th>
-          <th>Tgl Pembelian</th>
+          <th>Tgl Penerimaan</th>
         </thead>
       </table>
     </div>
