@@ -9,7 +9,8 @@
     <meta name="author" content="" />
     <title>{{ $title ?? 'PERCEPAT' }}</title>
     <!-- loader-->
-    {{-- <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
+    {{--
+    <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
     <script src="{{ asset('vendor/assets/js/pace.min.js') }}"></script> --}}
     <!--favicon-->
     <link rel="icon" href="{{ asset('vendor/assets/images/favicon.ico') }}" type="image/x-icon">
@@ -28,13 +29,14 @@
     <!-- Custom Style-->
     <link href="{{ asset('vendor/assets/css/app-style.css') }}" rel="stylesheet" />
     {{-- Datatables --}}
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.24/r-2.2.7/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/v/bs4/dt-1.10.24/r-2.2.7/datatables.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     @stack('styles')
 </head>
 
 <body class="bg-theme bg-theme1">
-{{-- <div id="loading" class="p-sticky align-center w-full h-full"><span class="fa fa-trash"></span></div> --}}
+    {{-- <div id="loading" class="p-sticky align-center w-full h-full"><span class="fa fa-trash"></span></div> --}}
     <!-- Start wrapper-->
     <div id="wrapper">
 
@@ -48,14 +50,14 @@
             <div class="container-fluid">
 
                 @section('content')
-                    <div class="row col-12 mt-3">
-                        <h2>{{ $header ?? '' }}</h2>
-                    </div>
+                <div class="row col-12 mt-3">
+                    <h2>{{ $header ?? '' }}</h2>
+                </div>
                 @show
 
-            <!--start overlay-->
-            <div class="overlay toggle-menu"></div>
-            <!--end overlay-->
+                <!--start overlay-->
+                <div class="overlay toggle-menu"></div>
+                <!--end overlay-->
 
             </div>
             <!-- End container-fluid-->
@@ -70,7 +72,8 @@
         <footer class="footer">
             <div class="container">
                 <div class="text-center">
-                    Copyright © {{ now()->year == '2021' ? '2021' : '2021 - '.now()->year }} <a href="https://bbpommataram.id" target="_blank">BBPOM Mataram</a>
+                    Copyright © {{ now()->year == '2021' ? '2021' : '2021 - '.now()->year }} <a
+                        href="https://bbpommataram.id" target="_blank">BBPOM Mataram</a>
                 </div>
             </div>
         </footer>
@@ -134,12 +137,13 @@
     <script src="{{ asset('vendor/assets/plugins/Chart.js/Chart.min.js') }}"></script>
     {{-- Datatables --}}
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/r-2.2.7/datatables.min.js"></script>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @stack('scripts')
 
     <script src="{{ asset('vendor/sweetalert/sweetalert.all.js') }}"></script>
+    <script src="/js/app.js"></script>
 </body>
 
 </html>

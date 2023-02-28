@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\TestEvent;
 use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\BarangLabController;
@@ -30,6 +31,13 @@ use SebastianBergmann\Type\ObjectType;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/send-msg', function () {
+    TestEvent::dispatch('hii from controller');
+
+    // event(new TestEvent); //alternative
+    return 'event sent';
+});
 
 Route::get('/storagelink', function () {
     return Artisan::call('storage:link');
