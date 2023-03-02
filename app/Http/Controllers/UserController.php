@@ -57,7 +57,7 @@ class UserController extends Controller
         $data->bidang_id = $request->bidang ?? 0;
 
         if ($data->save()) {
-            if($request->signed){
+            if ($request->signed) {
                 $signed = $request->signed;
                 $encoded_image = explode(",", $signed)[1];
                 $decoded_image = base64_decode($encoded_image);
@@ -112,7 +112,7 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required',
-            'email' => ['required','email', Rule::unique('users')->ignore($id)],
+            'email' => ['required', 'email', Rule::unique('users')->ignore($id)],
         ]);
 
         $data = User::find($id);
@@ -123,7 +123,7 @@ class UserController extends Controller
 
         // dd($request->all());
         if ($data->save()) {
-            if($request->signed){
+            if ($request->signed) {
                 Storage::delete($data->signature);
 
                 $encoded_image = explode(",", $request->signed)[1];
@@ -168,7 +168,7 @@ class UserController extends Controller
                 return $data->created_at->isoFormat('D MMM Y');
             })
             ->addColumn('photo', function ($data) {
-                $imgSrc = $data->photo ? Storage::url($data->photo) : Storage::url('noimage.png');
+                $imgSrc = $data->photo ? Storage::url($data->photo) : Storage::url('noimage.webp');
                 return '<img src="' . $imgSrc . '" width="40" />';
             })
             ->addColumn('signature', function ($data) {
@@ -177,10 +177,10 @@ class UserController extends Controller
                 }
                 return '<span class="text-danger">not available</span>';
             })
-            ->addColumn('position', function($data){
-                return $data->position === 'penyerah' ? 'petugas gudang' : $data->position ;
+            ->addColumn('position', function ($data) {
+                return $data->position === 'penyerah' ? 'petugas gudang' : $data->position;
             })
-            ->addColumn('bidang.name', function($data){
+            ->addColumn('bidang.name', function ($data) {
                 return $data->bidang->name ?? '-';
             })
             ->addColumn('actions', function ($data) {
