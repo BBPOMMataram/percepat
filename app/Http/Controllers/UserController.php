@@ -168,14 +168,22 @@ class UserController extends Controller
                 return $data->created_at->isoFormat('D MMM Y');
             })
             ->addColumn('photo', function ($data) {
-                $imgSrc = $data->photo ? Storage::url($data->photo) : Storage::url('noimage.webp');
-                return '<img src="' . $imgSrc . '" width="40" />';
+                if ($data->photo) {
+                    if (Storage::exists($data->photo)) {
+                        return '<img src="' . Storage::url($data->photo) . '" width="40" />';
+                    }
+                    return '<span class="alert-danger p-1">File not found</span>';
+                }
+                return '<img src="' . Storage::url('noimage.webp') . '" width="40" />';
             })
             ->addColumn('signature', function ($data) {
                 if ($data->signature) {
-                    return '<img src="' . Storage::url($data->signature) . '" width="40" />';
+                    if (Storage::exists($data->signature)) {
+                        return '<img src="' . Storage::url($data->signature) . '" width="40" />';
+                    }
+                    return '<span class="alert-danger p-1">File not found</span>';
                 }
-                return '<span class="text-danger">not available</span>';
+                return '<span class="alert-danger p-1">sign isn\'t available</span>';
             })
             ->addColumn('position', function ($data) {
                 return $data->position === 'penyerah' ? 'petugas gudang' : $data->position;
