@@ -144,6 +144,11 @@
 
     <script src="{{ asset('vendor/sweetalert/sweetalert.all.js') }}"></script>
     <script src="/js/app.js"></script>
+    <script>
+        window.Echo.private("message."+{{auth()->user()->id}}).listen('TestEvent', (e) => {
+    Swal.fire(e.msg.text + e.msg.user_id);
+})
+    </script>
 </body>
 
 </html>

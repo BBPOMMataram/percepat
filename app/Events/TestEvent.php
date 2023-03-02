@@ -20,9 +20,9 @@ class TestEvent implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($message)
+    public function __construct($msg)
     {
-        $this->msg = $message;
+        $this->msg = $msg;
     }
 
     /**
@@ -33,6 +33,6 @@ class TestEvent implements ShouldBroadcast
     public function broadcastOn()
     {
         // return new Channel('message.1');
-        return new PrivateChannel('message.1');
+        return new PrivateChannel('message.' . $this->msg["user_id"]);
     }
 }

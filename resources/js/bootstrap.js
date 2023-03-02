@@ -26,8 +26,3 @@ window.Echo = new Echo({
     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: true
 });
-
-
-window.Echo.private("message.1").listen('TestEvent', (e) => {
-    console.log('hiii', e);
-})

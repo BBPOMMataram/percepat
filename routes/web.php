@@ -33,7 +33,7 @@ use SebastianBergmann\Type\ObjectType;
 */
 
 Route::get('/send-msg', function () {
-    TestEvent::dispatch('hii from controller');
+    TestEvent::dispatch(['text' => 'hii id mu adalah ', 'user_id' => 2]);
 
     // event(new TestEvent); //alternative
     return 'event sent';

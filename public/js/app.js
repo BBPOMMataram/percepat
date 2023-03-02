@@ -2098,9 +2098,6 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   cluster: "ap1",
   forceTLS: true
 });
-window.Echo["private"]("message.1").listen('TestEvent', function (e) {
-  console.log('hiii', e);
-});
 
 /***/ }),
 
