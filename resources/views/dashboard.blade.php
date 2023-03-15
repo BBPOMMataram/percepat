@@ -23,7 +23,7 @@
                     <div class="progress my-3" style="height:3px;">
                         <div class="progress-bar" style="width:100%"></div>
                     </div>
-                    <p class="mb-0 text-white small-font">Total Pembelian</p>
+                    <p class="mb-0 text-white small-font">Total Penerimaan</p>
                 </div>
             </div>
             <div class="col-12 col-lg-6 col-xl-3 border-light">

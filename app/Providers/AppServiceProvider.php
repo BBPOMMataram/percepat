@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Notification;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        view()->share('notifications', [1, 2, 3]);
+        $notifications = Notification::orderByDesc('id')->get();
+        view()->share(compact('notifications'));
     }
 }

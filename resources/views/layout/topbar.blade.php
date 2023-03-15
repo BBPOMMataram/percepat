@@ -31,13 +31,23 @@
             <li class="nav-item notif">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret waves-effect" data-toggle="dropdown"
                     href="javascript:void();"><i class="fa fa-inbox"></i></a>
-                <ul class="dropdown-menu dropdown-menu-right mr-4">
+                <ol class="dropdown-menu dropdown-menu-right mr-4 bg-white ">
                     @foreach ($notifications as $item)
+                    @if ($item->to === auth()->user()->id)
+                    @if ($loop->index > 6)
+                    @break
+                    @endif
                     <a href="#">
-                        <li class="dropdown-item py-1 pl-3 text-success">{{$item}}</li>
+                        <li
+                            class="dropdown-item py-1 pl-3 {{ $item->is_read ? 'text-dark' : 'text-info font-weight-bold'}}">
+                            {{$item->message}}</li>
                     </a>
+                    @endif
                     @endforeach
-                </ul>
+                    <a href="#">
+                        <li class="pl-2 mt-2 text-dark"><u>Lihat semua</u></li>
+                    </a>
+                </ol>
             </li>
             <li class="nav-item">
                 <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" data-toggle="dropdown" href="#">
