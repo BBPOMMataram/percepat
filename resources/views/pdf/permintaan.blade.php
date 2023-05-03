@@ -57,7 +57,6 @@
         #footer table tr td {
             /* border: 1px solid black; */
         }
-
     </style>
 </head>
 
@@ -94,7 +93,8 @@
                 <tr>
                     <td style="text-align: left;" colspan="3">Tanggal Permintaan :
                         {{ $datapermintaan->tgl_permintaan->isoFormat('D MMMM Y') }}</td>
-                    <td style="text-align: left;" colspan="3">Bidang atau Seksi : {{ $datapermintaan->bidang->name }}</td>
+                    <td style="text-align: left;" colspan="3">Bidang atau Seksi : {{ $datapermintaan->bidang->name }}
+                    </td>
                 </tr>
                 <tr>
                     <td style="text-align: left;" colspan="6">Jenis Permintaan : {{ $datapermintaan->jenis }}</td>
@@ -136,7 +136,9 @@
                 <td>
                     @if ($datapermintaan->status_id >= 2)
                     @if ($kabid)
-                    <span style="padding-left: -20px;">@if ($kabid->signature) <img src="{{ Storage::url($kabid->signature) }}" alt="ttd kabid" width="150px"> @endif</span><br />
+                    <span style="padding-left: -20px;">@if ($kabid->signature) <img
+                            src="{{ Storage::url($kabid->signature) }}" alt="ttd kabid" width="150px">
+                        @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kabid->name }}</span>
                     @endif
                     @endif
@@ -144,18 +146,22 @@
                 <td style="text-align: right; margin-right: 20px">
                     @if ($datapermintaan->status_id >= 1)
                     @if ($pemohon)
-                    <span>@if($pemohon->signature) <img src="{{ Storage::url($pemohon->signature) }}" alt="ttd pemohon" width="150px">@endif</span><br />
+                    <span>@if($pemohon->signature) <img src="{{ Storage::url($pemohon->signature) }}" alt="ttd pemohon"
+                            width="150px">@endif</span><br />
                     <span>{{ $pemohon->name }}</span>
                     @endif
                     @endif
                 </td>
             </tr>
-            {{-- <tr><td><br/></td></tr> --}}
+            {{-- <tr>
+                <td><br /></td>
+            </tr> --}}
             <tr>
                 <td colspan="2" style="text-align: center; border: 1px solid black;">Penyerahan Barang</td>
             </tr>
             <tr>
-                <td>Tanggal Penyerahan : {{ $datapermintaan->tgl_penyerahan }}</td>
+                <td>Tanggal Penyerahan : {{ $datapermintaan->tgl_penyerahan ?
+                    $datapermintaan->tgl_penyerahan->isoFormat('D/MM/YY') : '' }}</td>
             </tr>
             <tr>
                 <td style="padding-left:50px;">Mengetahui<br />
@@ -168,7 +174,9 @@
                 <td>
                     @if ($datapermintaan->status_id >= 4)
                     @if ($kasub)
-                    <span style="padding-left: -20px;">@if ($kasub->signature) <img src="{{ Storage::url($kasub->signature) }}" alt="ttd kasub" width="150px"> @endif</span><br />
+                    <span style="padding-left: -20px;">@if ($kasub->signature) <img
+                            src="{{ Storage::url($kasub->signature) }}" alt="ttd kasub" width="150px">
+                        @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kasub->name }}</span>
                     @endif
                     @endif
@@ -176,7 +184,8 @@
                 <td style="text-align: right; margin-right: 20px">
                     @if ($datapermintaan->status_id >= 3)
                     @if ($penyerah)
-                    <span>@if($penyerah->signature) <img src="{{ Storage::url($penyerah->signature) }}" alt="ttd penyerah" width="150px">@endif</span><br />
+                    <span>@if($penyerah->signature) <img src="{{ Storage::url($penyerah->signature) }}"
+                            alt="ttd penyerah" width="150px">@endif</span><br />
                     <span>{{ $penyerah->name }}</span>
                     @endif
                     @endif

@@ -99,8 +99,8 @@
                 @foreach ($datapermintaanlist as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{  $item->barang->name ?? '-'}}</td>
-                    <td>{{  $item->barang->satuan ?? '-'}}</td>
+                    <td>{{ $item->barang->name ?? '-'}}</td>
+                    <td>{{ $item->barang->satuan ?? '-'}}</td>
 
                     <td style="text-align: center;">
                         @isset ($item->barang->expired)
@@ -136,24 +136,6 @@
     </div>
     <div id="footer">
         <div id="tgl">Mataram, {{ now()->isoFormat('D MMMM Y') }}</div>
-        {{-- <table>
-            <tr>
-                <td style="padding-left: 10px;">Yang bertanggung jawab <br />
-                    <span style="padding-left:30px;">Kabid / Penyelia</span>
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    @if ($datapermintaan->status_id >= 2)
-                    @if ($kabid)
-                    <span style="padding-left: -20px;">@if ($kabid->signature) <img src="{{ 'storage/'. $kabid->signature }}"
-        alt="ttd kabid" width="150px"> @endif</span><br />
-        <span style="margin-left: 25px;">{{ $kabid->name }}</span>
-        @endif
-        @endif
-        </td>
-        </tr>
-        </table> --}}
     </div>
 </body>
 
