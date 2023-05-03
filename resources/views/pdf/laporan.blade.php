@@ -123,7 +123,7 @@
                     </td>
                     <td style="text-align: center;">
                         @isset($item->permintaan->tgl_penyerahan)
-                        {{ $item->permintaan->tgl_penyerahan }}
+                        {{ $item->permintaan->tgl_penyerahan->isoFormat('D/MM/YY') }}
                         @else
                         -
                         @endisset
