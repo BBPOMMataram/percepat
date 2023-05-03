@@ -161,7 +161,7 @@
             </tr>
             <tr>
                 <td>Tanggal Penyerahan : {{ $datapermintaan->tgl_penyerahan ?
-                    $datapermintaan->tgl_penyerahan->isoFormat('D-M-YYYY') : '' }}</td>
+                    $datapermintaan->tgl_penyerahan->isoFormat('D-MMM-YYYY') : '' }}</td>
             </tr>
             <tr>
                 <td style="padding-left:50px;">Mengetahui<br />
