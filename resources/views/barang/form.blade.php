@@ -46,7 +46,7 @@
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>
-            <a href="{{ route('barang.index') }}"><button type="button"
+            <a href="{{ route('reagen.index') }}"><button type="button"
                 class="btn btn-secondary btn-round px-5">Exit</button></a>
           </div>
         </form>
@@ -71,7 +71,7 @@
       $('#form').on('submit', function(e){
         let fd = new FormData($('#form')[0]);
         
-        const url = "@isset($editeddata) {{ route('barang.update', $editeddata->id) }} @else {{ route('barang.store') }} @endisset"
+        const url = "@isset($editeddata) {{ route('reagen.update', $editeddata->id) }} @else {{ route('reagen.store') }} @endisset"
         const method = "@isset($editeddata) PUT @else POST @endisset"
 
         $.ajax({
