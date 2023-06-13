@@ -11,6 +11,7 @@ use App\Models\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Yajra\DataTables\Facades\DataTables;
 
 class PermintaanController extends Controller
@@ -171,6 +172,11 @@ class PermintaanController extends Controller
         $kasub = User::where('position', 'kasubbagumum')->first();
         $pemohon = User::find($datapermintaan->created_by);
         $kabid = User::find($datapermintaan->bidang->user->id);
+        $penyerah->signature = Storage::url($penyerah->signature);
+        $kasub->signature = Storage::url($kasub->signature);
+        $pemohon->signature = Storage::url($pemohon->signature);
+        $kabid->signature = Storage::url($kabid->signature);
+
         $pdf = PDF::loadView('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah', 'kasub', 'pemohon', 'kabid'));
         return $pdf->stream();
     }
@@ -428,10 +434,10 @@ class PermintaanController extends Controller
         return view('laporan.index', compact('header', 'barang'));
     }
 
-    public function print_laporan($id=0)
+    public function print_laporan($id = 0)
     {
         $datapermintaanlist = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
-        if($id){
+        if ($id) {
             $datapermintaanlist = $datapermintaanlist->where('barang_id', $id);
         }
         // $kabid = User::find(auth()->user()->id);
@@ -444,10 +450,10 @@ class PermintaanController extends Controller
         return $pdf->stream();
     }
 
-    public function dt_laporan($id=null)
+    public function dt_laporan($id = null)
     {
         $data = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
-        if($id){
+        if ($id) {
             $data = $data->where('barang_id', $id);
         }
         return DataTables::of($data)

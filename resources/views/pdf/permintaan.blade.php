@@ -65,7 +65,7 @@
         <table>
             <tr>
                 <td rowspan="4" id="logo">
-                    <img src="storage/bpomri.png" alt="Logo" width="60px">
+                    <img src="storage/bpomri.jpg" alt="Logo" width="60px">
                 </td>
                 <td>Nomor Formulir</td>
                 <td>POM-12.SOP.01.IK.02B(108A)/F.02</td>
@@ -136,8 +136,8 @@
                 <td>
                     @if ($datapermintaan->status_id >= 2)
                     @if ($kabid)
-                    <span style="padding-left: -20px;">@if ($kabid->signature) <img
-                            src="{{ Storage::url($kabid->signature) }}" alt="ttd kabid" width="150px">
+                    <span style="padding-left: -20px;">@if ($kabid->signature) <img src="{{ $kabid->signature }}"
+                            alt="ttd kabid" width="150px">
                         @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kabid->name }}</span>
                     @endif
@@ -146,16 +146,13 @@
                 <td style="text-align: right; margin-right: 20px">
                     @if ($datapermintaan->status_id >= 1)
                     @if ($pemohon)
-                    <span>@if($pemohon->signature) <img src="{{ Storage::url($pemohon->signature) }}" alt="ttd pemohon"
+                    <span>@if($pemohon->signature) <img src="{{ $pemohon->signature }}" alt="ttd pemohon"
                             width="150px">@endif</span><br />
                     <span>{{ $pemohon->name }}</span>
                     @endif
                     @endif
                 </td>
             </tr>
-            {{-- <tr>
-                <td><br /></td>
-            </tr> --}}
             <tr>
                 <td colspan="2" style="text-align: center; border: 1px solid black;">Penyerahan Barang</td>
             </tr>
@@ -174,8 +171,8 @@
                 <td>
                     @if ($datapermintaan->status_id >= 4)
                     @if ($kasub)
-                    <span style="padding-left: -20px;">@if ($kasub->signature) <img
-                            src="{{ Storage::url($kasub->signature) }}" alt="ttd kasub" width="150px">
+                    <span style="padding-left: -20px;">@if ($kasub->signature) <img src="{{ $kasub->signature }}"
+                            alt="ttd kasub" width="150px">
                         @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kasub->name }}</span>
                     @endif
@@ -184,8 +181,8 @@
                 <td style="text-align: right; margin-right: 20px">
                     @if ($datapermintaan->status_id >= 3)
                     @if ($penyerah)
-                    <span>@if($penyerah->signature) <img src="{{ Storage::url($penyerah->signature) }}"
-                            alt="ttd penyerah" width="150px">@endif</span><br />
+                    <span>@if($penyerah->signature) <img src="{{ $penyerah->signature }}" alt="ttd penyerah"
+                            width="150px">@endif</span><br />
                     <span>{{ $penyerah->name }}</span>
                     @endif
                     @endif
