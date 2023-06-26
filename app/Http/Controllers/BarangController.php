@@ -161,4 +161,21 @@ class BarangController extends Controller
             ->rawColumns(['msds'])
             ->toJson();
     }
+
+    function getDataReagen(Request $request)
+    {
+        $value_per_page = $request->query('value_per_page');
+        $name_query = $request->query('name');
+
+        $data = Barang::paginate($value_per_page);
+
+        if ($name_query) {
+            $data->where('name', $name_query);
+        }
+
+        //add query string to all response links
+        $data->appends(['value_per_page' => $value_per_page]);
+
+        return response()->json($data);
+    }
 }
