@@ -170,11 +170,12 @@ class BarangController extends Controller
         $data = Barang::paginate($value_per_page);
 
         if ($name_query) {
-            $data->where('name', $name_query);
+            $data = Barang::where('name', 'like', '%' . $name_query . '%')->paginate($value_per_page);
         }
 
         //add query string to all response links
         $data->appends(['value_per_page' => $value_per_page]);
+        $data->appends(['name' => $name_query]);
 
         return response()->json($data);
     }
