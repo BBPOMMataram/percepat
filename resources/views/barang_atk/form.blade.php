@@ -19,19 +19,26 @@
           @method('PUT')
           @endisset
           <div class="form-group">
-            <label for="name">Name</label>
+            <label for="name">Nama</label>
             <input required type="text" class="form-control form-control-rounded" id="name" name="name"
               placeholder="Name" value="{{ $editeddata->name ?? '' }}" autofocus>
           </div>
           <div class="form-group">
-            <label for="satuan">Satuan</label>
+            <label for="satuan">Satuan / Unit</label>
             <input required type="text" class="form-control form-control-rounded" id="satuan" name="satuan"
               placeholder="Satuan" value="{{ $editeddata->satuan ?? '' }}">
           </div>
           <div class="form-group">
-            <label for="stock">Stock</label>
+            <label for="stock">Stok</label>
             <input required type="number" class="form-control form-control-rounded" id="stock" name="stock"
               placeholder="Stock" value="{{ $editeddata->stock ?? 0 }}" min="0">
+          </div>
+          <div class="form-group">
+            <label for="description">Keterangan</label>
+            {{-- <input required type="number" class="form-control form-control-rounded" id="description"
+              name="description" placeholder="Stock" value="{{ $editeddata->description ?? 0 }}" min="0"> --}}
+            <textarea name="description" id="description" class="form-control"
+              value="{{$editeddata->description ?? '' }}" cols="30" rows="10"></textarea>
           </div>
           <div class="form-group">
             <button type="submit" class="btn btn-light btn-round px-5">Submit</button>

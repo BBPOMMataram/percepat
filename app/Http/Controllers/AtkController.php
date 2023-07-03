@@ -48,6 +48,7 @@ class AtkController extends Controller
         $data->name = $request->name;
         $data->satuan = $request->satuan;
         $data->stock = $request->stock;
+        $data->description = $request->description;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
@@ -85,6 +86,7 @@ class AtkController extends Controller
         $data->name = $request->name;
         $data->satuan = $request->satuan;
         $data->stock = $request->stock;
+        $data->description = $request->description;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);
@@ -129,18 +131,21 @@ class AtkController extends Controller
             ->toJson();
     }
 
-    public function dt_barang_atk_tanpalogin()
+    public function getDataAtk(Request $request)
     {
-        $data = Atk::all();
-        return DataTables::of($data)
-            ->addIndexColumn()
-            ->addColumn('expired', function ($data) {
-                return $data->expired ? $data->expired->isoFormat('D MMM Y') : null;
-            })
-            ->addColumn('msds', function ($data) {
-                return $data->msds ? '<a href="' . $data->msds . '" target="_blank"><i class="zmdi zmdi-link text-success"></i></a>' : null;
-            })
-            ->rawColumns(['msds'])
-            ->toJson();
+        $value_per_page = $request->query('value_per_page');
+        $name_query = $request->query('name');
+
+        $data = Atk::paginate($value_per_page);
+
+        if ($name_query) {
+            $data = Atk::where('name', 'like', '%' . $name_query . '%')->paginate($value_per_page);
+        }
+
+        //add query string to all response links
+        $data->appends(['value_per_page' => $value_per_page]);
+        $data->appends(['name' => $name_query]);
+
+        return response()->json($data);
     }
 }

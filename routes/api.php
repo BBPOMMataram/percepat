@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,3 +21,4 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
+Route::get('barang/atk', [AtkController::class, 'getDataAtk']);

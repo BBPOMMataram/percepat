@@ -11,9 +11,10 @@
         <thead>
           <th>Actions</th>
           <th>No</th>
-          <th>Name</th>
-          <th>Satuan</th>
-          <th>Stock</th>
+          <th>Nama</th>
+          <th>Unit</th>
+          <th>Stok</th>
+          <th>Keterangan</th>
         </thead>
       </table>
     </div>
@@ -36,6 +37,7 @@
             { data: 'name', className: 'text-wrap' },
             { data: 'satuan' },
             { data: 'stock' },
+            { data: 'description' },
             { data: 'id', visible: false}
           ]
         })
