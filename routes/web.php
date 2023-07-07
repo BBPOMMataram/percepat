@@ -16,8 +16,11 @@ use App\Models\Bidang;
 use App\Models\Pembelian;
 use App\Models\Permintaan;
 use App\Models\User;
+use Facade\FlareClient\Http\Response;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Route;
 use SebastianBergmann\Type\ObjectType;
 
@@ -53,6 +56,10 @@ Route::get('/', function () {
 Route::get('dtbarangtanpalogin', [BarangController::class, 'dt_barang_tanpalogin'])->name('dt_barang_tanpalogin');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('home', function () {
+        return 1;
+    });
+
     Route::get('/dashboard', function () {
         $data = (object)[];
 
@@ -117,10 +124,18 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('dtbaranglab', [BarangLabController::class, 'dt_baranglab'])->name('dt_baranglab');
 });
 
-Route::view('login', 'login')->name('login');
-Route::post('login', [LoginController::class, 'authenticate']);
+Route::view('login-admin', 'login')->name('login-admin');
+Route::post('login-admin', [LoginController::class, 'authenticate']);
 
-Route::get('logout', function () {
+Route::get('logout-admin', function () {
     Auth::logout();
-    return redirect()->route('login');
-})->name('logout');
+    return redirect()->route('login-admin');
+})->name('logout-admin');
+
+Route::get('testing', function (Request $request) {
+    Cookie::make('test', 'arfan', 100);
+
+    return 'test: ' . $request->cookie('test');
+});
+
+require __DIR__ . '/auth.php';

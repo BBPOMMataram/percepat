@@ -41,7 +41,7 @@
 
     <div class="container">
       <div class="text-right m-3">
-        <a href="{{ route('login') }}">Login <span class="zmdi zmdi-sign-in"></span></a>
+        <a href="{{ route('login-admin') }}">Login <span class="zmdi zmdi-sign-in"></span></a>
       </div>
 
       <div class="row mt-3">

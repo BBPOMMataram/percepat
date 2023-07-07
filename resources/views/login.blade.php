@@ -9,7 +9,8 @@
   <meta name="author" content="" />
   <title>Login || {{ $title ?? 'PERCEPAT' }}</title>
   <!-- loader-->
-  {{-- <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
+  {{--
+  <link href="{{ asset('vendor/assets/css/pace.min.css') }}" rel="stylesheet" />
   <script src="{{ asset('vendor/assets/js/pace.min.js') }}"></script> --}}
   <!--favicon-->
   <link rel="icon" href="{{ asset('vendor/assets/images/favicon.ico') }}" type="image/x-icon">
@@ -57,7 +58,7 @@
           @error('failed')
           <div class="alert alert-danger">{{ $message }}</div>
           @enderror
-          <form action="{{ route('login') }}" method="POST">
+          <form action="{{ route('login-admin') }}" method="POST">
             @csrf
             <div class="form-group">
               <label for="email" class="sr-only">Email</label>
@@ -79,30 +80,32 @@
                 </div>
               </div>
             </div>
-            {{-- 
-              <div class="form-row">
-                <div class="form-group col-6">
-                  <div class="icheck-material-white">
-                          <input type="checkbox" id="user-checkbox" checked="" />
-                          <label for="user-checkbox">Remember me</label>
-                  </div>
+            {{--
+            <div class="form-row">
+              <div class="form-group col-6">
+                <div class="icheck-material-white">
+                  <input type="checkbox" id="user-checkbox" checked="" />
+                  <label for="user-checkbox">Remember me</label>
                 </div>
-                <div class="form-group col-6 text-right">
-                  <a href="reset-password.html">Reset Password</a>
-                </div>
-              </div> 
+              </div>
+              <div class="form-group col-6 text-right">
+                <a href="reset-password.html">Reset Password</a>
+              </div>
+            </div>
             --}}
             <button type="submit" class="btn btn-light btn-block">Sign In</button>
             {{--
-              <div class="text-center mt-3">Sign In With</div>
-                <div class="form-row mt-4">
-                  <div class="form-group mb-0 col-6">
-                  <button type="button" class="btn btn-light btn-block"><i class="fa fa-facebook-square"></i> Facebook</button>
-                </div>
-                <div class="form-group mb-0 col-6 text-right">
-                  <button type="button" class="btn btn-light btn-block"><i class="fa fa-twitter-square"></i> Twitter</button>
-                </div>
-              </div> 
+            <div class="text-center mt-3">Sign In With</div>
+            <div class="form-row mt-4">
+              <div class="form-group mb-0 col-6">
+                <button type="button" class="btn btn-light btn-block"><i class="fa fa-facebook-square"></i>
+                  Facebook</button>
+              </div>
+              <div class="form-group mb-0 col-6 text-right">
+                <button type="button" class="btn btn-light btn-block"><i class="fa fa-twitter-square"></i>
+                  Twitter</button>
+              </div>
+            </div>
             --}}
 
           </form>
