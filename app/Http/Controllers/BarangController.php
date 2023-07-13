@@ -162,6 +162,7 @@ class BarangController extends Controller
             ->toJson();
     }
 
+    // ==============FOR API=============
     function getDataReagen(Request $request)
     {
         $value_per_page = $request->query('value_per_page');

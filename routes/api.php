@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\PembelianController;
+use App\Http\Controllers\PenerimaanAtkController;
+use App\Http\Controllers\PenerimaanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,5 +23,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::apiResource('penerimaan-reagen', PenerimaanController::class);
+Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
