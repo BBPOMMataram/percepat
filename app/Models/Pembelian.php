@@ -17,7 +17,7 @@ class Pembelian extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
-    public function barangreagen()
+    public function barang()
     {
         return $this->hasOne(Barang::class, 'id', 'barangs_id');
     }

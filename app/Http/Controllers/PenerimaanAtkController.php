@@ -27,7 +27,7 @@ class PenerimaanAtkController extends Controller
                 function ($query) use ($name_query) {
                     $query->where('name', 'like', '%' . $name_query . '%');
                 }
-            )->with('atk')->limit($limit_query)->get();
+            )->with('atk')->limit($limit_query)->latest()->get();
             // }
         }
 

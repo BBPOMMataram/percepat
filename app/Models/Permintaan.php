@@ -28,22 +28,20 @@ class Permintaan extends Model
     {
         return $this->hasOne(User::class, 'id', 'created_by');
     }
-    
+
     public function status()
     {
         return $this->hasOne(Status::class, 'id', 'status_id');
     }
 
-    public function barang()
-    {
-        return $this->hasOne(Status::class, 'id', 'barang_id');
-    }
+    // ga perlu karena udah ada permintaan list table yang berisi data barang
+    // public function barang()
+    // {
+    //     return $this->hasOne(Status::class, 'id', 'barang_id');
+    // }
 
     public function bidang()
     {
         return $this->hasOne(Bidang::class, 'id', 'bidang_id');
     }
-
-
-    
 }
