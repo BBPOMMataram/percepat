@@ -20,7 +20,7 @@ class PenerimaanController extends Controller
             function ($query) use ($name_query) {
                 $query->where('name', 'like', '%' . $name_query . '%');
             }
-        )->with('barang')->limit($limit_query)->latest()->paginate($value_per_page_query);
+        )->with('barang')->latest()->paginate($value_per_page_query);
 
         //add query string to all response links
         $data->appends(['value_per_page' => $value_per_page_query]);
