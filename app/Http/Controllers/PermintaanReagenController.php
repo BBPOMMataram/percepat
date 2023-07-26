@@ -18,24 +18,22 @@ class PermintaanReagenController extends Controller
         $name_query = $request->query('name');
         $limit_query = $request->query('limit');
 
-        $data = PermintaanList::paginate($value_per_page_query);
-        //add query string to all response links
-        $data->appends(['value_per_page' => $value_per_page_query]);
-        $data->appends(['name' => $name_query]);
+        $data = PermintaanList::whereHas(
+            'barang',
+            function ($query) use ($name_query) {
+                $query->where('name', 'like', '%' . $name_query . '%');
+            }
+        )->with('barang', 'permintaan.bidang', 'permintaan.status');
 
         //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
         if ($limit_query) {
-            // $data = PermintaanList::with('barang')->limit($limit_query)->get();
-            // if ($name_query) {
-            $data = PermintaanList::whereHas(
-                'barang',
-                function ($query) use ($name_query) {
-                    $query->where('name', 'like', '%' . $name_query . '%');
-                }
-            )->with('barang', 'permintaan.bidang', 'permintaan.status')->limit($limit_query)->latest()->get();
-            // }
+            $data = $data->limit($limit_query)->latest()->get();
+        } else {
+            $data = $data->latest()->paginate($value_per_page_query);
+            //add query string to all response links
+            $data->appends(['value_per_page' => $value_per_page_query]);
+            $data->appends(['name' => $name_query]);
         }
-
 
         return response()->json($data);
     }
