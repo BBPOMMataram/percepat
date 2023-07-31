@@ -13,21 +13,21 @@ class PermintaanListAtkController extends Controller
         $name_query = $request->query('name');
         $limit_query = $request->query('limit');
 
-        $data = PermintaanListAtk::paginate($value_per_page_query);
-        //add query string to all response links
-        $data->appends(['value_per_page' => $value_per_page_query]);
-        $data->appends(['name' => $name_query]);
+        $data = PermintaanListAtk::whereHas(
+            'atk',
+            function ($query) use ($name_query) {
+                $query->where('name', 'like', '%' . $name_query . '%');
+            }
+        )->with('atk', 'permintaan.bidang', 'permintaan.status');
 
-        //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
-        if ($limit_query) {
-            $data = PermintaanListAtk::whereHas(
-                'atk',
-                function ($query) use ($name_query) {
-                    $query->where('name', 'like', '%' . $name_query . '%');
-                }
-            )->with('atk', 'permintaan.bidang', 'permintaan.status')->limit($limit_query)->latest()->get();
+        if ($limit_query) { //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
+            $data = $data->limit($limit_query)->latest()->get();
+        } else {
+            $data = $data->latest()->paginate($value_per_page_query);
+            //add query string to all response links
+            $data->appends(['value_per_page' => $value_per_page_query]);
+            $data->appends(['name' => $name_query]);
         }
-
 
         return response()->json($data);
     }
