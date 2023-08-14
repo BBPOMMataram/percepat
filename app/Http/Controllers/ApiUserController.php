@@ -6,6 +6,7 @@ use App\Http\Requests\StoreApiUserRequest;
 use App\Http\Requests\UpdateApiUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\ApiUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -46,30 +47,29 @@ class ApiUserController extends Controller
     public function store(StoreApiUserRequest $request)
     {
         $validated = $request->validated();
-        
 
         $data = new ApiUser();
         $data->name = $validated['name'];
         $data->email = $validated['email'];
         $data->bidang_id = $validated['bidang_id'];
         $data->position = $validated['position'];
-        
+
         // MENYIMPAN SIGNATURE
         $signatureData = $validated['signature'];
-        
+
         $filename = 'signature-' . time() . '.png';
-        $path = 'signatures/'.$filename;
-        Storage::put($path , file_get_contents($signatureData));
-        
+        $path = 'signatures/' . $filename;
+        Storage::put($path, file_get_contents($signatureData));
+
         $data->signature = $path;
 
         // MENYIMPAN FOTO
         $photoData = $validated['photo'];
-        
+
         $filenamePhoto = 'photo-' . time() . '.png';
-        $photoPath = 'profile_photos/'.$filenamePhoto;
-        Storage::put($photoPath , file_get_contents($photoData));
-        
+        $photoPath = 'profile_photos/' . $filenamePhoto;
+        Storage::put($photoPath, file_get_contents($photoData));
+
         $data->photo = $photoPath;
         $data->password = Hash::make('password');
 
@@ -78,37 +78,64 @@ class ApiUserController extends Controller
         return response()->json(['msg' => 'Data berhasil tersimpan!']);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\ApiUser  $apiUser
-     * @return \Illuminate\Http\Response
-     */
-    public function show(ApiUser $apiUser)
+    function show(ApiUser $user)
     {
-        //
+        return new UserResource($user);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateApiUserRequest  $request
-     * @param  \App\Models\ApiUser  $apiUser
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateApiUserRequest $request, ApiUser $apiUser)
+    public function update(UpdateApiUserRequest $request, ApiUser $user)
     {
-        //
+        $validated = $request->validated();
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        $user->bidang_id = $validated['bidang_id'];
+        $user->position = $validated['position'];
+
+        // UBAH SIGNATURE
+        if (isset($validated['signature'])) {
+            // HAPUS SIGNATURE LAMA
+            Storage::delete($user->signature);
+
+            // SIGNATURE BARU
+            $signatureData = $validated['signature'];
+
+            $filename = 'signature-' . time() . '.png';
+            $path = 'signatures/' . $filename;
+
+            Storage::put($path, file_get_contents($signatureData));
+
+            $user->signature = $path;
+        }
+
+        // MENYIMPAN FOTO
+        if (isset($validated['photo'])) {
+            // HAPUS FOTO LAMA
+            Storage::delete($user->photo);
+            
+            // FOTO BARU
+            $photoData = $validated['photo'];
+
+            $filenamePhoto = 'photo-' . time() . '.png';
+            $photoPath = 'profile_photos/' . $filenamePhoto;
+            
+            Storage::put($photoPath, file_get_contents($photoData));
+
+            $user->photo = $photoPath;
+        }
+
+        $user->save();
+
+        return response()->json(['msg' => 'Data berhasil diubah!']);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\ApiUser  $apiUser
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(ApiUser $apiUser)
+    public function destroy(ApiUser $user)
     {
-        //
+        $photoUrlOri = $user->getRawOriginal('photo');
+        $signatureUrlOri = $user->getRawOriginal('signature');
+
+        $isImagesRemoved = Storage::delete($photoUrlOri, $signatureUrlOri);
+        $user->delete();
+        return response()->json(['msg' => 'Data berhasil dihapus!', 'isImagesRemoved' => $isImagesRemoved]);
     }
 }

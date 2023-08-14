@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\ApiUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class UpdateApiUserRequest extends FormRequest
@@ -14,7 +16,7 @@ class UpdateApiUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return Auth::check();
     }
 
     /**
@@ -25,12 +27,11 @@ class UpdateApiUserRequest extends FormRequest
     public function rules()
     {
         return [
-            //
             'name' => 'required|max:255',
-            'email' => ['required','email', 'max:255', Rule::unique('products')->ignore($this->product)],
+            'email' => ['required','email', 'max:255', Rule::unique(ApiUser::class)->ignore($this->user)],
             'bidang_id' => 'required',
             'position' => 'required',
-            'signature' => 'required',
+            'signature' => 'nullable',
             'photo' => 'nullable',
         ];
     }

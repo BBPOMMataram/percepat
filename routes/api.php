@@ -36,6 +36,8 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 // PENGGUNA
 Route::apiResource('users', ApiUserController::class);
 
+Route::apiResource('bidang', ApiBidangController::class);
+
 // PENERIMAAN
 Route::apiResource('penerimaan-reagen', PenerimaanController::class);
 Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
@@ -57,11 +59,6 @@ Route::get('barang-atk/getAll', function (Request $request) { //ntar handle di r
     $responseReagen = Atk::where('name', 'like', '%' . $name_query . '%')->get();
     return response()->json($responseReagen);
 });
-
-
-Route::resource('bidang', ApiBidangController::class);
-Route::resource('users', ApiUserController::class);
-
 
 // });
 
