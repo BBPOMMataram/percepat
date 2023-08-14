@@ -35,6 +35,7 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 
 // PENGGUNA
 Route::apiResource('users', ApiUserController::class);
+Route::patch('reset-password/{user}', [ApiUserController::class, 'resetPassword']);
 
 Route::apiResource('bidang', ApiBidangController::class);
 

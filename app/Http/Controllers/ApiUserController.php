@@ -138,4 +138,11 @@ class ApiUserController extends Controller
         $user->delete();
         return response()->json(['msg' => 'Data berhasil dihapus!', 'isImagesRemoved' => $isImagesRemoved]);
     }
+
+    function resetPassword(ApiUser $user) {
+        $user->password = Hash::make('password');
+        $user->save();
+
+        return response()->json(['msg' => 'Password berhasil direset!']);
+    }
 }
