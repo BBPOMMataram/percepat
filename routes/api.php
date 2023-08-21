@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\ApiAtkController;
 use App\Http\Controllers\ApiBidangController;
+use App\Http\Controllers\ApiReagenController;
 use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
@@ -37,31 +39,28 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
 Route::apiResource('users', ApiUserController::class);
 Route::patch('reset-password/{user}', [ApiUserController::class, 'resetPassword']);
 
+// BIDANG
 Route::apiResource('bidang', ApiBidangController::class);
 
 // PENERIMAAN
 Route::apiResource('penerimaan-reagen', PenerimaanController::class);
 Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
+
 // PERMINTAAN
 Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
 Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
 
 // BARANG
-Route::get('barang-reagen/getAll', function (Request $request) { //ntar handle di route barang pake controller, route ini untuk 'select options'
-    $name_query = $request->query('name');
 
-    $responseReagen = Barang::where('name', 'like', '%' . $name_query . '%')->get();
-    return response()->json($responseReagen);
-});
+// BARANG UNTUK REACT SELECT-OPTION
+Route::get('barang-reagen/getAll', [ApiReagenController::class, 'getAll']);
+Route::get('barang-atk/getAll', [ApiAtkController::class, 'getAll']);
 
-Route::get('barang-atk/getAll', function (Request $request) { //ntar handle di route barang pake controller, route ini untuk 'select options'
-    $name_query = $request->query('name');
-
-    $responseReagen = Atk::where('name', 'like', '%' . $name_query . '%')->get();
-    return response()->json($responseReagen);
-});
+Route::apiResource('barang-reagen', ApiReagenController::class);
+Route::apiResource('barang-atk', ApiAtkController::class);
 
 // });
 
+// DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);

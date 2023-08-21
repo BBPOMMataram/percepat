@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\BidangResource;
 use App\Models\ApiBidang;
+use App\Models\Bidang;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ApiBidangController extends Controller
 {
@@ -41,40 +43,63 @@ class ApiBidangController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $this->validate($request, [
+            'name' => ['required', 'unique:'. Bidang::class],
+            'kabid' => 'required'
+        ]);
+
+        $data = new Bidang();
+        
+        $data->name = $validated['name'];
+        $data->kabid = $validated['kabid'];
+
+        $data->save();
+
+        return response()->json(['msg' => 'Data berhasil tersimpan!']);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\ApiBidang  $apiBidang
+     * @param  \App\Models\ApiBidang  $bidang
      * @return \Illuminate\Http\Response
      */
-    public function show(ApiBidang $apiBidang)
+    public function show(ApiBidang $bidang)
     {
-        //
+        return new BidangResource($bidang);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\ApiBidang  $apiBidang
+     * @param  \App\Models\ApiBidang  $bidang
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, ApiBidang $apiBidang)
+    public function update(Request $request, ApiBidang $bidang)
     {
-        //
+        $validated = $this->validate($request, [
+            'name' => ['required', Rule::unique(Bidang::class)->ignore($bidang)],
+            'kabid' => 'required'
+        ]);
+
+        $bidang->name = $validated['name'];
+        $bidang->kabid = $validated['kabid'];
+
+        $bidang->save();
+
+        return response()->json(['msg' => 'Data berhasil diubah!']);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\ApiBidang  $apiBidang
+     * @param  \App\Models\ApiBidang  $bidang
      * @return \Illuminate\Http\Response
      */
-    public function destroy(ApiBidang $apiBidang)
+    public function destroy(ApiBidang $bidang)
     {
-        //
+        $bidang->delete();
+        return response()->json(['msg' => 'Data berhasil dihapus!']);
     }
 }
