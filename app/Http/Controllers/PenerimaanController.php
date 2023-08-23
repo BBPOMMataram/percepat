@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PenerimaanReagenResource;
 use App\Models\Barang;
 use App\Models\Pembelian;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class PenerimaanController extends Controller
             $data->created_at = $request->created_at; //new tgl pembelian
 
             $data->save();
-            
+
             $barang = Barang::find($request->barangs_id);
             if (isset($barang->expired)) {
                 $barangExpired = $barang->expired->format('Y-m-d');
@@ -93,9 +94,8 @@ class PenerimaanController extends Controller
                 $data->barangs_id = $newBarang->id; //ubah barangs_id yang diinput dengan barang baru yg beda expired
                 $data->save();
             }
-
         }); //end DB::transaction
-        return response(['status' => 1,'msg' => 'Data berhasil tersimpan!']);
+        return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
     }
 
     /**
@@ -106,7 +106,7 @@ class PenerimaanController extends Controller
      */
     public function show($id)
     {
-        //
+        return new PenerimaanReagenResource(Pembelian::with('barang')->find($id));
     }
 
     /**
@@ -118,7 +118,53 @@ class PenerimaanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $this->validate($request, [
+            'barangs_id' => 'required',
+            'jumlah' => 'numeric|min:1',
+        ], [
+            'barangs_id.required' => 'Silahkan Pilih Reagen',
+            'jumlah.numeric' => 'Format Jumlah harus number',
+            'jumlah.min' => 'Jumlah minimal 1',
+        ]);
+
+        DB::transaction(function () use ($request, $id) {
+
+            $data = Pembelian::find($id);
+            $data->barangs_id = $request->barangs_id;
+            $data->expired = $request->expired;
+            $data->vendor = $request->vendor;
+            $data->created_at = $request->created_at; //new tgl pembelian
+
+            $data->save();
+
+            $barang = Barang::find($request->barangs_id);
+            if (isset($barang->expired)) {
+                $barangExpired = $barang->expired->format('Y-m-d');
+            } else {
+                $barangExpired = $barang->expired;
+            }
+
+            // jika expired barang yang diinput sama dengan yang sudah ada di gudang maka jumlahkan stok...
+            if ($request->expired === $barangExpired) {
+                $barang->stock = $barang->stock - $data->jumlah + $request->jumlah; // *1 disini
+                $barang->save();
+            } else {
+                // ...jika tidak duplikat barang dan bedakan expired dan stok nya
+                $newBarang = new Barang();
+
+                $newBarang->code = $barang->code;
+                $newBarang->name = $barang->name;
+                $newBarang->satuan = $barang->satuan;
+                $newBarang->expired = $request->expired; //untuk data barang baru yang beda expired
+                $newBarang->stock = $request->jumlah; //untuk data barang baru yang beda expired
+                $newBarang->save();
+
+                $data->barangs_id = $newBarang->id; //ubah barangs_id yang diinput dengan barang baru yg beda expired
+                $data->jumlah = $request->jumlah; //dibelakangkan untuk ambil data jumlah sebelum ditambahkan ke stock barang lihat (*1)
+                $data->save();
+            }
+        }); //end DB::transaction
+        return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
     }
 
     /**
@@ -129,6 +175,9 @@ class PenerimaanController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $pembelian = Pembelian::find($id);
+        $pembelian->delete();
+
+        return response()->json(['msg' => 'Data berhasil dihapus!']);
     }
 }

@@ -96,7 +96,7 @@ class ApiReagenController extends Controller
     public function update(Request $request, ApiReagen $barang_reagen)
     {
         $this->validate($request, [
-            'name' => ['required', 'bail', Rule::unique(ApiReagen::class)->ignore($barang_reagen)],
+            'name' => ['required', 'bail'],
             'satuan' => ['required']
         ]);
 

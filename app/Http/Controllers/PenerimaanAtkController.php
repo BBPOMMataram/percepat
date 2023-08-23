@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\PenerimaanAtkResource;
+use App\Http\Resources\PenerimaanReagenResource;
 use App\Models\Atk;
 use App\Models\PenerimaanAtk;
 use Illuminate\Http\Request;
@@ -41,7 +43,6 @@ class PenerimaanAtkController extends Controller
 
     public function store(Request $request)
     {
-        // return $request->all();
         $this->validate($request, [
             'atk_id' => 'required',
             'jumlah' => 'numeric|min:1',
@@ -68,5 +69,69 @@ class PenerimaanAtkController extends Controller
         }); //end DB::transaction
 
         return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
+    }
+
+    public function show($id)
+    {
+        return new PenerimaanAtkResource(PenerimaanAtk::with('atk')->find($id));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        $this->validate($request, [
+            'atk_id' => 'required',
+            'jumlah' => 'numeric|min:1',
+        ], [
+            'atk_id.required' => 'Silahkan Pilih Atk',
+            'jumlah.numeric' => 'Format Jumlah harus number',
+            'jumlah.min' => 'Jumlah minimal 1',
+        ]);
+
+        DB::transaction(function () use ($request, $id) {
+
+            $data = PenerimaanAtk::find($id);
+            $data->atk_id = $request->atk_id;
+            $data->vendor = $request->vendor;
+            $data->created_at = $request->created_at; //new tgl pembelian
+
+            $data->save();
+
+            $atk = Atk::find($request->atk_id);
+
+            $atk->stock = $atk->stock - $data->jumlah + $request->jumlah;
+
+            $data->jumlah = $request->jumlah;
+            $atk->save();
+        }); //end DB::transaction
+
+        return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        DB::transaction(function () use ($id) {
+            $pembelian = PenerimaanAtk::find($id);
+
+            $atk = Atk::find($pembelian->atk_id);
+            $atk->stock = $atk->stock - $pembelian->jumlah;
+
+            $atk->save();
+            $pembelian->delete();
+        });
+
+        return response()->json(['msg' => 'Data berhasil dihapus!']);
     }
 }
