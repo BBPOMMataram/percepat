@@ -42,7 +42,7 @@ class PermintaanController extends Controller
         // $bidang = Bidang::all();
         // return view('permintaan.form', compact('header', 'bidang'));
         $data = new Permintaan();
-        $user = User::with('bidang')->find(auth()->user()->id);
+        $user = auth()->user();
         $data->bidang_id = $user->bidang->id;
         // $data->kabid_id = $request->kabid_id;
         $data->created_by = $user->id;

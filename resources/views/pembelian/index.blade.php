@@ -23,8 +23,11 @@
 </div>
 @endsection
 @push('scripts')
+
+<script src="{{asset('vendor/assets/plugins/jquery-ui/jquery-ui.min.js')}}"></script>
 <script>
   $(function(){
+    
       const dttable = $('#dttable').DataTable({
           responsive: true,
           serverSide: true,
@@ -40,7 +43,58 @@
             { data: 'vendor' },
             { data: 'created_at' },
             { data: 'id', visible: false}
-          ]
+          ],
+  createdRow: function (row, data, dataIndex) {
+    // Menambahkan atribut data-id ke setiap baris
+    $(row).attr('data-id', data.id);
+    $(row).attr('data-barang', data.barang.name);
+  },
+          initComplete: function () {
+            // Setelah tabel selesai dimuat, inisialisasi Sortable pada tbody
+            $('tbody').sortable({
+              axis: 'y', // Mengizinkan hanya pergeseran vertikal (atas-ke-bawah)
+              containment: 'table', // Mengizinkan pergeseran dalam batas tabel
+              cursor: 'move', // Mengganti kursor saat menggeser
+              update: function (event, ui) {
+                // Dijalankan saat posisi baris berubah
+                // Anda dapat mengirimkan permintaan AJAX untuk memperbarui urutan di server di sini
+                const newOrder = []
+
+                // Mendapatkan data ID dan data barang dari semua elemen sebelum diurutkan
+                const rows = $(this).find('tr');
+                
+                // Mendapatkan ID dalam urutan yang sudah diurutkan
+                const sortedIds = rows.map(function() {
+                  return $(this).data('id');
+                }).get().sort(function(a, b) {
+                  return a - b;
+                });
+                
+                rows.each(function(index) {
+                  const id = sortedIds[index];
+                  const barang = $(this).data('barang');
+                  newOrder.push({ id, barang });
+                });
+                // $(this).find('tr').each(function(i){
+                //   const id = $(this).data('id');
+                //   const barang = $(this).data('barang');
+                //   newOrder.push({ id, barang});
+                // })
+
+                $.ajax({
+                type: 'POST',
+                url: '{{ route('testing') }}', // Gantilah dengan URL yang sesuai
+                data: {
+                    newOrder: newOrder,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    console.log(response);
+                }
+            });
+              }
+            }).disableSelection(); // Mencegah teks dalam sel dipilih saat menggeser
+          }
         })
 
         $('#dttable').on('click', '.delete', function(e){

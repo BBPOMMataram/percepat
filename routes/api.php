@@ -9,6 +9,7 @@ use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
+use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PermintaanListAtkController;
 use App\Http\Controllers\PermintaanReagenController;
 use App\Http\Resources\UserResource;
@@ -30,7 +31,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-    return new UserResource(ApiUser::find($request->user()->id));
+    return new UserResource(ApiUser::with('bidang')->find($request->user()->id));
 });
 
 // Route::middleware(['auth:sanctum'])->group(function () {
@@ -49,6 +50,10 @@ Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
 // PERMINTAAN
 Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
 Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+
+Route::get('list-permintaan-reagen/{permintaan}', [PermintaanReagenController::class, 'listPermintaanReagen']);
+Route::post('list-permintaan-reagen/{permintaan}', [PermintaanReagenController::class, 'addListPermintaanReagen']);
+Route::delete('list-permintaan-reagen/{permintaan}/{barang}', [PermintaanReagenController::class, 'removeListPermintaanReagen']);
 
 // BARANG
 

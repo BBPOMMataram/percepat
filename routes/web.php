@@ -95,6 +95,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dtpembelian', [PembelianController::class, 'dt_pembelian'])->name('dt_pembelian');
 
     Route::resource('permintaan', PermintaanController::class);
+    // HPUS INI NTAR
+    Route::post('testing', function(Request $request){
+        return $request->all();
+    })->name('testing');
+    // HPUS INI NTAR
     Route::get('dtpermintaan', [PermintaanController::class, 'dt_permintaan'])->name('dt_permintaan');
     Route::get('print-permintaan/{idpermintaan}', [PermintaanController::class, 'print_permintaan'])->name('print_permintaan');
     Route::patch('changetglpermintaan', [PermintaanController::class, 'changetglpermintaan'])->name('changetglpermintaan');
