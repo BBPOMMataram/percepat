@@ -6,6 +6,7 @@ use App\Http\Resources\ListPermintaanReagenResource;
 use App\Models\Barang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -49,7 +50,12 @@ class PermintaanReagenController extends Controller
             'inventory' => ['required'],
         ]);
 
-        DB::transaction(function () use ($request) {
+        $inventory = json_decode($request->inventory);
+        if (!$inventory) {
+            return response()->json(['status' => 1, 'msg' => 'Barang tidak boleh kosong !'], 400);
+        }
+
+        DB::transaction(function () use ($request, $inventory) {
             // DI JSON DECODE AGAR DATA PROPERTY PADA OBJECT(KEY) DAPAT TERBACA BUKAN SEBAGAI STRING
             $user = json_decode($request->userFrontEnd);
 
@@ -58,7 +64,7 @@ class PermintaanReagenController extends Controller
             $data->bidang_id = $user->bidang->id;
             // $data->kabid_id = $request->kabid_id;
             $data->created_by = $user->id;
-            $data->created_at = $request->created_at;
+            $data->tgl_permintaan = $request->created_at;
 
             $last_data = Permintaan::latest()->first();
 
@@ -75,7 +81,6 @@ class PermintaanReagenController extends Controller
             $data->save();
 
             // STORE LIST BARANG
-            $inventory = json_decode($request->inventory);
             foreach ($inventory as $value) {
                 $newInventory = new PermintaanList();
                 $newInventory->permintaan_id = $data->id; //permintaan id
@@ -89,14 +94,38 @@ class PermintaanReagenController extends Controller
         return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
     }
 
-    public function show(Permintaan $permintaan_reagen)
-    {
-        //
-    }
-
     public function update(Request $request, Permintaan $permintaan_reagen)
     {
-        //
+        $this->validate($request, [
+            'userFrontEnd' => ['required'],
+            'created_at' => ['required'],
+            'inventory' => ['required'],
+        ]);
+
+        $inventory = json_decode($request->inventory);
+        if (!$inventory) {
+            return response()->json(['status' => 1, 'msg' => 'Barang tidak boleh kosong !'], 400);
+        }
+
+        DB::transaction(function () use ($request, $inventory, $permintaan_reagen) {
+
+            $permintaan_reagen->tgl_permintaan = $request->created_at;
+
+            $permintaan_reagen->save();
+
+            // UPDATE LIST BARANG
+            PermintaanList::where('permintaan_id', $permintaan_reagen->id)->delete();
+            foreach ($inventory as $value) {
+                $newInventory = new PermintaanList();
+                $newInventory->permintaan_id = $permintaan_reagen->id;
+                $newInventory->barang_id = $value->barang->id;
+                $newInventory->jumlahpermintaan = $value->jumlahpermintaan;
+                $newInventory->keterangan = $value->keterangan;
+
+                $newInventory->save();
+            }
+        });
+        return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
     }
 
     public function destroy(Permintaan $permintaan_reagen)
