@@ -50,6 +50,8 @@ Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
 // PERMINTAAN
 Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
 Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+// DOWNLOAD PERMINTAAN
+Route::get('download-permintaan-reagen/{id_permintaan}', [PermintaanReagenController::class, 'downloadPermintaanReagen']);
 
 Route::get('list-permintaan-reagen/{permintaan}', [PermintaanReagenController::class, 'listPermintaanReagen']);
 Route::post('list-permintaan-reagen/{permintaan}', [PermintaanReagenController::class, 'addListPermintaanReagen']);

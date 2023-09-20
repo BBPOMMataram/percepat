@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ListPermintaanReagenResource;
+use App\Models\ApiUser;
 use App\Models\Barang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
-use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PermintaanReagenController extends Controller
 {
@@ -178,5 +180,33 @@ class PermintaanReagenController extends Controller
             ->where('barang_id', $barang->id)->delete();
 
         return response()->json(['status' => 1, 'msg' => 'Berhasil dihapus!']);
+    }
+
+    function downloadPermintaanReagen($id)
+    {
+        $datapermintaan = Permintaan::find($id);
+        $datapermintaanlist = PermintaanList::where('permintaan_id', $id)->get();
+        $penyerah = ApiUser::where('position', 'penyerah')->first();
+        $kasub = ApiUser::where('position', 'kasubbagumum')->first();
+        $pemohon = ApiUser::find($datapermintaan->created_by);
+        $kabid = ApiUser::find($datapermintaan->bidang->user->id);
+        $penyerahSignature = 'storage/' . $penyerah->getRawOriginal('signature');
+        $kasubSignature = 'storage/' . $kasub->getRawOriginal('signature');
+        $pemohonSignature = 'storage/' . $pemohon->getRawOriginal('signature');
+        $kabidSignature = 'storage/' . $kabid->getRawOriginal('signature');
+
+        $pdf = PDF::loadView('pdf/permintaan', compact(
+            'datapermintaan',
+            'datapermintaanlist',
+            'penyerah',
+            'kasub',
+            'pemohon',
+            'kabid',
+            'penyerahSignature',
+            'kasubSignature',
+            'pemohonSignature',
+            'kabidSignature',
+        ));
+        return $pdf->download();
     }
 }

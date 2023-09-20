@@ -172,10 +172,10 @@ class PermintaanController extends Controller
         $kasub = User::where('position', 'kasubbagumum')->first();
         $pemohon = User::find($datapermintaan->created_by);
         $kabid = User::find($datapermintaan->bidang->user->id);
-        $penyerah->signature = Storage::url($penyerah->signature);
-        $kasub->signature = Storage::url($kasub->signature);
-        $pemohon->signature = Storage::url($pemohon->signature);
-        $kabid->signature = Storage::url($kabid->signature);
+        $penyerah->signature = 'storage/'.$penyerah->signature;
+        $kasub->signature = 'storage/'.$kasub->signature;
+        $pemohon->signature = 'storage/'.$pemohon->signature;
+        $kabid->signature = 'storage/'.$kabid->signature;
 
         $pdf = PDF::loadView('pdf/permintaan', compact('datapermintaan', 'datapermintaanlist', 'penyerah', 'kasub', 'pemohon', 'kabid'));
         return $pdf->stream();

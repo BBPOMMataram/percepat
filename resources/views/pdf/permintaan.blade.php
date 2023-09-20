@@ -136,7 +136,7 @@
                 <td>
                     @if ($datapermintaan->status_id >= 2)
                     @if ($kabid)
-                    <span style="padding-left: -20px;">@if ($kabid->signature) <img src="{{ $kabid->signature }}"
+                    <span style="padding-left: -20px;">@if ($kabidSignature) <img src="{{ $kabidSignature }}"
                             alt="ttd kabid" width="150px">
                         @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kabid->name }}</span>
@@ -146,7 +146,7 @@
                 <td style="text-align: right; margin-right: 20px">
                     @if ($datapermintaan->status_id >= 1)
                     @if ($pemohon)
-                    <span>@if($pemohon->signature) <img src="{{ $pemohon->signature }}" alt="ttd pemohon"
+                    <span>@if($pemohonSignature) <img src={{ $pemohonSignature }} alt="ttd pemohon"
                             width="150px">@endif</span><br />
                     <span>{{ $pemohon->name }}</span>
                     @endif
@@ -171,7 +171,7 @@
                 <td>
                     @if ($datapermintaan->status_id >= 4)
                     @if ($kasub)
-                    <span style="padding-left: -20px;">@if ($kasub->signature) <img src="{{ $kasub->signature }}"
+                    <span style="padding-left: -20px;">@if ($kasubSignature) <img src="{{ $kasubSignature }}"
                             alt="ttd kasub" width="150px">
                         @endif</span><br />
                     <span style="margin-left: 25px;">{{ $kasub->name }}</span>
@@ -181,7 +181,7 @@
                 <td style="text-align: right; margin-right: 20px">
                     @if ($datapermintaan->status_id >= 3)
                     @if ($penyerah)
-                    <span>@if($penyerah->signature) <img src="{{ $penyerah->signature }}" alt="ttd penyerah"
+                    <span>@if($penyerahSignature) <img src="{{ $penyerahSignature }}" alt="ttd penyerah"
                             width="150px">@endif</span><br />
                     <span>{{ $penyerah->name }}</span>
                     @endif

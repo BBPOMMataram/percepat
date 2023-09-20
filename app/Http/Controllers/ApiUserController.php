@@ -91,11 +91,12 @@ class ApiUserController extends Controller
         $user->email = $validated['email'];
         $user->bidang_id = $validated['bidang_id'];
         $user->position = $validated['position'];
-
+        
         // UBAH SIGNATURE
         if (isset($validated['signature'])) {
             // HAPUS SIGNATURE LAMA
-            Storage::delete($user->signature);
+            $signatureOri = $user->getRawOriginal('signature');
+            Storage::delete($signatureOri);
 
             // SIGNATURE BARU
             $signatureData = $validated['signature'];
