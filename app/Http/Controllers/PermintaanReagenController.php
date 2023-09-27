@@ -19,7 +19,8 @@ class PermintaanReagenController extends Controller
         $value_per_page_query = $request->query('value_per_page');
         $limit_query = $request->query('limit');
 
-        $data = Permintaan::with('peminta', 'status', 'bidang', 'bidang.user');
+        $data = Permintaan::with('peminta', 'status', 'bidang', 'bidang.user')
+        ->where('jenis', '!=', 'ATK');
 
         //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
         if ($limit_query) {

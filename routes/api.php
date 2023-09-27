@@ -52,10 +52,15 @@ Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
 Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
 // DOWNLOAD PERMINTAAN
 Route::get('download-permintaan-reagen/{id_permintaan}', [PermintaanReagenController::class, 'downloadPermintaanReagen']);
+Route::get('download-permintaan-atk/{id_permintaan}', [PermintaanListAtkController::class, 'downloadPermintaanAtk']);
 
 Route::get('list-permintaan-reagen/{permintaan}', [PermintaanReagenController::class, 'listPermintaanReagen']);
 Route::post('list-permintaan-reagen/{permintaan}', [PermintaanReagenController::class, 'addListPermintaanReagen']);
 Route::delete('list-permintaan-reagen/{permintaan}/{barang}', [PermintaanReagenController::class, 'removeListPermintaanReagen']);
+
+Route::get('list-permintaan-atk/{permintaan}', [PermintaanListAtkController::class, 'listPermintaanAtk']);
+Route::post('list-permintaan-atk/{permintaan}', [PermintaanListAtkController::class, 'addListPermintaanAtk']);
+Route::delete('list-permintaan-atk/{permintaan}/{atk}', [PermintaanListAtkController::class, 'removeListPermintaanAtk']);
 
 // BARANG
 
