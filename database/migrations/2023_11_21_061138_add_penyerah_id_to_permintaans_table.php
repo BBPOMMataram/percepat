@@ -15,6 +15,8 @@ class AddPenyerahIdToPermintaansTable extends Migration
     {
         Schema::table('permintaans', function (Blueprint $table) {
             $table->bigInteger('penyerah_id')->default(18);
+            $table->bigInteger('kasubbagumum_id')->default(0);
+            $table->bigInteger('kabid_id')->default(0);
         });
     }
 
@@ -27,6 +29,8 @@ class AddPenyerahIdToPermintaansTable extends Migration
     {
         Schema::table('permintaans', function (Blueprint $table) {
             $table->dropColumn('penyerah_id');
+            $table->dropColumn('kasubbagumum_id');
+            $table->dropColumn('kabid_id');
         });
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\ListPermintaanReagenResource;
 use App\Http\Resources\PermintaanReagenResource;
 use App\Models\ApiUser;
+use App\Models\Atk;
 use App\Models\Barang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
@@ -193,9 +194,9 @@ class PermintaanReagenController extends Controller
         $datapermintaan = Permintaan::find($id);
         $datapermintaanlist = PermintaanList::where('permintaan_id', $id)->get();
         $penyerah = ApiUser::find($datapermintaan->penyerah_id);
-        $kasub = ApiUser::where('position', 'kasubbagumum')->first();
+        $kasub = ApiUser::find($datapermintaan->kasubbagumum_id);
         $pemohon = ApiUser::find($datapermintaan->created_by);
-        $kabid = ApiUser::find($datapermintaan->bidang->user->id);
+        $kabid = ApiUser::find($datapermintaan->kabid_id);
         $penyerahSignature = 'storage/' . $penyerah->getRawOriginal('signature');
         $kasubSignature = 'storage/' . $kasub->getRawOriginal('signature');
         $pemohonSignature = 'storage/' . $pemohon->getRawOriginal('signature');
@@ -225,6 +226,7 @@ class PermintaanReagenController extends Controller
             case 'penyelia':
                 if ($permintaan->status_id === 1) {
                     $permintaan->status_id += 1;
+                    $permintaan->kabid_id = auth()->user()->id;
                     $permintaan->save();
                     return response(['status' => 1, 'msg' => 'Permintaan berhasil diverifikasi!']);
                 }
@@ -233,8 +235,8 @@ class PermintaanReagenController extends Controller
                 if ($permintaan->status_id === 2) {
                     $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
                     // jika data list reagen tidak ada berarti barang ATK
-                    if(count($permintaanList) === 0){
-                    $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+                    if (count($permintaanList) === 0) {
+                        $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
                     }
 
                     $realisasi = $request->data;
@@ -253,13 +255,25 @@ class PermintaanReagenController extends Controller
             case 'kasubbagumum':
                 if ($permintaan->status_id === 3) {
                     $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
-                    foreach ($permintaanList as $value) {
-                        $barang = Barang::find($value->barang_id);
-                        $barang->stock -= $value->jumlahrealisasi;
-                        $barang->save();
+                    // jika data list reagen tidak ada berarti barang ATK
+                    if (count($permintaanList) === 0) {
+                        $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+
+                        foreach ($permintaanList as $value) {
+                            $barang = Atk::find($value->atk_id);
+                            $barang->stock -= $value->jumlahrealisasi;
+                            $barang->save();
+                        }
+                    } else { //LANJUT KURANGI BARANG REAGEN JIKA BUKAN ATK
+                        foreach ($permintaanList as $value) {
+                            $barang = Barang::find($value->barang_id);
+                            $barang->stock -= $value->jumlahrealisasi;
+                            $barang->save();
+                        }
                     }
 
                     $permintaan->status_id += 1;
+                    $permintaan->kasubbagumum_id = auth()->user()->id;
                     $permintaan->save();
                     return response(['status' => 1, 'msg' => 'Permintaan berhasil disetujui!']);
                 }
