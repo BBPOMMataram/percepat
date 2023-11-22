@@ -126,20 +126,21 @@
     <div id="footer">
         <table>
             <tr>
-                <td style="padding-left: 5px;">Mengetahui Atasan langsung <br />
-                    <span style="padding-left:30px;">Kabid / Penyelia</span>
+                <td>
+                    <div style="width:180px; text-align:center;">Mengetahui Atasan langsung</div>
+                    <div style="width:180px; text-align:center;">Kabid / Penyelia</div>
                 </td>
-                <td style="text-align: right; padding-right: 5px;">Pemohon / Penerima <br />
+                <td style="text-align: right; padding-right: 35px;">Pemohon / Penerima <br />
                 </td>
             </tr>
             <tr>
                 <td>
                     @if ($datapermintaan->status_id >= 2)
                     @if ($kabid)
-                    <span style="padding-left: -20px;">@if ($kabidSignature) <img src="{{ $kabidSignature }}"
-                            alt="ttd kabid" width="150px">
+                    <span>@if ($kabidSignature) <img src="{{ $kabidSignature }}"
+                            alt="ttd kabid" width="150px" style="padding-left: 15px;">
                         @endif</span><br />
-                    <span style="margin-left: 25px;">{{ $kabid->name }}</span>
+                    <div style="width:180px; text-align:center;">{{ $kabid->name }}</div>
                     @endif
                     @endif
                 </td>
@@ -148,7 +149,7 @@
                     @if ($pemohon)
                     <span>@if($pemohonSignature) <img src={{ $pemohonSignature }} alt="ttd pemohon"
                             width="150px">@endif</span><br />
-                    <span>{{ $pemohon->name }}</span>
+                    <div style="width:180px; margin-left:auto; text-align:center;">{{ $pemohon->name }}</div>
                     @endif
                     @endif
                 </td>
@@ -161,20 +162,21 @@
                     $datapermintaan->tgl_penyerahan->isoFormat('D MMM YYYY') : '' }}</td>
             </tr>
             <tr>
-                <td style="padding-left:50px;">Mengetahui<br />
-                    <span style="margin-left:-20px;">Ka. Sub. Bag. Umum</span>
+                <td>
+                    <div style="width:180px; text-align:center;">Mengetahui</div>
+                    <div style="width:180px; text-align:center;">Ka. Sub. Bag. Umum</div>
                 </td>
-                <td style="text-align: right; padding-right: 5px;">Yang menyerahkan <br />
+                <td style="text-align: right; padding-right: 35px;">Yang menyerahkan <br />
                 </td>
             </tr>
             <tr>
                 <td>
                     @if ($datapermintaan->status_id >= 4)
                     @if ($kasub)
-                    <span style="padding-left: -20px;">@if ($kasubSignature) <img src="{{ $kasubSignature }}"
-                            alt="ttd kasub" width="150px">
+                    <span>@if ($kasubSignature) <img src="{{ $kasubSignature }}"
+                            alt="ttd kasub" width="150px" style="padding-left:15px">
                         @endif</span><br />
-                    <span style="margin-left: 25px;">{{ $kasub->name }}</span>
+                    <div style="width:180px; text-align:center;">{{ $kasub->name }}</div>
                     @endif
                     @endif
                 </td>
@@ -183,7 +185,7 @@
                     @if ($penyerah)
                     <span>@if($penyerahSignature) <img src="{{ $penyerahSignature }}" alt="ttd penyerah"
                             width="150px">@endif</span><br />
-                    <span>{{ $penyerah->name }}</span>
+                    <div style="width:180px; margin-left:auto; text-align:center;">{{ $penyerah->name }}</div>
                     @endif
                     @endif
                 </td>

@@ -21,26 +21,30 @@ class PermintaanListAtkController extends Controller
         $data = Permintaan::with('peminta', 'status', 'bidang', 'bidang.user')
             ->where('jenis', 'ATK');
 
-        if ($limit_query) { //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
-            $data = $data->limit($limit_query)->latest()->get();
-        } else {
-            $data = $data->latest()->paginate($value_per_page_query);
-            //add query string to all response links
-            $data->appends(['value_per_page' => $value_per_page_query]);
-        }
+       //data permintaan ditampilkan sesuai jabatan
+       if (auth()->user()->position === 'penyelia') {
+        $data = $data->whereHas('bidang.user', function ($query) {
+            $query->where('id', auth()->user()->id);
+        });
+    } elseif (auth()->user()->position === 'pemohon') {
+        $data = $data->where('created_by', auth()->user()->id);
+    } elseif (auth()->user()->position === 'penyerah') {
+        $data = $data->where('status_id', '>=', 2);
+    } elseif (auth()->user()->position === 'kasubbagumum') {
+        $data = $data->where('status_id', '>=', 3);
+    }
 
-        //data permintaan ditampilkan sesuai jabatan
-        if (auth()->user()->position === 'penyelia') {
-            $data = $data->where('bidang.user.id', auth()->user()->id);
-        } elseif (auth()->user()->position === 'pemohon') {
-            $data = $data->where('created_by', auth()->user()->id);
-        } elseif (auth()->user()->position === 'penyerah') {
-            $data = $data->where('status_id', '>=', 2);
-        } elseif (auth()->user()->position === 'kasubbagumum') {
-            $data = $data->where('status_id', '>=', 3);
-        }
+    //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
+    if ($limit_query) {
+        $data = $data->limit($limit_query)->latest()->get();
+    } else {
+        $data = $data->latest()->paginate($value_per_page_query);
 
-        return response()->json($data);
+        //add query string to all response links
+        $data->appends(['value_per_page' => $value_per_page_query]);
+    }
+
+        return new ListPermintaanAtkResource($data);
     }
 
     /**
@@ -199,7 +203,7 @@ class PermintaanListAtkController extends Controller
     {
         $datapermintaan = Permintaan::find($id);
         $datapermintaanlist = PermintaanListAtk::where('permintaan_id', $id)->get();
-        $penyerah = ApiUser::where('position', 'penyerah')->first();
+        $penyerah = ApiUser::find($datapermintaan->penyerah_id);
         $kasub = ApiUser::where('position', 'kasubbagumum')->first();
         $pemohon = ApiUser::find($datapermintaan->created_by);
         $kabid = ApiUser::find($datapermintaan->bidang->user->id);

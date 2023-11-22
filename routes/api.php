@@ -62,6 +62,8 @@ Route::get('list-permintaan-atk/{permintaan}', [PermintaanListAtkController::cla
 Route::post('list-permintaan-atk/{permintaan}', [PermintaanListAtkController::class, 'addListPermintaanAtk']);
 Route::delete('list-permintaan-atk/{permintaan}/{atk}', [PermintaanListAtkController::class, 'removeListPermintaanAtk']);
 
+Route::post('acc-permintaan/{permintaan}', [PermintaanReagenController::class, 'accPermintaan']);
+
 // BARANG
 
 // BARANG UNTUK REACT SELECT-OPTION

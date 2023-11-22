@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ListPermintaanReagenResource;
+use App\Http\Resources\PermintaanReagenResource;
 use App\Models\ApiUser;
 use App\Models\Barang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
+use App\Models\PermintaanListAtk;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -20,20 +22,13 @@ class PermintaanReagenController extends Controller
         $limit_query = $request->query('limit');
 
         $data = Permintaan::with('peminta', 'status', 'bidang', 'bidang.user')
-        ->where('jenis', '!=', 'ATK');
-
-        //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
-        if ($limit_query) {
-            $data = $data->limit($limit_query)->latest()->get();
-        } else {
-            $data = $data->latest()->paginate($value_per_page_query);
-            //add query string to all response links
-            $data->appends(['value_per_page' => $value_per_page_query]);
-        }
+            ->where('jenis', '!=', 'ATK');
 
         //data permintaan ditampilkan sesuai jabatan
         if (auth()->user()->position === 'penyelia') {
-            $data = $data->where('bidang.user.id', auth()->user()->id);
+            $data = $data->whereHas('bidang.user', function ($query) {
+                $query->where('id', auth()->user()->id);
+            });
         } elseif (auth()->user()->position === 'pemohon') {
             $data = $data->where('created_by', auth()->user()->id);
         } elseif (auth()->user()->position === 'penyerah') {
@@ -42,7 +37,17 @@ class PermintaanReagenController extends Controller
             $data = $data->where('status_id', '>=', 3);
         }
 
-        return response()->json($data);
+        //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
+        if ($limit_query) {
+            $data = $data->limit($limit_query)->latest()->get();
+        } else {
+            $data = $data->latest()->paginate($value_per_page_query);
+
+            //add query string to all response links
+            $data->appends(['value_per_page' => $value_per_page_query]);
+        }
+
+        return new PermintaanReagenResource($data);
     }
 
     public function store(Request $request)
@@ -187,7 +192,7 @@ class PermintaanReagenController extends Controller
     {
         $datapermintaan = Permintaan::find($id);
         $datapermintaanlist = PermintaanList::where('permintaan_id', $id)->get();
-        $penyerah = ApiUser::where('position', 'penyerah')->first();
+        $penyerah = ApiUser::find($datapermintaan->penyerah_id);
         $kasub = ApiUser::where('position', 'kasubbagumum')->first();
         $pemohon = ApiUser::find($datapermintaan->created_by);
         $kabid = ApiUser::find($datapermintaan->bidang->user->id);
@@ -209,5 +214,65 @@ class PermintaanReagenController extends Controller
             'kabidSignature',
         ));
         return $pdf->download();
+    }
+
+    // UNTUK REAGEN MAUPUN ATK
+    function accPermintaan(Request $request, Permintaan $permintaan)
+    {
+        $userPosition = auth()->user()->position;
+        switch ($userPosition) {
+                // ACC OLEH PENYELIA
+            case 'penyelia':
+                if ($permintaan->status_id === 1) {
+                    $permintaan->status_id += 1;
+                    $permintaan->save();
+                    return response(['status' => 1, 'msg' => 'Permintaan berhasil diverifikasi!']);
+                }
+                // ACC OLEH PETUGAS / PENYERAH
+            case 'penyerah':
+                if ($permintaan->status_id === 2) {
+                    $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
+                    // jika data list reagen tidak ada berarti barang ATK
+                    if(count($permintaanList) === 0){
+                    $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+                    }
+
+                    $realisasi = $request->data;
+                    foreach ($permintaanList as $key => $item) {
+                        $item->jumlahrealisasi = $realisasi[$key];
+                        $item->save();
+                    }
+
+                    $permintaan->status_id += 1;
+                    $permintaan->tgl_penyerahan = now();
+                    $permintaan->penyerah_id = auth()->user()->id;
+                    $permintaan->save();
+                    return response(['status' => 1, 'msg' => 'Permintaan berhasil disetujui!']);
+                }
+                // ACC OLEH KASUBBAGUMUM
+            case 'kasubbagumum':
+                if ($permintaan->status_id === 3) {
+                    $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
+                    foreach ($permintaanList as $value) {
+                        $barang = Barang::find($value->barang_id);
+                        $barang->stock -= $value->jumlahrealisasi;
+                        $barang->save();
+                    }
+
+                    $permintaan->status_id += 1;
+                    $permintaan->save();
+                    return response(['status' => 1, 'msg' => 'Permintaan berhasil disetujui!']);
+                }
+
+            default:
+                return response(['status' => 0, 'msg' => 'Terjadi kesalahan!']);
+        }
+
+        // if ($datapermintaan->save()) {
+        //     $databarang = PermintaanList::with('barang')->where('permintaan_id', $datapermintaan->id)->get();
+        //     $kepada = User::where('position', 'penyerah')->first();
+        //     Mail::to($kepada)->send(new PermohonanEmail($datapermintaan, $databarang, $kepada->name));
+        // }
+
     }
 }
