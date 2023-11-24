@@ -197,10 +197,10 @@ class PermintaanReagenController extends Controller
         $kasub = ApiUser::find($datapermintaan->kasubbagumum_id);
         $pemohon = ApiUser::find($datapermintaan->created_by);
         $kabid = ApiUser::find($datapermintaan->kabid_id);
-        $penyerahSignature = 'storage/' . $penyerah->getRawOriginal('signature');
-        $kasubSignature = 'storage/' . $kasub->getRawOriginal('signature');
+        $penyerahSignature = 'storage/' . $penyerah->getRawOriginal('signature'); // tidak diberi kondisi seperti di kasub atau kabid karena default value nya ada
+        $kasubSignature = 'storage/' . ($kasub ? $kasub->getRawOriginal('signature') : '');
         $pemohonSignature = 'storage/' . $pemohon->getRawOriginal('signature');
-        $kabidSignature = 'storage/' . $kabid->getRawOriginal('signature');
+        $kabidSignature = 'storage/' . ($kabid ? $kabid->getRawOriginal('signature') : '');
 
         $pdf = PDF::loadView('pdf/permintaan', compact(
             'datapermintaan',

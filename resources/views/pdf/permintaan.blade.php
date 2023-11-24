@@ -181,7 +181,8 @@
                     @endif
                 </td>
                 <td style="text-align: right; margin-right: 20px">
-                    @if ($datapermintaan->status_id >= 3)
+                    {{-- MENAMPILKAN TTD PENYERAH SAAT SUDAH DISETUJUI OLEH PENYERAH, JADI TIDAK APA2 DEFAULT VALUE PENYERAH_ID PADA TABLE PERMINTAAN DIISI DULUAN BEGITU JUGA DENGAN YG LAINNYA --}}
+                    @if ($datapermintaan->status_id >= 3) 
                     @if ($penyerah)
                     <span>@if($penyerahSignature) <img src="{{ $penyerahSignature }}" alt="ttd penyerah"
                             width="150px">@endif</span><br />

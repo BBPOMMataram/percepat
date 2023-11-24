@@ -102,4 +102,10 @@ class ApiBidangController extends Controller
         $bidang->delete();
         return response()->json(['msg' => 'Data berhasil dihapus!']);
     }
+
+    function getAll() {
+        $data = Bidang::all();
+        
+        return BidangResource::collection($data);
+    }
 }
