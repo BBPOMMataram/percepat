@@ -39,6 +39,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // PERMINTAAN
     Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
     Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+    
     // DOWNLOAD PERMINTAAN
     Route::get('download-permintaan-reagen/{id_permintaan}', [PermintaanReagenController::class, 'downloadPermintaanReagen']);
     Route::get('download-permintaan-atk/{id_permintaan}', [PermintaanListAtkController::class, 'downloadPermintaanAtk']);
@@ -60,7 +61,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('barang-reagen', ApiReagenController::class);
     Route::apiResource('barang-atk', ApiAtkController::class);
 
+    // LAPORAN PERMINTAAN REAGEN
     Route::get('laporan-permintaan', [LaporanPermintaanController::class, 'index']);
+    // LAPORAN PERMINTAAN ATK
+    Route::get('laporan-permintaan-atk', [LaporanPermintaanController::class, 'permintaanAtk']);
 });
 
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
