@@ -65,6 +65,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('laporan-permintaan', [LaporanPermintaanController::class, 'index']);
     // LAPORAN PERMINTAAN ATK
     Route::get('laporan-permintaan-atk', [LaporanPermintaanController::class, 'permintaanAtk']);
+
+    Route::patch('profile/{user}', [ApiUserController::class, 'updateProfile']);
 });
 
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE

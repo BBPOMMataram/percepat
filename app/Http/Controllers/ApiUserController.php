@@ -10,14 +10,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class ApiUserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index(Request $request)
     {
         $value_per_page_query = $request->query('value_per_page');
@@ -38,12 +34,6 @@ class ApiUserController extends Controller
         return UserResource::collection($data);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreApiUserRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(StoreApiUserRequest $request)
     {
         $validated = $request->validated();
@@ -145,5 +135,54 @@ class ApiUserController extends Controller
         $user->save();
 
         return response()->json(['msg' => 'Password berhasil direset!']);
+    }
+
+    function updateProfile(Request $request, ApiUser $user)
+    {
+        $validated = $this->validate($request, [
+            'name' => 'nullable|max:255',
+            'email' => ['nullable','email', 'max:255', Rule::unique(ApiUser::class)->ignore($user)],
+            'signature' => 'nullable',
+            'photo' => 'nullable',
+        ]);
+
+        $user->name = $validated['name'];
+        $user->email = $validated['email'];
+        
+        // UBAH SIGNATURE
+        if (isset($validated['signature'])) {
+            // HAPUS SIGNATURE LAMA
+            $signatureOri = $user->getRawOriginal('signature');
+            Storage::delete($signatureOri);
+
+            // SIGNATURE BARU
+            $signatureData = $validated['signature'];
+
+            $filename = 'signature-' . time() . '.png';
+            $path = 'signatures/' . $filename;
+
+            Storage::put($path, file_get_contents($signatureData));
+
+            $user->signature = $path;
+        }
+
+        // MENYIMPAN FOTO
+        if (isset($validated['photo'])) {
+            // HAPUS FOTO LAMA
+            Storage::delete($user->photo);
+            
+            // FOTO BARU
+            $photoData = $validated['photo'];
+
+            $filenamePhoto = 'photo-' . time() . '.png';
+            $photoPath = 'profile_photos/' . $filenamePhoto;
+            
+            Storage::put($photoPath, file_get_contents($photoData));
+
+            $user->photo = $photoPath;
+        }
+
+        $user->save();
+        return response()->json(['msg' => 'Data berhasil tersimpan!']);
     }
 }
