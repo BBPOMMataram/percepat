@@ -35,112 +35,112 @@ use SebastianBergmann\Type\ObjectType;
 |
 */
 
-Route::get('/send-msg', function () {
-    TestEvent::dispatch(['text' => 'hii id mu adalah ', 'user_id' => 2]);
+// Route::get('/send-msg', function () {
+//     TestEvent::dispatch(['text' => 'hii id mu adalah ', 'user_id' => 2]);
 
-    // event(new TestEvent); //alternative
-    return 'event sent';
-});
+//     // event(new TestEvent); //alternative
+//     return 'event sent';
+// });
 
-Route::get('/storagelink', function () {
-    return Artisan::call('storage:link');
-});
+// Route::get('/storagelink', function () {
+//     return Artisan::call('storage:link');
+// });
 
-Route::get('/', function () {
-    if (Auth::check()) {
-        return redirect()->route('dashboard');
-    }
-    return view('barang.tanpalogin');
-})->name('home');
+// Route::get('/', function () {
+//     if (Auth::check()) {
+//         return redirect()->route('dashboard');
+//     }
+//     return view('barang.tanpalogin');
+// })->name('home');
 
-Route::get('dtbarangtanpalogin', [BarangController::class, 'dt_barang_tanpalogin'])->name('dt_barang_tanpalogin');
+// Route::get('dtbarangtanpalogin', [BarangController::class, 'dt_barang_tanpalogin'])->name('dt_barang_tanpalogin');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('home', function () {
-        return 1;
-    });
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('home', function () {
+//         return 1;
+//     });
 
-    Route::get('/dashboard', function () {
-        $data = (object)[];
+//     Route::get('/dashboard', function () {
+//         $data = (object)[];
 
-        $jmlpembelian = Pembelian::count();
-        $jmlpermintaan = Permintaan::count();
-        $jmlbarang = Barang::count();
-        $jmluser = User::count() - 1;
+//         $jmlpembelian = Pembelian::count();
+//         $jmlpermintaan = Permintaan::count();
+//         $jmlbarang = Barang::count();
+//         $jmluser = User::count() - 1;
 
-        $data->jmlpembelian = $jmlpembelian;
-        $data->jmlpermintaan = $jmlpermintaan;
-        $data->jmlbarang = $jmlbarang;
-        $data->jmluser = $jmluser;
+//         $data->jmlpembelian = $jmlpembelian;
+//         $data->jmlpermintaan = $jmlpermintaan;
+//         $data->jmlbarang = $jmlbarang;
+//         $data->jmluser = $jmluser;
 
-        $recentpermintaan = Permintaan::with('status', 'bidang.user')->orderBy('created_at', 'desc')->limit(10)->get();
+//         $recentpermintaan = Permintaan::with('status', 'bidang.user')->orderBy('created_at', 'desc')->limit(10)->get();
 
-        return view('dashboard', compact('data', 'recentpermintaan'));
-    })->name('dashboard');
+//         return view('dashboard', compact('data', 'recentpermintaan'));
+//     })->name('dashboard');
 
-    Route::resource('users', UserController::class);
-    Route::get('dtusers', [UserController::class, 'dt_users'])->name('dt_users');
+//     Route::resource('users', UserController::class);
+//     Route::get('dtusers', [UserController::class, 'dt_users'])->name('dt_users');
 
-    Route::resource('profile', ProfileController::class);
+//     Route::resource('profile', ProfileController::class);
 
-    Route::prefix('barang')->group(function () {
-        Route::resource('reagen', BarangController::class);
-        Route::get('dtbarang', [BarangController::class, 'dt_barang'])->name('dt_barang');
+//     Route::prefix('barang')->group(function () {
+//         Route::resource('reagen', BarangController::class);
+//         Route::get('dtbarang', [BarangController::class, 'dt_barang'])->name('dt_barang');
 
-        Route::resource('atk', AtkController::class);
-        Route::get('dtbarang-atk', [AtkController::class, 'dt_barang_atk'])->name('dt_barang_atk');
-    });
+//         Route::resource('atk', AtkController::class);
+//         Route::get('dtbarang-atk', [AtkController::class, 'dt_barang_atk'])->name('dt_barang_atk');
+//     });
 
-    Route::resource('pembelian', PembelianController::class);
-    Route::get('dtpembelian', [PembelianController::class, 'dt_pembelian'])->name('dt_pembelian');
+//     Route::resource('pembelian', PembelianController::class);
+//     Route::get('dtpembelian', [PembelianController::class, 'dt_pembelian'])->name('dt_pembelian');
 
-    Route::resource('permintaan', PermintaanController::class);
-    // HPUS INI NTAR
-    Route::post('testing', function(Request $request){
-        return $request->all();
-    })->name('testing');
-    // HPUS INI NTAR
-    Route::get('dtpermintaan', [PermintaanController::class, 'dt_permintaan'])->name('dt_permintaan');
-    Route::get('print-permintaan/{idpermintaan}', [PermintaanController::class, 'print_permintaan'])->name('print_permintaan');
-    Route::patch('changetglpermintaan', [PermintaanController::class, 'changetglpermintaan'])->name('changetglpermintaan');
+//     Route::resource('permintaan', PermintaanController::class);
+//     // HPUS INI NTAR
+//     Route::post('testing', function(Request $request){
+//         return $request->all();
+//     })->name('testing');
+//     // HPUS INI NTAR
+//     Route::get('dtpermintaan', [PermintaanController::class, 'dt_permintaan'])->name('dt_permintaan');
+//     Route::get('print-permintaan/{idpermintaan}', [PermintaanController::class, 'print_permintaan'])->name('print_permintaan');
+//     Route::patch('changetglpermintaan', [PermintaanController::class, 'changetglpermintaan'])->name('changetglpermintaan');
 
-    Route::patch('kabidaccpermintaan/{idpermintaan}', [PermintaanController::class, 'kabid_accpermintaan'])->name('kabid_accpermintaan');
-    Route::patch('penyerahaccpermintaan/{idpermintaan}', [PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
-    Route::patch('kasubbagumumaccpermintaan/{idpermintaan}', [PermintaanController::class, 'kasubbagumum_accpermintaan'])->name('kasubbagumum_accpermintaan');
+//     Route::patch('kabidaccpermintaan/{idpermintaan}', [PermintaanController::class, 'kabid_accpermintaan'])->name('kabid_accpermintaan');
+//     Route::patch('penyerahaccpermintaan/{idpermintaan}', [PermintaanController::class, 'penyerah_accpermintaan'])->name('penyerah_accpermintaan');
+//     Route::patch('kasubbagumumaccpermintaan/{idpermintaan}', [PermintaanController::class, 'kasubbagumum_accpermintaan'])->name('kasubbagumum_accpermintaan');
 
-    Route::get('permintaanlistdone/{idpermintaan}', [PermintaanController::class, 'permintaanlist_done'])->name('permintaanlist.done');
-    Route::get('permintaanlist/{idpermintaan}', [PermintaanController::class, 'permintaanlist_index'])->name('permintaanlist.index');
-    Route::get('permintaanlist/create/{idpermintaan}', [PermintaanController::class, 'permintaanlist_create'])->name('permintaanlist.create');
-    Route::put('permintaanlist/{idpermintaan}/{idbarang}', [PermintaanController::class, 'permintaanlist_update'])->name('permintaanlist.update');
-    Route::get('permintaanlist/{idpermintaan}/{idbarang}/edit', [PermintaanController::class, 'permintaanlist_edit'])->name('permintaanlist.edit');
-    Route::post('permintaanlist/{idpermintaan}', [PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
-    Route::delete('permintaanlist/{idpermintaan}/{idbarang}', [PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
-    Route::get('dt_permintaanlist/{idpermintaan}', [PermintaanController::class, 'dt_permintaanlist'])->name('dt_permintaanlist');
-    Route::get('print-laporan/{id?}', [PermintaanController::class, 'print_laporan'])->name('print_laporan');
+//     Route::get('permintaanlistdone/{idpermintaan}', [PermintaanController::class, 'permintaanlist_done'])->name('permintaanlist.done');
+//     Route::get('permintaanlist/{idpermintaan}', [PermintaanController::class, 'permintaanlist_index'])->name('permintaanlist.index');
+//     Route::get('permintaanlist/create/{idpermintaan}', [PermintaanController::class, 'permintaanlist_create'])->name('permintaanlist.create');
+//     Route::put('permintaanlist/{idpermintaan}/{idbarang}', [PermintaanController::class, 'permintaanlist_update'])->name('permintaanlist.update');
+//     Route::get('permintaanlist/{idpermintaan}/{idbarang}/edit', [PermintaanController::class, 'permintaanlist_edit'])->name('permintaanlist.edit');
+//     Route::post('permintaanlist/{idpermintaan}', [PermintaanController::class, 'permintaanlist_store'])->name('permintaanlist.store');
+//     Route::delete('permintaanlist/{idpermintaan}/{idbarang}', [PermintaanController::class, 'permintaanlist_destroy'])->name('permintaanlist.destroy');
+//     Route::get('dt_permintaanlist/{idpermintaan}', [PermintaanController::class, 'dt_permintaanlist'])->name('dt_permintaanlist');
+//     Route::get('print-laporan/{id?}', [PermintaanController::class, 'print_laporan'])->name('print_laporan');
 
-    Route::get('laporan', [PermintaanController::class, 'laporan'])->name('laporan');
-    Route::get('dt_laporan/{id?}', [PermintaanController::class, 'dt_laporan'])->name('dt_laporan');
+//     Route::get('laporan', [PermintaanController::class, 'laporan'])->name('laporan');
+//     Route::get('dt_laporan/{id?}', [PermintaanController::class, 'dt_laporan'])->name('dt_laporan');
 
-    Route::resource('bidang', BidangController::class);
-    Route::get('dtbidang', [BidangController::class, 'dt_bidang'])->name('dt_bidang');
+//     Route::resource('bidang', BidangController::class);
+//     Route::get('dtbidang', [BidangController::class, 'dt_bidang'])->name('dt_bidang');
 
-    // tambahan data barang
-    // Route::resource('baranglab', BarangLabController::class);
-    // Route::get('dtbaranglab', [BarangLabController::class, 'dt_baranglab'])->name('dt_baranglab');
-});
+//     // tambahan data barang
+//     // Route::resource('baranglab', BarangLabController::class);
+//     // Route::get('dtbaranglab', [BarangLabController::class, 'dt_baranglab'])->name('dt_baranglab');
+// });
 
-Route::view('login-admin', 'login')->name('login-admin');
-Route::post('login-admin', [LoginController::class, 'authenticate']);
+// Route::view('login-admin', 'login')->name('login-admin');
+// Route::post('login-admin', [LoginController::class, 'authenticate']);
 
-Route::get('logout-admin', function () {
-    Auth::logout();
-    return redirect()->route('login-admin');
-})->name('logout-admin');
+// Route::get('logout-admin', function () {
+//     Auth::logout();
+//     return redirect()->route('login-admin');
+// })->name('logout-admin');
 
-Route::get('testing', function (Request $request) {
-    Cookie::make('test', 'arfan', 100);
+// Route::get('testing', function (Request $request) {
+//     Cookie::make('test', 'arfan', 100);
 
-    return 'test: ' . $request->cookie('test');
-});
+//     return 'test: ' . $request->cookie('test');
+// });
 
 require __DIR__ . '/auth.php';
