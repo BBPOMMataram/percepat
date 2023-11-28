@@ -66,6 +66,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // LAPORAN PERMINTAAN ATK
     Route::get('laporan-permintaan-atk', [LaporanPermintaanController::class, 'permintaanAtk']);
 
+    Route::patch('profile/update-password', [ApiUserController::class, 'updatePassword']);
     Route::patch('profile/{user}', [ApiUserController::class, 'updateProfile']);
 });
 

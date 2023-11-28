@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules;
 
 class ApiUserController extends Controller
 {
@@ -81,7 +82,7 @@ class ApiUserController extends Controller
         $user->email = $validated['email'];
         $user->bidang_id = $validated['bidang_id'];
         $user->position = $validated['position'];
-        
+
         // UBAH SIGNATURE
         if (isset($validated['signature'])) {
             // HAPUS SIGNATURE LAMA
@@ -103,13 +104,13 @@ class ApiUserController extends Controller
         if (isset($validated['photo'])) {
             // HAPUS FOTO LAMA
             Storage::delete($user->photo);
-            
+
             // FOTO BARU
             $photoData = $validated['photo'];
 
             $filenamePhoto = 'photo-' . time() . '.png';
             $photoPath = 'profile_photos/' . $filenamePhoto;
-            
+
             Storage::put($photoPath, file_get_contents($photoData));
 
             $user->photo = $photoPath;
@@ -130,25 +131,44 @@ class ApiUserController extends Controller
         return response()->json(['msg' => 'Data berhasil dihapus!', 'isImagesRemoved' => $isImagesRemoved]);
     }
 
-    function resetPassword(ApiUser $user) {
+    function resetPassword(ApiUser $user)
+    {
         $user->password = Hash::make('password');
         $user->save();
 
         return response()->json(['msg' => 'Password berhasil direset!']);
     }
 
+    function updatePassword(Request $request)
+    {
+        $user = ApiUser::find(auth()->user()->id);
+
+        $this->validate($request, [
+            'currentPassword' => ['required', 'current_password', Rules\Password::defaults()],
+            'newPassword' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'currentPassword.current_password' => 'Password salah!',
+            'newPassword.confirmed' => 'Konfirmasi password baru tidak cocok!'
+        ]);
+
+        $user->password = Hash::make($request->newPassword);
+        $user->save();
+
+        return response()->json(['msg' => 'Password berhasil diubah!']);
+    }
+
     function updateProfile(Request $request, ApiUser $user)
     {
         $validated = $this->validate($request, [
             'name' => 'nullable|max:255',
-            'email' => ['nullable','email', 'max:255', Rule::unique(ApiUser::class)->ignore($user)],
+            'email' => ['nullable', 'email', 'max:255', Rule::unique(ApiUser::class)->ignore($user)],
             'signature' => 'nullable',
             'photo' => 'nullable',
         ]);
 
         $user->name = $validated['name'];
         $user->email = $validated['email'];
-        
+
         // UBAH SIGNATURE
         if (isset($validated['signature'])) {
             // HAPUS SIGNATURE LAMA
@@ -170,13 +190,13 @@ class ApiUserController extends Controller
         if (isset($validated['photo'])) {
             // HAPUS FOTO LAMA
             Storage::delete($user->photo);
-            
+
             // FOTO BARU
             $photoData = $validated['photo'];
 
             $filenamePhoto = 'photo-' . time() . '.png';
             $photoPath = 'profile_photos/' . $filenamePhoto;
-            
+
             Storage::put($photoPath, file_get_contents($photoData));
 
             $user->photo = $photoPath;
