@@ -22,10 +22,10 @@ class ApiUser extends Model
     }
 
     function getPhotoAttribute($value) {
-        return Storage::url($value);
+        return $value ? Storage::url($value) : null;
     }
 
     function getSignatureAttribute($value) {
-        return Storage::url($value);
+        return $value ? Storage::url($value) : null;
     }
 }

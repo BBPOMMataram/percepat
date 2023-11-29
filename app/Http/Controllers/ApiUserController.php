@@ -55,17 +55,18 @@ class ApiUserController extends Controller
         $data->signature = $path;
 
         // MENYIMPAN FOTO
+        if (isset($validated['photo'])) {
         $photoData = $validated['photo'];
 
-        $filenamePhoto = 'photo-' . time() . '.png';
-        $photoPath = 'profile_photos/' . $filenamePhoto;
-        Storage::put($photoPath, file_get_contents($photoData));
+            $filenamePhoto = 'photo-' . time() . '.png';
+            $photoPath = 'profile_photos/' . $filenamePhoto;
+            Storage::put($photoPath, file_get_contents($photoData));
 
-        $data->photo = $photoPath;
+            $data->photo = $photoPath;
+        }
+
         $data->password = Hash::make('password');
-
         $data->save();
-
         return response()->json(['msg' => 'Data berhasil tersimpan!']);
     }
 
