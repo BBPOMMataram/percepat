@@ -26,15 +26,15 @@ class PermintaanReagenController extends Controller
             ->where('jenis', '!=', 'ATK');
 
         //data permintaan ditampilkan sesuai jabatan
-        if (auth()->user()->position === 'penyelia') {
+        if (auth()->user()->position == 'penyelia') {
             $data = $data->whereHas('bidang.user', function ($query) {
                 $query->where('id', auth()->user()->id);
             });
-        } elseif (auth()->user()->position === 'pemohon') {
+        } elseif (auth()->user()->position == 'pemohon') {
             $data = $data->where('created_by', auth()->user()->id);
-        } elseif (auth()->user()->position === 'penyerah') {
+        } elseif (auth()->user()->position == 'penyerah') {
             $data = $data->where('status_id', '>=', 2);
-        } elseif (auth()->user()->position === 'kasubbagumum') {
+        } elseif (auth()->user()->position == 'kasubbagumum') {
             $data = $data->where('status_id', '>=', 3);
         }
 
@@ -201,6 +201,7 @@ class PermintaanReagenController extends Controller
         $kasubSignature = 'storage/' . ($kasub ? $kasub->getRawOriginal('signature') : '');
         $pemohonSignature = 'storage/' . $pemohon->getRawOriginal('signature');
         $kabidSignature = 'storage/' . ($kabid ? $kabid->getRawOriginal('signature') : '');
+        $logobpom = 'storage/bpomri.jpg';
 
         $pdf = PDF::loadView('pdf/permintaan', compact(
             'datapermintaan',
@@ -213,6 +214,7 @@ class PermintaanReagenController extends Controller
             'kasubSignature',
             'pemohonSignature',
             'kabidSignature',
+            'logobpom',
         ));
         return $pdf->download();
     }
@@ -224,7 +226,7 @@ class PermintaanReagenController extends Controller
         switch ($userPosition) {
                 // ACC OLEH PENYELIA
             case 'penyelia':
-                if ($permintaan->status_id === 1) {
+                if ($permintaan->status_id == 1) {
                     $permintaan->status_id += 1;
                     $permintaan->kabid_id = auth()->user()->id;
                     $permintaan->save();
@@ -232,10 +234,10 @@ class PermintaanReagenController extends Controller
                 }
                 // ACC OLEH PETUGAS / PENYERAH
             case 'penyerah':
-                if ($permintaan->status_id === 2) {
+                if ($permintaan->status_id == 2) {
                     $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
                     // jika data list reagen tidak ada berarti barang ATK
-                    if (count($permintaanList) === 0) {
+                    if (count($permintaanList) == 0) {
                         $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
                     }
 
@@ -253,10 +255,10 @@ class PermintaanReagenController extends Controller
                 }
                 // ACC OLEH KASUBBAGUMUM
             case 'kasubbagumum':
-                if ($permintaan->status_id === 3) {
+                if ($permintaan->status_id == 3) {
                     $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
                     // jika data list reagen tidak ada berarti barang ATK
-                    if (count($permintaanList) === 0) {
+                    if (count($permintaanList) == 0) {
                         $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
 
                         foreach ($permintaanList as $value) {

@@ -6,6 +6,7 @@ use App\Http\Resources\LaporanPermintaanAtkResource;
 use App\Http\Resources\LaporanPermintaanReagenResource;
 use App\Models\PermintaanList;
 use App\Models\PermintaanListAtk;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class LaporanPermintaanController extends Controller
@@ -86,5 +87,21 @@ class LaporanPermintaanController extends Controller
         }
 
         return new LaporanPermintaanAtkResource($data);
+    }
+
+    function downloadLaporanPermintaanReagen()
+    {
+        $datapermintaanlist = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan')->get();
+        // if ($id) {
+        //     $datapermintaanlist = $datapermintaanlist->where('barang_id', $id);
+        // }
+        // $kabid = User::find(auth()->user()->id);
+        $pdf = PDF::loadView(
+            'pdf/laporan',
+            compact(
+                'datapermintaanlist',
+            )
+        );
+        return $pdf->download();
     }
 }

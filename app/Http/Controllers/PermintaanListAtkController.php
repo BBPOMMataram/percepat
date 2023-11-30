@@ -21,28 +21,28 @@ class PermintaanListAtkController extends Controller
         $data = Permintaan::with('peminta', 'status', 'bidang', 'bidang.user')
             ->where('jenis', 'ATK');
 
-       //data permintaan ditampilkan sesuai jabatan
-       if (auth()->user()->position === 'penyelia') {
-        $data = $data->whereHas('bidang.user', function ($query) {
-            $query->where('id', auth()->user()->id);
-        });
-    } elseif (auth()->user()->position === 'pemohon') {
-        $data = $data->where('created_by', auth()->user()->id);
-    } elseif (auth()->user()->position === 'penyerah') {
-        $data = $data->where('status_id', '>=', 2);
-    } elseif (auth()->user()->position === 'kasubbagumum') {
-        $data = $data->where('status_id', '>=', 3);
-    }
+        //data permintaan ditampilkan sesuai jabatan
+        if (auth()->user()->position === 'penyelia') {
+            $data = $data->whereHas('bidang.user', function ($query) {
+                $query->where('id', auth()->user()->id);
+            });
+        } elseif (auth()->user()->position === 'pemohon') {
+            $data = $data->where('created_by', auth()->user()->id);
+        } elseif (auth()->user()->position === 'penyerah') {
+            $data = $data->where('status_id', '>=', 2);
+        } elseif (auth()->user()->position === 'kasubbagumum') {
+            $data = $data->where('status_id', '>=', 3);
+        }
 
-    //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
-    if ($limit_query) {
-        $data = $data->limit($limit_query)->latest()->get();
-    } else {
-        $data = $data->latest()->paginate($value_per_page_query);
+        //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
+        if ($limit_query) {
+            $data = $data->limit($limit_query)->latest()->get();
+        } else {
+            $data = $data->latest()->paginate($value_per_page_query);
 
-        //add query string to all response links
-        $data->appends(['value_per_page' => $value_per_page_query]);
-    }
+            //add query string to all response links
+            $data->appends(['value_per_page' => $value_per_page_query]);
+        }
 
         return new ListPermintaanAtkResource($data);
     }
@@ -211,6 +211,7 @@ class PermintaanListAtkController extends Controller
         $kasubSignature = 'storage/' . $kasub->getRawOriginal('signature');
         $pemohonSignature = 'storage/' . $pemohon->getRawOriginal('signature');
         $kabidSignature = 'storage/' . $kabid->getRawOriginal('signature');
+        $logobpom = 'storage/bpomri.jpg';
 
         $pdf = PDF::loadView('pdf/permintaan-atk', compact(
             'datapermintaan',
@@ -223,6 +224,7 @@ class PermintaanListAtkController extends Controller
             'kasubSignature',
             'pemohonSignature',
             'kabidSignature',
+            'logobpom',
         ));
 
         return $pdf->download();

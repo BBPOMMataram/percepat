@@ -65,7 +65,7 @@
         <table>
             <tr>
                 <td rowspan="4" id="logo">
-                    <img src="storage/bpomri.jpg" alt="Logo" width="60px">
+                    <img src={{$logobpom}} alt="Logo" width="60px">
                 </td>
                 <td>Nomor Formulir</td>
                 <td>POM-12.SOP.01.IK.02B(108A)/F.02</td>

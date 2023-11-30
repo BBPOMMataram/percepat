@@ -61,10 +61,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('barang-reagen', ApiReagenController::class);
     Route::apiResource('barang-atk', ApiAtkController::class);
 
-    // LAPORAN PERMINTAAN REAGEN
+    // LAPORAN PERMINTAAN
     Route::get('laporan-permintaan', [LaporanPermintaanController::class, 'index']);
-    // LAPORAN PERMINTAAN ATK
     Route::get('laporan-permintaan-atk', [LaporanPermintaanController::class, 'permintaanAtk']);
+
+    // DOWNLOAD LAPORAN
+    Route::get('download-laporan-permintaan', [LaporanPermintaanController::class, 'downloadLaporanPermintaanReagen']);
+    Route::get('download-laporan-permintaan-atk', [LaporanPermintaanController::class, 'downloadLaporanPermintaanReagen']);
 
     Route::patch('profile/update-password', [ApiUserController::class, 'updatePassword']);
     Route::patch('profile/{user}', [ApiUserController::class, 'updateProfile']);
