@@ -201,7 +201,7 @@ class PermintaanReagenController extends Controller
         $kasubSignature = 'storage/' . ($kasub ? $kasub->getRawOriginal('signature') : '');
         $pemohonSignature = 'storage/' . $pemohon->getRawOriginal('signature');
         $kabidSignature = 'storage/' . ($kabid ? $kabid->getRawOriginal('signature') : '');
-        $logobpom = 'storage/bpomri.png';
+        $logobpom = 'storage/bpomri.jpg';
 
         $pdf = PDF::loadView('pdf/permintaan', compact(
             'datapermintaan',
