@@ -59,7 +59,7 @@
               <option value="penyerah" @isset($user) @if($user->position === 'penyerah') selected @endif
                 @endisset>Petugas Gudang</option>
               <option value="kasubbagumum" @isset($user) @if($user->position === 'kasubbagumum') selected @endif
-                @endisset>Ka. Sub. Bag. Umum</option>
+                @endisset>Ka. Bag. Tata Usaha</option>
             </select>
           </div>
           <div class="form-group">

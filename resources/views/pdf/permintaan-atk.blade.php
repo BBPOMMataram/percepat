@@ -164,7 +164,7 @@
             <tr>
                 <td>
                     <div style="width:180px; text-align:center;">Mengetahui</div>
-                    <div style="width:180px; text-align:center;">Ka. Sub. Bag. Umum</div>
+                    <div style="width:180px; text-align:center;">Ka. Bag. Tata Usaha</div>
                 </td>
                 <td style="text-align: right; padding-right: 35px;">Yang menyerahkan <br />
                 </td>
