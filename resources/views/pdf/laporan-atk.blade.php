@@ -76,14 +76,13 @@
 
     </div>
     <div id="content">
-        <h3 id="title">LAPORAN PERMINTAAN BARANG REAGEN<br>BALAI BESAR POM DI MATARAM</h3>
+        <h3 id="title">LAPORAN PERMINTAAN BARANG ATK<br>BALAI BESAR POM DI MATARAM</h3>
         <table>
             <thead>
                 <tr style="text-align: center;">
                     <td rowspan="2">No</td>
                     <td rowspan="2">Nama Barang</td>
                     <td rowspan="2">Satuan</td>
-                    <td rowspan="2">Expired</td>
                     <td colspan="2">Jumlah</td>
                     <td rowspan="2">Peminta</td>
                     <td rowspan="2">Bidang</td>
@@ -99,16 +98,8 @@
                 @foreach ($datapermintaanlist as $item)
                 <tr>
                     <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->barang->name ?? '-'}}</td>
-                    <td>{{ $item->barang->satuan ?? '-'}}</td>
-
-                    <td style="text-align: center;">
-                        @isset ($item->barang->expired)
-                        {{ $item->barang->expired->isoFormat('D/MM/YY') }}
-                        @else
-                        -
-                        @endisset
-                    </td>
+                    <td>{{ $item->atk->name ?? '-'}}</td>
+                    <td>{{ $item->atk->satuan ?? '-'}}</td>
                     <td style="text-align: center;">{{ $item->jumlahpermintaan }}</td>
                     <td style="text-align: center;">{{ $item->jumlahrealisasi }}</td>
                     <td>{{ $item->permintaan->peminta->name ?? '-' }}</td>

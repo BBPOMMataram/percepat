@@ -67,7 +67,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // DOWNLOAD LAPORAN
     Route::get('download-laporan-permintaan', [LaporanPermintaanController::class, 'downloadLaporanPermintaanReagen']);
-    Route::get('download-laporan-permintaan-atk', [LaporanPermintaanController::class, 'downloadLaporanPermintaanReagen']);
+    Route::get('download-laporan-permintaan-atk', [LaporanPermintaanController::class, 'downloadLaporanPermintaanAtk']);
 
     Route::patch('profile/update-password', [ApiUserController::class, 'updatePassword']);
     Route::patch('profile/{user}', [ApiUserController::class, 'updateProfile']);
