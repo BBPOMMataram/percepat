@@ -11,10 +11,12 @@ use Illuminate\Http\Request;
 
 class LaporanPermintaanController extends Controller
 {
+    // data permintaan reagen
     public function index(Request $request)
     {
         $value_per_page_query = $request->query('value_per_page');
         $limit_query = $request->query('limit');
+        $name_query = $request->query('name');
 
         // PERMINTAAN LIST REAGEN, UNTUK ATK NAMA MODELNYA PermintaanListAtk
         $data = PermintaanList::with('barang', 'permintaan');
@@ -37,6 +39,12 @@ class LaporanPermintaanController extends Controller
             });
         }
 
+        if ($name_query) {
+            $data = $data->whereHas('barang', function ($query) use ($name_query) {
+                $query->where('name', 'like', '%' . $name_query . '%');
+            });
+        }
+
         //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
         if ($limit_query) {
             $data = $data->limit($limit_query)->latest()->get();
@@ -50,10 +58,12 @@ class LaporanPermintaanController extends Controller
         return new LaporanPermintaanReagenResource($data);
     }
 
+    // data permintaan atk
     public function permintaanAtk(Request $request)
     {
         $value_per_page_query = $request->query('value_per_page');
         $limit_query = $request->query('limit');
+        $name_query = $request->query('name');
 
         // PERMINTAAN LIST UNTUK ATK NAMA MODELNYA PermintaanListAtk
         $data = PermintaanListAtk::with('atk', 'permintaan');
@@ -73,6 +83,12 @@ class LaporanPermintaanController extends Controller
         if ($bidang !== 'undefined') {
             $data = $data->whereHas('permintaan', function ($query) use ($bidang) {
                 $query->where('bidang_id', $bidang);
+            });
+        }
+
+        if ($name_query) {
+            $data = $data->whereHas('atk', function ($query) use ($name_query) {
+                $query->where('name', 'like', '%' . $name_query . '%');
             });
         }
 
