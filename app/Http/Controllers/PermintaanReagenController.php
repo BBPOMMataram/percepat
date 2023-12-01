@@ -139,8 +139,11 @@ class PermintaanReagenController extends Controller
 
     public function destroy(Permintaan $permintaan_reagen)
     {
-        $permintaan_reagen->delete();
-        return response()->json(['msg' => 'Data berhasil dihapus!']);
+        DB::transaction(function () use ($permintaan_reagen) {
+            PermintaanList::where('permintaan_id', $permintaan_reagen->id)->delete();
+            $permintaan_reagen->delete();
+            return response()->json(['msg' => 'Data berhasil dihapus!']);
+        });
     }
 
     function listPermintaanReagen(Permintaan $permintaan)

@@ -149,6 +149,11 @@ class PermintaanListAtkController extends Controller
      */
     public function destroy(Permintaan $permintaan_atk)
     {
+        DB::transaction(function () use ($permintaan_atk) {
+            PermintaanListAtk::where('permintaan_id', $permintaan_atk->id)->delete();
+            $permintaan_atk->delete();
+            return response()->json(['msg' => 'Data berhasil dihapus!']);
+        });
         $permintaan_atk->delete();
         return response()->json(['msg' => 'Data berhasil dihapus!']);
     }
