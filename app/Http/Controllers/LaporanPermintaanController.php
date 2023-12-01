@@ -107,9 +107,9 @@ class LaporanPermintaanController extends Controller
 
     function downloadLaporanPermintaanReagen(Request $request)
     {
-
         $value_per_page_query = $request->query('value_per_page');
         $limit_query = $request->query('limit');
+        $name_query = $request->query('name');
 
         // PERMINTAAN LIST REAGEN, UNTUK ATK NAMA MODELNYA PermintaanListAtk
         $datapermintaanlist = PermintaanList::with('barang', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan');
@@ -132,6 +132,12 @@ class LaporanPermintaanController extends Controller
             });
         }
 
+        if ($name_query) {
+            $datapermintaanlist = $datapermintaanlist->whereHas('barang', function ($query) use ($name_query) {
+                $query->where('name', 'like', '%' . $name_query . '%');
+            });
+        }
+
         //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT (IF EXISTS)
         if ($limit_query) {
             $datapermintaanlist = $datapermintaanlist->limit($limit_query)->latest()->get();
@@ -149,9 +155,9 @@ class LaporanPermintaanController extends Controller
 
     function downloadLaporanPermintaanAtk(Request $request)
     {
-
         $value_per_page_query = $request->query('value_per_page');
         $limit_query = $request->query('limit');
+        $name_query = $request->query('name');
 
         // PERMINTAAN LIST REAGEN, UNTUK ATK NAMA MODELNYA PermintaanListAtk
         $datapermintaanlist = PermintaanListAtk::with('atk', 'permintaan.peminta', 'permintaan.bidang', 'permintaan.status', 'permintaan');
@@ -171,6 +177,12 @@ class LaporanPermintaanController extends Controller
         if ($bidang !== 'undefined') {
             $datapermintaanlist = $datapermintaanlist->whereHas('permintaan', function ($query) use ($bidang) {
                 $query->where('bidang_id', $bidang);
+            });
+        }
+
+        if ($name_query) {
+            $datapermintaanlist = $datapermintaanlist->whereHas('atk', function ($query) use ($name_query) {
+                $query->where('name', 'like', '%' . $name_query . '%');
             });
         }
 
