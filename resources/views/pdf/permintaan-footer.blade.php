@@ -30,9 +30,11 @@
                 @endif
             </td>
         </tr>
+        <br />
         <tr>
             <td colspan="2" style="text-align: center; border: 1px solid black;">Penyerahan Barang</td>
         </tr>
+        <br />
         <tr>
             <td>Tanggal Penyerahan : {{ $datapermintaan->tgl_penyerahan ?
                 $datapermintaan->tgl_penyerahan->isoFormat('D MMM YYYY') : '' }}</td>
