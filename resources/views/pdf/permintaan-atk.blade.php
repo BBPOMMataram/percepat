@@ -68,15 +68,17 @@
                     <img src={{$logobpom}} alt="Logo" width="60px">
                 </td>
                 <td>Nomor Formulir</td>
-                <td>POM-12.SOP.01.IK.02B(108A)/F.02</td>
+                {{-- NOMOR LAMA --}}
+                {{-- <td>POM-12.SOP.01.IK.02B(108A)/F.02</td>  --}}
+                <td>POM-14.01/CFM.01/SOP.01/IK18A/F.01</td> 
             </tr>
             <tr>
                 <td>Tanggal Pembuatan</td>
-                <td>10 Oktober 2011</td>
+                <td>09 Maret 2020</td>
             </tr>
             <tr>
                 <td>Nomor / Tanggal Revisi</td>
-                <td>-</td>
+                <td>02/12 Mei 2023</td>
             </tr>
             <tr>
                 <td>Nama Formulir</td>
