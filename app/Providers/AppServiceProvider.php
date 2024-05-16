@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $notifications = Notification::orderByDesc('id')->get();
-        view()->share(compact('notifications'));
+        // $notifications = Notification::orderByDesc('id')->get();
+        // view()->share(compact('notifications'));
     }
 }
