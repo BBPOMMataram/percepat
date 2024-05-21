@@ -60,6 +60,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::apiResource('barang-reagen', ApiReagenController::class);
     Route::apiResource('barang-atk', ApiAtkController::class);
+    // Route::apiResource('barang-reagen-expired', [ApiReagenController::class, 'reagenExpired']);
 
     // LAPORAN PERMINTAAN
     Route::get('laporan-permintaan', [LaporanPermintaanController::class, 'index']);
@@ -76,3 +77,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
+Route::get('barang-reagen-expired', [ApiReagenController::class, 'reagenExpired']);

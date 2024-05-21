@@ -151,4 +151,27 @@ class ApiReagenController extends Controller
         $responseReagen = ApiReagen::where('name', 'like', '%' . $name_query . '%')->get();
         return response()->json($responseReagen);
     }
+
+    public function reagenExpired(Request $request)
+    {
+        $value_per_page_query = $request->query('value_per_page');
+        $name_query = $request->query('name');
+        $limit_query = $request->query('limit');
+
+        $data = ApiReagen::where('name', 'like', '%' . $name_query . '%')
+                ->whereDate('expired', '<', now()->addMonths(6))
+                ->where('stock', '>', 0)
+                ->orderBy('expired');
+
+        if ($limit_query) { //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
+            $data = $data->limit($limit_query)->latest()->get();
+        } else {
+            $data = $data->latest()->paginate($value_per_page_query);
+            //add query string to all response links (KALAU ADA QUERY STRING NYA SAAT PERTAMA FETCH DATA)
+            $data->appends(['value_per_page' => $value_per_page_query]);
+            $data->appends(['name' => $name_query]);
+        }
+
+        return ReagenResource::collection($data);
+    }
 }
