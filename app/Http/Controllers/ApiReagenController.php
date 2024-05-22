@@ -174,4 +174,13 @@ class ApiReagenController extends Controller
 
         return ReagenResource::collection($data);
     }
+
+    
+    public function reagenExpiredCount()
+    {
+        $data = ApiReagen::whereDate('expired', '<', now()->addMonths(6))
+                ->where('stock', '>', 0)->count();
+        
+        return $data;
+    }
 }

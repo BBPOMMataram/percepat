@@ -77,3 +77,4 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
+Route::get('barang-reagen-expired-count', [ApiReagenController::class, 'reagenExpiredCount']);
