@@ -16,7 +16,7 @@ class ChartController extends Controller
         $year = $request->query("year");
         if($year){
             $reagen = Barang::whereYear('created_at', $year)
-                        ->select(DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as sales'))
+                        ->select(DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as total'))
                         ->groupBy(DB::raw('MONTH(created_at)'))
                         ->get();
 
@@ -26,7 +26,7 @@ class ChartController extends Controller
             'reagen' => $reagen->map(function($item) {
                 return [
                     'month' => date("F", mktime(0, 0, 0, $item->month, 10)), // Mengubah angka bulan menjadi nama bulan
-                    'sales' => $item->sales
+                    'total' => $item->total
                 ];
             })
         ];
