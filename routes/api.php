@@ -6,6 +6,7 @@ use App\Http\Controllers\ApiReagenController;
 use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenerimaanAtkController;
@@ -78,3 +79,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
+
+
+Route::get('reagen', [ChartController::class, 'reagen']);
