@@ -81,5 +81,6 @@ Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
 
 
-Route::get('reagen', [ChartController::class, 'reagen']);
+Route::get('barang', [ChartController::class, 'barang']);
 Route::get('reagen/permintaan', [ChartController::class, 'permintaan']);
+Route::get('reagen-ed', [ChartController::class, 'reagen_ed']);
