@@ -206,4 +206,10 @@ class ApiUserController extends Controller
         $user->save();
         return response()->json(['msg' => 'Data berhasil tersimpan!']);
     }
+
+    function users_count() {
+        $data = ApiUser::count();
+
+        return response()->json($data);
+    }
 }

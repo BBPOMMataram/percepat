@@ -108,4 +108,9 @@ class ApiBidangController extends Controller
         
         return BidangResource::collection($data);
     }
+
+    function bidang_count() {
+        $data = Bidang::count();
+        return response()->json($data);
+    }
 }
