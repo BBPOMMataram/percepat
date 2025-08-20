@@ -14,6 +14,7 @@ use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PermintaanListAtkController;
 use App\Http\Controllers\PermintaanReagenController;
+use App\Http\Controllers\SiteController;
 use App\Http\Resources\UserResource;
 use App\Models\ApiUser;
 use Illuminate\Http\Request;
@@ -87,3 +88,5 @@ Route::get('reagen-ed', [ChartController::class, 'reagen_ed']);
 
 Route::get('bidang-count', [ApiBidangController::class, 'bidang_count']);
 Route::get('users-count', [ApiUserController::class, 'users_count']);
+
+Route::get('site', [SiteController::class, 'getSites']);

@@ -227,9 +227,27 @@ class PermintaanReagenController extends Controller
     {
         $userPosition = auth()->user()->position;
         switch ($userPosition) {
-                // ACC OLEH PENYELIA
+            // ACC OLEH PENYELIA
             case 'penyelia':
                 if ($permintaan->status_id == 1) {
+                    $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
+                    // jika data list reagen tidak ada berarti barang ATK
+                    if (count($permintaanList) == 0) {
+                        $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+
+                        foreach ($permintaanList as $value) {
+                            $barang = Atk::find($value->atk_id);
+                            $barang->stock -= $value->jumlahpermintaan;
+                            $barang->save();
+                        }
+                    } else { //LANJUT KURANGI BARANG REAGEN JIKA BUKAN ATK
+                        foreach ($permintaanList as $value) {
+                            $barang = Barang::find($value->barang_id);
+                            $barang->stock -= $value->jumlahpermintaan;
+                            $barang->save();
+                        }
+                    }
+
                     $permintaan->status_id += 1;
                     $permintaan->kabid_id = auth()->user()->id;
                     $permintaan->save();
@@ -254,28 +272,29 @@ class PermintaanReagenController extends Controller
                     $permintaan->tgl_penyerahan = now();
                     $permintaan->penyerah_id = auth()->user()->id;
                     $permintaan->save();
-                    return response(['status' => 1, 'msg' => 'Permintaan berhasil disetujui!']);
+                    return response(['status' => 1, 'msg' => 'Permintaan berhasil diselesaikan!']);
                 }
                 // ACC OLEH KASUBBAGUMUM
             case 'kasubbagumum':
                 if ($permintaan->status_id == 3) {
-                    $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
-                    // jika data list reagen tidak ada berarti barang ATK
-                    if (count($permintaanList) == 0) {
-                        $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+                    // PENGURANGAN STOK BARANG DIPINDAH SAAT DIACC PENYELIA
+                    // $permintaanList = PermintaanList::where('permintaan_id', $permintaan->id)->get();
+                    // // jika data list reagen tidak ada berarti barang ATK
+                    // if (count($permintaanList) == 0) {
+                    //     $permintaanList = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
 
-                        foreach ($permintaanList as $value) {
-                            $barang = Atk::find($value->atk_id);
-                            $barang->stock -= $value->jumlahrealisasi;
-                            $barang->save();
-                        }
-                    } else { //LANJUT KURANGI BARANG REAGEN JIKA BUKAN ATK
-                        foreach ($permintaanList as $value) {
-                            $barang = Barang::find($value->barang_id);
-                            $barang->stock -= $value->jumlahrealisasi;
-                            $barang->save();
-                        }
-                    }
+                    //     foreach ($permintaanList as $value) {
+                    //         $barang = Atk::find($value->atk_id);
+                    //         $barang->stock -= $value->jumlahrealisasi;
+                    //         $barang->save();
+                    //     }
+                    // } else { //LANJUT KURANGI BARANG REAGEN JIKA BUKAN ATK
+                    //     foreach ($permintaanList as $value) {
+                    //         $barang = Barang::find($value->barang_id);
+                    //         $barang->stock -= $value->jumlahrealisasi;
+                    //         $barang->save();
+                    //     }
+                    // }
 
                     $permintaan->status_id += 1;
                     $permintaan->kasubbagumum_id = auth()->user()->id;
