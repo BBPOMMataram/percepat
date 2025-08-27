@@ -12,6 +12,7 @@ class VerifyCsrfToken extends Middleware
      * @var array
      */
     protected $except = [
-        '/login'
+        '/login',
+        '/api/spp' // Khusus untuk endpoint survey pelayanan publik di bypass csrf karena dianggap stateful request karena file html nya langsung di folder public
     ];
 }

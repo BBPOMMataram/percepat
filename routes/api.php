@@ -8,13 +8,12 @@ use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
-use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
-use App\Http\Controllers\PermintaanController;
 use App\Http\Controllers\PermintaanListAtkController;
 use App\Http\Controllers\PermintaanReagenController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\SurveyPelananPublicController;
 use App\Http\Resources\UserResource;
 use App\Models\ApiUser;
 use Illuminate\Http\Request;
@@ -81,7 +80,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
 
-
 Route::get('barang', [ChartController::class, 'barang']);
 Route::get('reagen/permintaan', [ChartController::class, 'permintaan']);
 Route::get('reagen-ed', [ChartController::class, 'reagen_ed']);
@@ -89,4 +87,8 @@ Route::get('reagen-ed', [ChartController::class, 'reagen_ed']);
 Route::get('bidang-count', [ApiBidangController::class, 'bidang_count']);
 Route::get('users-count', [ApiUserController::class, 'users_count']);
 
+// DATA WEBISTE DI HOMEPAGE
 Route::get('site', [SiteController::class, 'getSites']);
+
+// DATA SURVEY PELAYANAN PUBLIC
+Route::post('spp', [SurveyPelananPublicController::class, 'store']);
