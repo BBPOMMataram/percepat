@@ -11,11 +11,17 @@ class SurveyPelananPublicController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
+            'hp' => 'required|string',
             'rating' => 'required|integer|min:1|max:3',
-            'comment' => 'nullable|string',
         ]);
 
         $survey = new SurveyPelananPublic();
+        $survey->name = $request->name;
+        $survey->hp = $request->hp;
+        $survey->instansi = $request->instansi;
+        $survey->email = $request->email;
+        $survey->age = $request->age;
         $survey->rating = $request->rating;
         $survey->comment = $request->comment;
         $survey->save();
