@@ -1,0 +1,55 @@
+name: Deploy to percepat-api.bbpommataram.id
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          port: 55055
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            echo "[Deploy] Fetch latest code..."
+            APP_DIR=/home/bbpommataram.id/PERCEPAT-API
+            cd $APP_DIR || exit
+            git fetch --all
+            git reset --hard origin/master
+
+            echo "[Deploy] Install dependencies..."
+            composer install --no-dev --prefer-dist --no-interaction --no-ansi
+            #npm ci
+            #npm run build
+
+            echo "[Deploy] Run migrations..."
+            php artisan migrate --force
+
+            echo "[Deploy] Clear caches..."
+            php artisan optimize:clear
+
+            echo "[Deploy] Fix permissions..."
+            # Set owner storage & cache ke www-data
+            chown -R dscom6037:dscom6037 $APP_DIR/storage $APP_DIR/bootstrap/cache
+
+            # Folder = 755 (drwxr-xr-x)
+            find $APP_DIR/storage -type d -exec chmod 755 {} \;
+            find $APP_DIR/bootstrap/cache -type d -exec chmod 755 {} \;
+
+            # File = 644 (-rw-r--r--)
+            find $APP_DIR/storage -type f -exec chmod 644 {} \;
+            find $APP_DIR/bootstrap/cache -type f -exec chmod 644 {} \;
+
+            # Khusus laravel.log pastikan bisa ditulis
+            touch $APP_DIR/storage/logs/laravel.log
+            chown dscom6037:dscom6037 $APP_DIR/storage/logs/laravel.log
+            chmod 644 $APP_DIR/storage/logs/laravel.log
+
+            echo "[Deploy] Done ✅"

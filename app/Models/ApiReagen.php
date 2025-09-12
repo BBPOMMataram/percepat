@@ -10,4 +10,8 @@ class ApiReagen extends Model
     use HasFactory;
 
     protected $table = 'barangs';
+
+    protected $casts = [
+        'expired' => 'datetime'
+    ];
 }

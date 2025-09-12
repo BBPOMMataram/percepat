@@ -74,6 +74,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::patch('profile/update-password', [ApiUserController::class, 'updatePassword']);
     Route::patch('profile/{user}', [ApiUserController::class, 'updateProfile']);
+
+    // DOWNLOAD REAGEN
+    Route::get('download-reagen', [ApiReagenController::class, 'downloadReagen']);
 });
 
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE

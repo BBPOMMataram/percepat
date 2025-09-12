@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ReagenResource;
 use App\Models\ApiReagen;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -159,9 +160,9 @@ class ApiReagenController extends Controller
         $limit_query = $request->query('limit');
 
         $data = ApiReagen::where('name', 'like', '%' . $name_query . '%')
-                ->whereDate('expired', '<', now()->addMonths(6))
-                ->where('stock', '>', 0)
-                ->orderBy('expired');
+            ->whereDate('expired', '<', now()->addMonths(6))
+            ->where('stock', '>', 0)
+            ->orderBy('expired');
 
         if ($limit_query) { //FOR REQUEST IN DASHBOARD FRONTEND, IT HAS LIMIT
             $data = $data->limit($limit_query)->latest()->get();
@@ -175,12 +176,24 @@ class ApiReagenController extends Controller
         return ReagenResource::collection($data);
     }
 
-    
+
     public function reagenExpiredCount()
     {
         $data = ApiReagen::whereDate('expired', '<', now()->addMonths(6))
-                ->where('stock', '>', 0)->count();
-        
+            ->where('stock', '>', 0)->count();
+
         return $data;
+    }
+
+    public function downloadReagen()
+    {
+        $data = ApiReagen::all();
+
+        $pdf = PDF::loadView(
+            'pdf/barang-reagen',
+            compact('data')
+        );
+
+        return $pdf->download();
     }
 }
