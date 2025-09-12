@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\AtkResource;
 use App\Models\ApiAtk;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -97,7 +98,7 @@ class ApiAtkController extends Controller
             'name' => ['required', 'bail', Rule::unique(ApiAtk::class)->ignore($barang_atk)],
             'satuan' => ['required']
         ]);
-        
+
         $existingReagen = ApiAtk::where([
             'name' => $request->name,
             'satuan' => $request->satuan,
@@ -145,5 +146,13 @@ class ApiAtkController extends Controller
 
         $responseReagen = ApiAtk::where('name', 'like', '%' . $name_query . '%')->get();
         return response()->json($responseReagen);
+    }
+
+    public function downloadAtk()
+    {
+        $data = ApiAtk::all();
+
+        $pdf = PDF::loadView('pdf.barang-atk', ['data' => $data]);
+        return $pdf->download('data-atk.pdf');
     }
 }

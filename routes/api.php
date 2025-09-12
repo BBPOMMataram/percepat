@@ -77,6 +77,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // DOWNLOAD REAGEN
     Route::get('download-reagen', [ApiReagenController::class, 'downloadReagen']);
+    // DOWNLOAD ATK
+    Route::get('download-atk', [ApiAtkController::class, 'downloadAtk']);
 });
 
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
