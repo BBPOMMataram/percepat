@@ -15,7 +15,7 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          port: 55055
+          port: 56710
           key: ${{ secrets.SSH_KEY }}
           script: |
             echo "[Deploy] Fetch latest code..."
