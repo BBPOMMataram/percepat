@@ -37,7 +37,7 @@ jobs:
 
             echo "[Deploy] Fix permissions..."
             # Set owner storage & cache ke www-data
-            chown -R dscom6037:dscom6037 $APP_DIR/storage $APP_DIR/bootstrap/cache
+            chown -R bbpom9725:bbpom9725 $APP_DIR/storage $APP_DIR/bootstrap/cache
 
             # Folder = 755 (drwxr-xr-x)
             find $APP_DIR/storage -type d -exec chmod 755 {} \;
@@ -49,7 +49,7 @@ jobs:
 
             # Khusus laravel.log pastikan bisa ditulis
             touch $APP_DIR/storage/logs/laravel.log
-            chown dscom6037:dscom6037 $APP_DIR/storage/logs/laravel.log
+            chown bbpom9725:bbpom9725 $APP_DIR/storage/logs/laravel.log
             chmod 644 $APP_DIR/storage/logs/laravel.log
 
             echo "[Deploy] Done ✅"
