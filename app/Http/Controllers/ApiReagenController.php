@@ -6,7 +6,6 @@ use App\Http\Resources\ReagenResource;
 use App\Models\ApiReagen;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ApiReagenController extends Controller
@@ -188,29 +187,14 @@ class ApiReagenController extends Controller
 
     public function downloadReagen()
     {
-        try {
+        return 'ok returned';
+        $data = ApiReagen::all();
 
-            $data = ApiReagen::all();
+        $pdf = PDF::loadView(
+            'pdf/barang-reagen',
+            compact('data')
+        );
 
-            $pdf = PDF::loadView(
-                'pdf/barang-reagen',
-                compact('data')
-            );
-
-            return $pdf->download();
-        } catch (\Throwable $th) {
-            Log::error('[DOWNLOAD-REAGEN] Gagal generate PDF', [
-                'message' => $th->getMessage(),
-                'file' => $th->getFile(),
-                'line' => $th->getLine(),
-                'trace' => $th->getTraceAsString(),
-            ]);
-
-            // Jangan throw lagi, cukup kirimkan response JSON
-            return response()->json([
-                'msg' => 'Gagal mendownload data!',
-                'error' => app()->environment('local') ? $th->getMessage() : 'Terjadi kesalahan server'
-            ], 500);
-        }
+        return $pdf->download();
     }
 }
