@@ -193,15 +193,22 @@ class ApiReagenController extends Controller
 
             $pdf = PDF::loadView('pdf/barang-reagen', compact('data'));
 
-            return $pdf->download('reagen.pdf');
+            // Test apakah DomPDF berhasil render binary
+            $output = $pdf->output();
+            if (empty($output)) {
+                Log::error('PDF EMPTY OUTPUT - DomPDF tidak menghasilkan data.');
+                return response()->json(['message' => 'PDF gagal dibuat (kosong)'], 500);
+            }
+
+            return response($output, 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'attachment; filename="reagen.pdf"',
+            ]);
         } catch (\Throwable $th) {
             Log::error('PDF ERROR: ' . $th->getMessage(), [
                 'trace' => $th->getTraceAsString()
             ]);
-            return response()->json([
-                'message' => 'Gagal generate PDF',
-                'error'   => $th->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Gagal generate PDF', 'error' => $th->getMessage()], 500);
         }
     }
 }
