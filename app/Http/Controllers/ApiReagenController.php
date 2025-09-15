@@ -187,8 +187,8 @@ class ApiReagenController extends Controller
 
     public function downloadReagen()
     {
-        return 'ok returned';
         $data = ApiReagen::all();
+        return 'ok returned';
 
         $pdf = PDF::loadView(
             'pdf/barang-reagen',
