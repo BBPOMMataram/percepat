@@ -187,24 +187,19 @@ class ApiReagenController extends Controller
 
     public function downloadReagen()
     {
-        \Illuminate\Support\Facades\Log::info('DEBUG DOWNLOAD-REAGEN', [
-            'url' => request()->fullUrl(),
-            'headers' => request()->headers->all(),
-            'cookies' => request()->cookies->all(),
-            'auth_user' => auth()->user(),
-            // 'guard' => auth()->getDefaultDriver(),
-        ]);
+        try {
 
-        $data = ApiReagen::all();
+            $data = ApiReagen::all();
 
-        $pdf = PDF::loadView(
-            'pdf/barang-reagen',
-            compact('data')
-        );
+            $pdf = PDF::loadView(
+                'pdf/barang-reagen',
+                compact('data')
+            );
 
-        return $pdf->download()->withHeaders([
-            'Access-Control-Allow-Origin' => 'https://bbpommataram.id',
-            'Access-Control-Allow-Credentials' => 'true',
-        ]);
+            return $pdf->download();
+        } catch (\Throwable $th) {
+            throw $th;
+            return response()->json(['msg' => 'Gagal mendownload data!', 'error' => $th]);
+        }
     }
 }
