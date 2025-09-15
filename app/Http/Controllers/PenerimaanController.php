@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Resources\PenerimaanReagenResource;
 use App\Models\Barang;
 use App\Models\Pembelian;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -179,5 +180,17 @@ class PenerimaanController extends Controller
         $pembelian->delete();
 
         return response()->json(['msg' => 'Data berhasil dihapus!']);
+    }
+
+    public function downloadPenerimaanReagen()
+    {
+        $data = Pembelian::with('barang')->get();
+
+        $pdf = PDF::loadView(
+            'pdf/penerimaan-reagen',
+            compact('data')
+        );
+
+        return $pdf->download();
     }
 }

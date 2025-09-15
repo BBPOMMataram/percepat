@@ -6,6 +6,7 @@ use App\Http\Resources\PenerimaanAtkResource;
 use App\Http\Resources\PenerimaanReagenResource;
 use App\Models\Atk;
 use App\Models\PenerimaanAtk;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -133,5 +134,17 @@ class PenerimaanAtkController extends Controller
         });
 
         return response()->json(['msg' => 'Data berhasil dihapus!']);
+    }
+
+    public function downloadPenerimaanAtk()
+    {
+        $data = PenerimaanAtk::with('atk')->get();
+
+        $pdf = PDF::loadView(
+            'pdf/penerimaan-atk',
+            compact('data')
+        );
+
+        return $pdf->download();
     }
 }

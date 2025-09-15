@@ -81,6 +81,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('download-atk', [ApiAtkController::class, 'downloadAtk']);
 });
 
+Route::get('download-penerimaan-reagen', [PenerimaanController::class, 'downloadPenerimaanReagen']);
+Route::get('download-penerimaan-atk', [PenerimaanAtkController::class, 'downloadPenerimaanAtk']);
+
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
 Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
 Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
