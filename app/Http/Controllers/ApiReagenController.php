@@ -187,6 +187,14 @@ class ApiReagenController extends Controller
 
     public function downloadReagen()
     {
+        \Illuminate\Support\Facades\Log::info('DEBUG DOWNLOAD-REAGEN', [
+            'url' => request()->fullUrl(),
+            'headers' => request()->headers->all(),
+            'cookies' => request()->cookies->all(),
+            'auth_user' => auth()->user(),
+            // 'guard' => auth()->getDefaultDriver(),
+        ]);
+
         $data = ApiReagen::all();
 
         $pdf = PDF::loadView(
