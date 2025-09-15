@@ -194,7 +194,7 @@ class ApiReagenController extends Controller
             compact('data')
         );
 
-        return 'ok returned';
+        return view('pdf/barang-reagen', compact('data'));
         return $pdf->download();
     }
 }
