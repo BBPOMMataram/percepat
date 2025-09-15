@@ -202,6 +202,9 @@ class ApiReagenController extends Controller
             compact('data')
         );
 
-        return $pdf->download();
+        return $pdf->download()->withHeaders([
+            'Access-Control-Allow-Origin' => 'https://bbpommataram.id',
+            'Access-Control-Allow-Credentials' => 'true',
+        ]);
     }
 }
