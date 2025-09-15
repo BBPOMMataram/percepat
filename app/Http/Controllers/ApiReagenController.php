@@ -6,7 +6,6 @@ use App\Http\Resources\ReagenResource;
 use App\Models\ApiReagen;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 
 class ApiReagenController extends Controller
@@ -188,27 +187,13 @@ class ApiReagenController extends Controller
 
     public function downloadReagen()
     {
-        try {
-            $data = ApiReagen::all();
+        $data = ApiReagen::all();
 
-            $pdf = PDF::loadView('pdf/barang-reagen', compact('data'));
+        $pdf = PDF::loadView(
+            'pdf/barang-reagen',
+            compact('data')
+        );
 
-            // Test apakah DomPDF berhasil render binary
-            $output = $pdf->output();
-            if (empty($output)) {
-                Log::error('PDF EMPTY OUTPUT - DomPDF tidak menghasilkan data.');
-                return response()->json(['message' => 'PDF gagal dibuat (kosong)'], 500);
-            }
-
-            return response($output, 200, [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'attachment; filename="reagen.pdf"',
-            ]);
-        } catch (\Throwable $th) {
-            Log::error('PDF ERROR: ' . $th->getMessage(), [
-                'trace' => $th->getTraceAsString()
-            ]);
-            return response()->json(['message' => 'Gagal generate PDF', 'error' => $th->getMessage()], 500);
-        }
+        return $pdf->download();
     }
 }
