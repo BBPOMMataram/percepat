@@ -100,3 +100,14 @@ Route::get('site', [SiteController::class, 'getSites']);
 
 // DATA SURVEY PELAYANAN PUBLIC
 Route::post('spp', [SurveyPelananPublicController::class, 'store']);
+
+Route::middleware(['jwt'])->prefix('v1')->group(function () {
+    // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
+    Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
+    Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
+    // tambah untuk baku pembanding dan suku cadang nanti
+
+    // PERMINTAAN
+    Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
+    Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+});
