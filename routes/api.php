@@ -8,6 +8,7 @@ use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
+use App\Http\Controllers\New\PermintaanReagenController as NewPermintaanReagenController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanListAtkController;
@@ -108,6 +109,6 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     // tambah untuk baku pembanding dan suku cadang nanti
 
     // PERMINTAAN
-    Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
+    Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
     Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
 });
