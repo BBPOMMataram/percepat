@@ -8,6 +8,9 @@ use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
+use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
+use App\Http\Controllers\New\PerlengkapanKebersihanController;
+use App\Http\Controllers\New\PermintaanListPerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanReagenController as NewPermintaanReagenController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
@@ -102,13 +105,28 @@ Route::get('site', [SiteController::class, 'getSites']);
 // DATA SURVEY PELAYANAN PUBLIC
 Route::post('spp', [SurveyPelananPublicController::class, 'store']);
 
+
+
+
+
+
+// NEW ROUTES
 Route::middleware(['jwt'])->prefix('v1')->group(function () {
     // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
     Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
     Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
+    Route::get('barang-perlengkapan-kebersihan-all', [PerlengkapanKebersihanController::class, 'getAll']);
     // tambah untuk baku pembanding dan suku cadang nanti
 
     // PERMINTAAN
     Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
+    Route::apiResource('permintaan-perlengkapan-kebersihan', PerlengkapanKebersihanController::class)->only(['index', 'store']);
     Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+
+    // DATA LIST PERMINTAAN
+    Route::get('list-permintaan-perlengkapan-kebersihan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'list_permintaan_perlengkapan_kebersihan']);
+    Route::get('download-permintaan-perlengkapan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'download_permintaan_perlengkapan']);
+
+    // DATA MASTER
+    Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
 });

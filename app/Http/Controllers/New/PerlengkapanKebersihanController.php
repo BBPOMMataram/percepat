@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
+use App\Models\PerlengkapanKebersihan;
 use App\Models\Permintaan;
-use App\Models\PermintaanList;
+use App\Models\PermintaanListPerlengkapanKebersihan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PermintaanReagenController extends Controller
+class PerlengkapanKebersihanController extends Controller
 {
     public function index(Request $request)
     {
@@ -17,7 +18,7 @@ class PermintaanReagenController extends Controller
         $page = $request->query('page', 1);
 
         $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
-            ->where('jenis', 'Reagen dan Bahan Laboratorium Lain')
+            ->where('jenis', 'PERLENGKAPAN KEBERSIHAN')
             ->latest();
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
@@ -29,7 +30,6 @@ class PermintaanReagenController extends Controller
 
     public function store(Request $request)
     {
-        // return $request->pemohon['employee'];
         $this->validate($request, [
             'pemohon' => ['required'], // bukan hanya id pemohon tapi data lengkap pemohon dalam bentuk object
             'createdAt' => ['required'],
@@ -48,7 +48,7 @@ class PermintaanReagenController extends Controller
 
             $data = new Permintaan();
 
-            $data->jenis = 'Reagen dan Bahan Laboratorium Lain';
+            $data->jenis = 'PERLENGKAPAN KEBERSIHAN';
             $data->bidang_id = null; //dibuat null untuk menyesuaikan bidang user auth (si mandalika), ini untuk permintaan baru setelah SSO
             $data->bidang_id_auth_external = $pemohon['employee']['fungsi_id']; // sbg ganti nya gunakan fungsi dari user auth external  
             $data->bidang_name_auth_external = $pemohon['employee']['fungsi']['name']; // ini untuk langsung simpan nama bidang juga biar gak ribet join ke tabel bidang
@@ -74,9 +74,9 @@ class PermintaanReagenController extends Controller
 
             // STORE LIST BARANG
             foreach ($listBarang as $value) {
-                $newInventory = new PermintaanList();
+                $newInventory = new PermintaanListPerlengkapanKebersihan();
                 $newInventory->permintaan_id = $data->id; //permintaan id
-                $newInventory->barang_id = $value['id'];
+                $newInventory->perlengkapan_kebersihan_id = $value['id'];
                 $newInventory->jumlahpermintaan = $value['jumlah'];
                 $newInventory->keterangan = $value['keterangan'];
 
@@ -85,5 +85,14 @@ class PermintaanReagenController extends Controller
         });
 
         return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
+    }
+
+    // UNTUK DROPDOWN
+    function getAll(Request $request)
+    {
+        $name_query = $request->query('name');
+
+        $responseReagen = PerlengkapanKebersihan::where('name', 'like', '%' . $name_query . '%')->get();
+        return response()->json($responseReagen);
     }
 }
