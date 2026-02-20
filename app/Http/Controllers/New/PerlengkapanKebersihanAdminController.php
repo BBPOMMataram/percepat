@@ -23,4 +23,37 @@ class PerlengkapanKebersihanAdminController extends Controller
 
         return response()->json($data);
     }
+
+    function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'stock' => 'required|integer',
+            'satuan' => 'required|string|max:50',
+        ]);
+
+        $perlengkapanKebersihan = PerlengkapanKebersihan::create($request->only('name', 'stock', 'satuan'));
+
+        return response()->json($perlengkapanKebersihan, 201);
+    }
+
+    function update(Request $request, PerlengkapanKebersihan $perlengkapanKebersihan)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'stock' => 'required|integer',
+            'satuan' => 'required|string|max:50',
+        ]);
+
+        $perlengkapanKebersihan->update($request->only('name', 'stock', 'satuan'));
+
+        return response()->json($perlengkapanKebersihan);
+    }
+
+    function destroy(PerlengkapanKebersihan $perlengkapanKebersihan)
+    {
+        $perlengkapanKebersihan->delete();
+
+        return response()->json(null, 204);
+    }
 }
