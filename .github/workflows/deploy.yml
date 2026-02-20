@@ -20,34 +20,40 @@ jobs:
           script: |
             echo "[Deploy] Fetch latest code..."
             APP_DIR=/home/bbpommataram.id/PERCEPAT-API
+            PHP_BIN=/usr/local/lsws/lsphp82/bin/php
+            COMPOSER_BIN=/usr/local/bin/composer
+
             cd $APP_DIR || exit
             git fetch --all
             git reset --hard origin/master
 
             echo "[Deploy] Install dependencies..."
-            composer install --no-dev --prefer-dist --no-interaction --no-ansi
+            export COMPOSER_ALLOW_SUPERUSER=1
+            $PHP_BIN $COMPOSER_BIN install \
+            --no-dev \
+            --prefer-dist \
+            --no-interaction \
+            --optimize-autoloader
+
             #npm ci
             #npm run build
 
             echo "[Deploy] Run migrations..."
-            php artisan migrate --force
+            $PHP_BIN artisan migrate --force
 
             echo "[Deploy] Clear caches..."
-            php artisan optimize:clear
+            $PHP_BIN artisan optimize:clear
 
             echo "[Deploy] Fix permissions..."
-            # Set owner storage & cache ke www-data
+
             chown -R bbpom9725:bbpom9725 $APP_DIR/storage $APP_DIR/bootstrap/cache
 
-            # Folder = 755 (drwxr-xr-x)
             find $APP_DIR/storage -type d -exec chmod 755 {} \;
             find $APP_DIR/bootstrap/cache -type d -exec chmod 755 {} \;
 
-            # File = 644 (-rw-r--r--)
             find $APP_DIR/storage -type f -exec chmod 644 {} \;
             find $APP_DIR/bootstrap/cache -type f -exec chmod 644 {} \;
 
-            # Khusus laravel.log pastikan bisa ditulis
             touch $APP_DIR/storage/logs/laravel.log
             chown bbpom9725:bbpom9725 $APP_DIR/storage/logs/laravel.log
             chmod 644 $APP_DIR/storage/logs/laravel.log
