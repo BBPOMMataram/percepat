@@ -21,7 +21,7 @@ jobs:
             echo "[Deploy] Fetch latest code..."
             APP_DIR=/home/bbpommataram.id/PERCEPAT-API
             PHP_BIN=/usr/local/lsws/lsphp82/bin/php
-            COMPOSER_BIN=/usr/local/bin/composer
+            COMPOSER_BIN=/usr/bin/composer
 
             cd $APP_DIR || exit
             git fetch --all
@@ -34,9 +34,6 @@ jobs:
             --prefer-dist \
             --no-interaction \
             --optimize-autoloader
-
-            #npm ci
-            #npm run build
 
             echo "[Deploy] Run migrations..."
             $PHP_BIN artisan migrate --force
