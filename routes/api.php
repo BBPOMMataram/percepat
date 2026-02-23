@@ -12,6 +12,7 @@ use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanListPerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanReagenController as NewPermintaanReagenController;
+use App\Http\Controllers\New\VerifPerlengkapanKebersihanController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanListAtkController;
@@ -126,6 +127,11 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     // DATA LIST PERMINTAAN
     Route::get('list-permintaan-perlengkapan-kebersihan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'list_permintaan_perlengkapan_kebersihan']);
     Route::get('download-permintaan-perlengkapan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'download_permintaan_perlengkapan']);
+
+    // VERIFIKASI PERMINTAAN PERLENGKAPAN KEBERSIHAN
+    Route::get('verif-perlengkapan-kebersihan', [VerifPerlengkapanKebersihanController::class, 'index']);
+    Route::post('verif-katim-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif']);
+    Route::post('verif-kabagtu-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_kabagtu']);
 
     // DATA MASTER
     Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);

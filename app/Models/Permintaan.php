@@ -10,6 +10,11 @@ class Permintaan extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'status_id',
+        'kabaggumum_id',
+    ];
+
     protected $casts = [
         'tgl_permintaan' => 'datetime',
         'tgl_penyerahan' => 'datetime',
