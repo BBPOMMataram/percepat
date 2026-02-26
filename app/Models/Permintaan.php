@@ -13,6 +13,7 @@ class Permintaan extends Model
     protected $fillable = [
         'status_id',
         'kasubbagumum_id',
+        'penyerah_id',
     ];
 
     protected $casts = [

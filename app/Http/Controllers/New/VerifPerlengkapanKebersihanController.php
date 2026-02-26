@@ -4,6 +4,7 @@ namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
 use App\Models\Permintaan;
+use App\Models\PermintaanListPerlengkapanKebersihan;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -53,6 +54,38 @@ class VerifPerlengkapanKebersihanController extends Controller
             'status_id' => 3,
             'kasubbagumum_id' => User::where('external_user_id', $request->user["id"])->first()->id,
         ]);
+
+        return response()->json([
+            'message' => 'Permintaan ' . $permintaan->status->name,
+            'data' => $permintaan,
+        ]);
+    }
+
+    public function verif_petugas(Request $request, $id)
+    {
+        $permintaan = Permintaan::findOrFail($id);
+
+        $listBarang = PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->get();
+
+        $realisasi = $request->realisasi; // array
+        foreach ($listBarang as $key => $item) {
+            $item->jumlahrealisasi = $realisasi[$key];
+            $item->save();
+        }
+
+        $permintaan->update([
+            'status_id' => 4,
+            'penyerah_id' => User::where('external_user_id', $request->user["id"])->first()->id,
+        ]);
+
+
+        // foreach ($listBarang as $value) {
+        //     $value->perlengkapan_kebersihan_id = $value['id'];
+        //     $value->jumlahpermintaan = $value['jumlah'];
+        //     $value->keterangan = $value['keterangan'];
+
+        //     $value->save();
+        // }
 
         return response()->json([
             'message' => 'Permintaan ' . $permintaan->status->name,

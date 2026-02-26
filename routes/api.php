@@ -132,6 +132,7 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     Route::get('verif-perlengkapan-kebersihan', [VerifPerlengkapanKebersihanController::class, 'index']);
     Route::post('verif-katim-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif']);
     Route::post('verif-kabagtu-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_kabagtu']);
+    Route::post('verif-petugas-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_petugas']);
 
     // DATA MASTER
     Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
