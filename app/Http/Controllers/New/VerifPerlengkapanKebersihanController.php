@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
+use App\Models\PerlengkapanKebersihan;
 use App\Models\Permintaan;
 use App\Models\PermintaanListPerlengkapanKebersihan;
 use App\Models\User;
@@ -67,10 +68,12 @@ class VerifPerlengkapanKebersihanController extends Controller
 
         $listBarang = PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->get();
 
+        // return $listBarang;
         $realisasi = $request->realisasi; // array
         foreach ($listBarang as $key => $item) {
             $item->jumlahrealisasi = $realisasi[$key];
             $item->save();
+            PerlengkapanKebersihan::find($item->perlengkapan_kebersihan_id)->decrement('stock', $realisasi[$key]);
         }
 
         $permintaan->update([
