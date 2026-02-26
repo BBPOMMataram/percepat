@@ -18,6 +18,8 @@ jobs:
           port: 56710
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -e
+
             echo "[Deploy] Fetch latest code..."
             APP_DIR=/home/bbpommataram.id/PERCEPAT-API
             PHP_BIN=/usr/local/lsws/lsphp82/bin/php
