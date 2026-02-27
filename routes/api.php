@@ -11,8 +11,10 @@ use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanListPerlengkapanKebersihanController;
+use App\Http\Controllers\New\PermintaanListReagenController;
 use App\Http\Controllers\New\PermintaanReagenController as NewPermintaanReagenController;
 use App\Http\Controllers\New\VerifPerlengkapanKebersihanController;
+use App\Http\Controllers\New\VerifReagenController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanListAtkController;
@@ -124,15 +126,25 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     Route::apiResource('permintaan-perlengkapan-kebersihan', PerlengkapanKebersihanController::class)->only(['index', 'store']);
     Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
 
-    // DATA LIST PERMINTAAN
+    // DATA LIST PERMINTAAN PERLENGKAPAN KEBERSIHAN
     Route::get('list-permintaan-perlengkapan-kebersihan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'list_permintaan_perlengkapan_kebersihan']);
     Route::get('download-permintaan-perlengkapan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'download_permintaan_perlengkapan']);
 
+    // DATA LIST PERMINTAAN REAGEN
+    Route::get('list-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'list_permintaan_reagen']);
+    Route::get('download-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'download_permintaan_reagen']);
+
     // VERIFIKASI PERMINTAAN PERLENGKAPAN KEBERSIHAN
     Route::get('verif-perlengkapan-kebersihan', [VerifPerlengkapanKebersihanController::class, 'index']);
-    Route::post('verif-katim-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif']);
+    Route::post('verif-katim-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_katim']);
     Route::post('verif-kabagtu-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_kabagtu']);
     Route::post('verif-petugas-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_petugas']);
+
+    // VERIFIKASI PERMINTAAN REAGEN
+    Route::get('verif-reagen', [VerifReagenController::class, 'index']);
+    Route::post('verif-katim-reagen/{id}', [VerifReagenController::class, 'verif_katim']);
+    Route::post('verif-kabagtu-reagen/{id}', [VerifReagenController::class, 'verif_kabagtu']);
+    Route::post('verif-petugas-reagen/{id}', [VerifReagenController::class, 'verif_petugas']);
 
     // DATA MASTER
     Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);

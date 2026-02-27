@@ -14,6 +14,10 @@ class Barang extends Model
         'expired' => 'datetime'
     ];
 
+    // protected $fillable = [
+    //     'stock',
+    // ];
+
     function getMsdsAttribute($value)
     {
         return $value != null && $value != '-' ?? Storage::url($value);

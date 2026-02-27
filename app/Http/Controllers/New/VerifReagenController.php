@@ -3,14 +3,16 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barang;
 use App\Models\PerlengkapanKebersihan;
 use App\Models\Permintaan;
+use App\Models\PermintaanList;
 use App\Models\PermintaanListPerlengkapanKebersihan;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class VerifPerlengkapanKebersihanController extends Controller
+class VerifReagenController extends Controller
 {
 
     public function index(Request $request)
@@ -21,9 +23,9 @@ class VerifPerlengkapanKebersihanController extends Controller
         $is_kabagtu = $request->query('is_kabagtu', 0);
 
         $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
-            ->where('jenis', 'PERLENGKAPAN KEBERSIHAN')
+            ->where('jenis', 'Reagen dan Bahan Laboratorium Lain')
             ->latest();
-
+        // return $query->get();
         //kalo verifikator selain kabagtu maka tampilkan permintaan yang katimnya sesuai dengan katim_id yang login
         if (!$is_kabagtu) {
             $query->where('katim_selected', $katim_id);
@@ -68,9 +70,9 @@ class VerifPerlengkapanKebersihanController extends Controller
     {
         $permintaan = Permintaan::findOrFail($id);
 
-        $listBarang = PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->get();
+        $listBarang = PermintaanList::where('permintaan_id', $permintaan->id)->get();
 
-
+        // return $listBarang;
         $realisasi = $request->realisasi; // array
 
         DB::transaction(function () use ($listBarang, $realisasi) {
@@ -78,7 +80,7 @@ class VerifPerlengkapanKebersihanController extends Controller
                 $item->jumlahrealisasi = $realisasi[$key];
                 $item->save();
 
-                $barang = PerlengkapanKebersihan::lockForUpdate()->find($item->perlengkapan_kebersihan_id);
+                $barang = Barang::lockForUpdate()->find($item->barang_id);
 
                 if ($barang->stock < $realisasi[$key]) {
                     throw new \Exception("Stock tidak mencukupi");
@@ -92,15 +94,6 @@ class VerifPerlengkapanKebersihanController extends Controller
             'status_id' => 4,
             'penyerah_id' => User::where('external_user_id', $request->user["id"])->first()->id,
         ]);
-
-
-        // foreach ($listBarang as $value) {
-        //     $value->perlengkapan_kebersihan_id = $value['id'];
-        //     $value->jumlahpermintaan = $value['jumlah'];
-        //     $value->keterangan = $value['keterangan'];
-
-        //     $value->save();
-        // }
 
         return response()->json([
             'message' => 'Permintaan ' . $permintaan->status->name,
