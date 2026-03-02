@@ -7,6 +7,7 @@ use App\Models\ApiUser;
 use App\Models\Atk;
 use App\Models\Permintaan;
 use App\Models\PermintaanListAtk;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -56,31 +57,35 @@ class PermintaanListAtkController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'userFrontEnd' => ['required'],
-            'created_at' => ['required'],
-            'inventory' => ['required'],
+            'pemohon' => ['required'], // bukan hanya id pemohon tapi data lengkap pemohon dalam bentuk object
+            'createdAt' => ['required'],
+            'listBarang' => ['required'],
+            'katimId' => ['required'],
         ]);
 
-        $inventory = json_decode($request->inventory);
-        if (!$inventory) {
+        $listBarang = $request->listBarang;
+        if (!$listBarang) {
             return response()->json(['status' => 1, 'msg' => 'Barang tidak boleh kosong !'], 400);
         }
 
-        DB::transaction(function () use ($request, $inventory) {
+        DB::transaction(function () use ($request, $listBarang) {
             // DI JSON DECODE AGAR DATA PROPERTY PADA OBJECT(KEY) DAPAT TERBACA BUKAN SEBAGAI STRING
-            $user = json_decode($request->userFrontEnd);
+            $pemohon = $request->pemohon;
 
             $data = new Permintaan();
 
-            $data->bidang_id = $user->bidang->id;
-            // $data->kabid_id = $request->kabid_id;
-            $data->created_by = $user->id;
-            $data->tgl_permintaan = $request->created_at;
             $data->jenis = 'ATK';
+            $data->bidang_id = null; //dibuat null untuk menyesuaikan bidang user auth (si mandalika), ini untuk permintaan baru setelah SSO
+            $data->bidang_id_auth_external = $pemohon['employee']['fungsi_id']; // sbg ganti nya gunakan fungsi dari user auth external  
+            $data->bidang_name_auth_external = $pemohon['employee']['fungsi']['name']; // ini untuk langsung simpan nama bidang juga biar gak ribet join ke tabel bidang
+            // $data->kabid_id = $request->kabid_id; // cek dulu kenapa di comment, sepertinya nanti diisi setelah diapprove kabid (untuk menjadi kabid siapa yg approve duluan mgkn karena ada beberapa kabid di satu fungsi)
+            $data->katim_selected = User::where('external_user_id', $request->katimId)->first()->id; // karena skrg katim pilih manual jadi simpan katim yang dipilih pemohon (setelah SSO)
+            $userInternalId = User::where('external_user_id', $pemohon['id'])->first()->id;
+            $data->created_by = $userInternalId;
+            $data->tgl_permintaan = $request->createdAt;
 
-            $last_data = Permintaan::where('jenis', 'ATK')
-                ->latest()->first();
-
+            // isi no urut
+            $last_data = Permintaan::latest()->first();
             if ($last_data) {
                 if (now()->month !== $last_data->created_at->month) {
                     $data->nourut = 1;
@@ -94,12 +99,12 @@ class PermintaanListAtkController extends Controller
             $data->save();
 
             // STORE LIST BARANG
-            foreach ($inventory as $value) {
+            foreach ($listBarang as $value) {
                 $newInventory = new PermintaanListAtk();
                 $newInventory->permintaan_id = $data->id; //permintaan id
-                $newInventory->atk_id = $value->barang->id;
-                $newInventory->jumlahpermintaan = $value->jumlahpermintaan;
-                $newInventory->keterangan = $value->keterangan;
+                $newInventory->atk_id = $value['id'];
+                $newInventory->jumlahpermintaan = $value['jumlah'];
+                $newInventory->keterangan = $value['keterangan'];
 
                 $newInventory->save();
             }

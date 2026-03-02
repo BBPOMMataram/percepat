@@ -10,14 +10,17 @@ use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
+use App\Http\Controllers\New\PermintaanAtkController;
 use App\Http\Controllers\New\PermintaanListPerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanListReagenController;
 use App\Http\Controllers\New\PermintaanReagenController as NewPermintaanReagenController;
 use App\Http\Controllers\New\VerifPerlengkapanKebersihanController;
 use App\Http\Controllers\New\VerifReagenController;
+use App\Http\Controllers\New\VerifAtkController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanListAtkController;
+use App\Http\Controllers\New\PermintaanListAtkController as NewPermintaanListAtkController;
 use App\Http\Controllers\PermintaanReagenController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SurveyPelananPublicController;
@@ -124,7 +127,7 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     // PERMINTAAN
     Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
     Route::apiResource('permintaan-perlengkapan-kebersihan', PerlengkapanKebersihanController::class)->only(['index', 'store']);
-    Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+    Route::apiResource('permintaan-atk', PermintaanAtkController::class);
 
     // DATA LIST PERMINTAAN PERLENGKAPAN KEBERSIHAN
     Route::get('list-permintaan-perlengkapan-kebersihan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'list_permintaan_perlengkapan_kebersihan']);
@@ -133,6 +136,10 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     // DATA LIST PERMINTAAN REAGEN
     Route::get('list-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'list_permintaan_reagen']);
     Route::get('download-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'download_permintaan_reagen']);
+
+    // DATA LIST PERMINTAAN ATK
+    Route::get('list-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'list_permintaan_atk']);
+    Route::get('download-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'download_permintaan_atk']);
 
     // VERIFIKASI PERMINTAAN PERLENGKAPAN KEBERSIHAN
     Route::get('verif-perlengkapan-kebersihan', [VerifPerlengkapanKebersihanController::class, 'index']);
@@ -145,6 +152,12 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
     Route::post('verif-katim-reagen/{id}', [VerifReagenController::class, 'verif_katim']);
     Route::post('verif-kabagtu-reagen/{id}', [VerifReagenController::class, 'verif_kabagtu']);
     Route::post('verif-petugas-reagen/{id}', [VerifReagenController::class, 'verif_petugas']);
+
+    // VERIFIKASI PERMINTAAN ATK
+    Route::get('verif-atk', [VerifAtkController::class, 'index']);
+    Route::post('verif-katim-atk/{id}', [VerifAtkController::class, 'verif_katim']);
+    Route::post('verif-kabagtu-atk/{id}', [VerifAtkController::class, 'verif_kabagtu']);
+    Route::post('verif-petugas-atk/{id}', [VerifAtkController::class, 'verif_petugas']);
 
     // DATA MASTER
     Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);

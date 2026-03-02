@@ -65,12 +65,12 @@
         <table>
             <tr>
                 <td rowspan="4" id="logo">
-                    <img src={{$logobpom}} alt="Logo" width="60px">
+                    <img src={{ $logobpom }} alt="Logo" width="60px">
                 </td>
                 <td>Nomor Formulir</td>
                 {{-- NOMOR LAMA --}}
                 {{-- <td>POM-12.SOP.01.IK.02B(108A)/F.02</td>  --}}
-                <td>POM-14.01/CFM.01/SOP.01/IK18A/F.01</td> 
+                <td>POM-14.01/CFM.01/SOP.01/IK18A/F.01</td>
             </tr>
             <tr>
                 <td>Tanggal Pembuatan</td>
@@ -95,7 +95,8 @@
                 <tr>
                     <td style="text-align: left;" colspan="3">Tanggal Permintaan :
                         {{ $datapermintaan->tgl_permintaan->isoFormat('D MMMM Y') }}</td>
-                    <td style="text-align: left;" colspan="3">Bidang atau Seksi : {{ $datapermintaan->bidang->name }}
+                    <td style="text-align: left;" colspan="3">Bidang atau Seksi :
+                        {{ $datapermintaan->bidang_name_auth_external }}
                     </td>
                 </tr>
                 <tr>
@@ -113,14 +114,14 @@
                     <td>Realisasi</td>
                 </tr>
                 @foreach ($datapermintaanlist as $item)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $item->barang->name }}</td>
-                    <td>{{ $item->barang->satuan }}</td>
-                    <td>{{ $item->jumlahpermintaan }}</td>
-                    <td>{{ $item->jumlahrealisasi }}</td>
-                    <td>{{ $item->keterangan }}</td>
-                </tr>
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->barang->name }}</td>
+                        <td>{{ $item->barang->satuan }}</td>
+                        <td>{{ $item->jumlahpermintaan }}</td>
+                        <td>{{ $item->jumlahrealisasi }}</td>
+                        <td>{{ $item->keterangan }}</td>
+                    </tr>
                 @endforeach
             </thead>
         </table>

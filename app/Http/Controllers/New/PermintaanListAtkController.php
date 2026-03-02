@@ -6,24 +6,24 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ListPermintaanAtkResource;
 use App\Models\ApiUser;
 use App\Models\Permintaan;
-use App\Models\PermintaanList;
+use App\Models\PermintaanListAtk;
 use Barryvdh\DomPDF\Facade as PDF;
 
-class PermintaanListReagenController extends Controller
+class PermintaanListAtkController extends Controller
 {
-    public function list_permintaan_reagen($permintaanId)
+    public function list_permintaan_atk($permintaanId)
     {
-        $data = PermintaanList::with('barang', 'permintaan')
+        $data = PermintaanListAtk::with('atk', 'permintaan')
             ->where('permintaan_id', $permintaanId)
             ->get();
 
         return new ListPermintaanAtkResource($data);
     }
 
-    function download_permintaan_reagen($permintaanId)
+    function download_permintaan_atk($permintaanId)
     {
         $datapermintaan = Permintaan::find($permintaanId);
-        $datapermintaanlist = PermintaanList::where('permintaan_id', $permintaanId)->get();
+        $datapermintaanlist = PermintaanListAtk::where('permintaan_id', $permintaanId)->get();
         $penyerah = $datapermintaan->penyerah_id ? ApiUser::find($datapermintaan->penyerah_id) : null;
         $kasub = ApiUser::where('position', 'kasubbagumum')->first();
         $pemohon = ApiUser::find($datapermintaan->created_by);
@@ -46,7 +46,7 @@ class PermintaanListReagenController extends Controller
 
         $logobpom = 'storage/bpomri.jpg';
         // return $datapermintaan;
-        $pdf = PDF::loadView('pdf/permintaan', compact(
+        $pdf = PDF::loadView('pdf/permintaan-atk', compact(
             'datapermintaan',
             'datapermintaanlist',
             'penyerah',

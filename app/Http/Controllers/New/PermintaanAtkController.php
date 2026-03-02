@@ -4,12 +4,9 @@ namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
 use App\Models\Permintaan;
-use App\Models\PermintaanList;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
-class PermintaanReagenController extends Controller
+class PermintaanAtkController extends Controller
 {
     public function index(Request $request)
     {
@@ -17,7 +14,7 @@ class PermintaanReagenController extends Controller
         $page = $request->query('page', 1);
 
         $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
-            ->where('jenis', 'Reagen dan Bahan Laboratorium Lain')
+            ->where('jenis', 'ATK')
             ->latest();
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
