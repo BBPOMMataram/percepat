@@ -79,7 +79,7 @@ class VerifAtkController extends Controller
                 $item->jumlahrealisasi = $realisasi[$key];
                 $item->save();
 
-                $barang = ApiAtk::lockForUpdate()->find($item->perlengkapan_kebersihan_id);
+                $barang = ApiAtk::lockForUpdate()->find($item->atk_id);
 
                 if ($barang->stock < $realisasi[$key]) {
                     throw new \Exception("Stock tidak mencukupi");
