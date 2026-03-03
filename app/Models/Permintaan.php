@@ -56,4 +56,9 @@ class Permintaan extends Model
     {
         return $this->hasOne(User::class, 'id', 'katim_selected');
     }
+
+    public function penyerah()
+    {
+        return $this->hasOne(User::class, 'id', 'penyerah_id');
+    }
 }

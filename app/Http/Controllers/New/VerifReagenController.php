@@ -22,7 +22,7 @@ class VerifReagenController extends Controller
         $katim_id = User::where('external_user_id', $request->query('katim_id'))->first()->id;
         $is_kabagtu = $request->query('is_kabagtu', 0);
 
-        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
+        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
             ->where('jenis', 'Reagen dan Bahan Laboratorium Lain')
             ->latest();
         // return $query->get();
