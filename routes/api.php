@@ -11,7 +11,7 @@ use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\New\AtkAdminController;
 use App\Http\Controllers\New\ReagenAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
-use App\Http\Controllers\New\PerlengkapanKebersihanController;
+use App\Http\Controllers\New\PermintaanPerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanAtkController;
 use App\Http\Controllers\New\PermintaanListPerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanListReagenController;
@@ -97,8 +97,8 @@ Route::get('download-penerimaan-reagen', [PenerimaanController::class, 'download
 Route::get('download-penerimaan-atk', [PenerimaanAtkController::class, 'downloadPenerimaanAtk']);
 
 // DI LUAR AUTH UNTUK DATA BARANG DI HOMEPAGE
-Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
-Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
+// Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
+// Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
 
 Route::get('barang', [ChartController::class, 'barang']);
 Route::get('reagen/permintaan', [ChartController::class, 'permintaan']);
@@ -118,51 +118,58 @@ Route::post('spp', [SurveyPelananPublicController::class, 'store']);
 
 
 
-// NEW ROUTES ============================================================================
-Route::middleware(['jwt'])->prefix('v1')->group(function () {
-    // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
-    Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
-    Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
-    Route::get('barang-perlengkapan-kebersihan-all', [PerlengkapanKebersihanController::class, 'getAll']);
-    // tambah untuk baku pembanding dan suku cadang nanti
+// ROUTES FOR PERCEPAT NEW ============================================================================
+Route::prefix('v1')->group(function () {
+    // PUBLIC ROUTES
+    Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
+    Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
 
-    // PERMINTAAN
-    Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
-    Route::apiResource('permintaan-perlengkapan-kebersihan', PerlengkapanKebersihanController::class)->only(['index', 'store']);
-    Route::apiResource('permintaan-atk', PermintaanAtkController::class);
+    // PROTECTED ROUTES
+    Route::middleware(['jwt'])->group(function () {
+        // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
+        Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
+        Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
+        Route::get('barang-perlengkapan-kebersihan-all', [PermintaanPerlengkapanKebersihanController::class, 'getAll']);
+        // tambah untuk baku pembanding dan suku cadang nanti
 
-    // DATA LIST PERMINTAAN PERLENGKAPAN KEBERSIHAN
-    Route::get('list-permintaan-perlengkapan-kebersihan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'list_permintaan_perlengkapan_kebersihan']);
-    Route::get('download-permintaan-perlengkapan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'download_permintaan_perlengkapan']);
+        // PERMINTAAN
+        Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
+        Route::apiResource('permintaan-perlengkapan-kebersihan', PermintaanPerlengkapanKebersihanController::class)->only(['index', 'store']);
+        Route::apiResource('permintaan-atk', PermintaanAtkController::class);
 
-    // DATA LIST PERMINTAAN REAGEN
-    Route::get('list-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'list_permintaan_reagen']);
-    Route::get('download-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'download_permintaan_reagen']);
+        // DATA LIST PERMINTAAN PERLENGKAPAN KEBERSIHAN
+        Route::get('list-permintaan-perlengkapan-kebersihan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'list_permintaan_perlengkapan_kebersihan']);
+        Route::get('download-permintaan-perlengkapan/{permintaan}', [PermintaanListPerlengkapanKebersihanController::class, 'download_permintaan_perlengkapan']);
 
-    // DATA LIST PERMINTAAN ATK
-    Route::get('list-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'list_permintaan_atk']);
-    Route::get('download-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'download_permintaan_atk']);
+        // DATA LIST PERMINTAAN REAGEN
+        Route::get('list-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'list_permintaan_reagen']);
+        Route::get('download-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'download_permintaan_reagen']);
 
-    // VERIFIKASI PERMINTAAN PERLENGKAPAN KEBERSIHAN
-    Route::get('verif-perlengkapan-kebersihan', [VerifPerlengkapanKebersihanController::class, 'index']);
-    Route::post('verif-katim-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_katim']);
-    Route::post('verif-kabagtu-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_kabagtu']);
-    Route::post('verif-petugas-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_petugas']);
+        // DATA LIST PERMINTAAN ATK
+        Route::get('list-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'list_permintaan_atk']);
+        Route::get('download-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'download_permintaan_atk']);
 
-    // VERIFIKASI PERMINTAAN REAGEN
-    Route::get('verif-reagen', [VerifReagenController::class, 'index']);
-    Route::post('verif-katim-reagen/{id}', [VerifReagenController::class, 'verif_katim']);
-    Route::post('verif-kabagtu-reagen/{id}', [VerifReagenController::class, 'verif_kabagtu']);
-    Route::post('verif-petugas-reagen/{id}', [VerifReagenController::class, 'verif_petugas']);
+        // VERIFIKASI PERMINTAAN PERLENGKAPAN KEBERSIHAN
+        Route::get('verif-perlengkapan-kebersihan', [VerifPerlengkapanKebersihanController::class, 'index']);
+        Route::post('verif-katim-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_katim']);
+        Route::post('verif-kabagtu-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_kabagtu']);
+        Route::post('verif-petugas-perlengkapan-kebersihan/{id}', [VerifPerlengkapanKebersihanController::class, 'verif_petugas']);
 
-    // VERIFIKASI PERMINTAAN ATK
-    Route::get('verif-atk', [VerifAtkController::class, 'index']);
-    Route::post('verif-katim-atk/{id}', [VerifAtkController::class, 'verif_katim']);
-    Route::post('verif-kabagtu-atk/{id}', [VerifAtkController::class, 'verif_kabagtu']);
-    Route::post('verif-petugas-atk/{id}', [VerifAtkController::class, 'verif_petugas']);
+        // VERIFIKASI PERMINTAAN REAGEN
+        Route::get('verif-reagen', [VerifReagenController::class, 'index']);
+        Route::post('verif-katim-reagen/{id}', [VerifReagenController::class, 'verif_katim']);
+        Route::post('verif-kabagtu-reagen/{id}', [VerifReagenController::class, 'verif_kabagtu']);
+        Route::post('verif-petugas-reagen/{id}', [VerifReagenController::class, 'verif_petugas']);
 
-    // DATA MASTER
-    Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
-    Route::apiResource('atk', AtkAdminController::class);
-    Route::apiResource('reagen', ReagenAdminController::class);
+        // VERIFIKASI PERMINTAAN ATK
+        Route::get('verif-atk', [VerifAtkController::class, 'index']);
+        Route::post('verif-katim-atk/{id}', [VerifAtkController::class, 'verif_katim']);
+        Route::post('verif-kabagtu-atk/{id}', [VerifAtkController::class, 'verif_kabagtu']);
+        Route::post('verif-petugas-atk/{id}', [VerifAtkController::class, 'verif_petugas']);
+
+        // DATA MASTER
+        Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
+        Route::apiResource('atk', AtkAdminController::class);
+        Route::apiResource('reagen', ReagenAdminController::class);
+    });
 });

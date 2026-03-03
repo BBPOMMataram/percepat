@@ -21,7 +21,7 @@ class VerifAtkController extends Controller
         $katim_id = User::where('external_user_id', $request->query('katim_id'))->first()->id;
         $is_kabagtu = $request->query('is_kabagtu', 0);
 
-        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
+        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
             ->where('jenis', 'ATK')
             ->latest();
 

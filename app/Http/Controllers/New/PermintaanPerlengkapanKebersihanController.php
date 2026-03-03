@@ -10,14 +10,14 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PerlengkapanKebersihanController extends Controller
+class PermintaanPerlengkapanKebersihanController extends Controller
 {
     public function index(Request $request)
     {
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
 
-        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
+        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
             ->where('jenis', 'PERLENGKAPAN KEBERSIHAN')
             ->latest();
 

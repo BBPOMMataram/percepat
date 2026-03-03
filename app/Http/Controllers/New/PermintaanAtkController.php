@@ -16,7 +16,7 @@ class PermintaanAtkController extends Controller
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
 
-        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim'])
+        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
             ->where('jenis', 'ATK')
             ->latest();
 
