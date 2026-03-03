@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class Atk extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'stock',
+        'satuan',
+    ];
 }

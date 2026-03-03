@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
-use App\Models\PerlengkapanKebersihan;
+use App\Models\ApiReagen;
 use Illuminate\Http\Request;
 
-class PerlengkapanKebersihanAdminController extends Controller
+class ReagenAdminController extends Controller
 {
     // UNTUK crud ADMIN PERCEPAT
     function index(Request $request)
@@ -15,7 +15,7 @@ class PerlengkapanKebersihanAdminController extends Controller
         $page = $request->query('page', 1);
         $name_query = $request->query('name');
 
-        $query = PerlengkapanKebersihan::where('name', 'like', '%' . $name_query . '%')
+        $query = ApiReagen::where('name', 'like', '%' . $name_query . '%')
             ->orderBy('name', 'asc');
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
@@ -31,27 +31,29 @@ class PerlengkapanKebersihanAdminController extends Controller
             'name' => 'required|string|max:255',
             'stock' => 'required|integer',
             'satuan' => 'required|string|max:50',
+            'expired' => 'nullable|date',
         ]);
 
-        PerlengkapanKebersihan::create($request->only('name', 'stock', 'satuan'));
+        ApiReagen::create($request->only('name', 'stock', 'satuan', 'expired'));
         return response()->json(['message' => 'Data berhasil tersimpan!'], 201);
     }
 
-    function update(Request $request, PerlengkapanKebersihan $perlengkapanKebersihan)
+    function update(Request $request, ApiReagen $reagen)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'stock' => 'required|integer',
             'satuan' => 'required|string|max:50',
+            'expired' => 'nullable|date',
         ]);
 
-        $perlengkapanKebersihan->update($request->only('name', 'stock', 'satuan'));
+        $reagen->update($request->only('name', 'stock', 'satuan', 'expired'));
         return response()->json(['message' => 'Data berhasil diupdate!']);
     }
 
-    function destroy(PerlengkapanKebersihan $perlengkapanKebersihan)
+    function destroy(ApiReagen $reagen)
     {
-        $perlengkapanKebersihan->delete();
+        $reagen->delete();
         return response()->json(['message' => 'Data berhasil dihapus!'], 204);
     }
 }

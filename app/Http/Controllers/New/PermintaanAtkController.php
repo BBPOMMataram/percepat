@@ -4,7 +4,10 @@ namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
 use App\Models\Permintaan;
+use App\Models\PermintaanListAtk;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PermintaanAtkController extends Controller
 {
@@ -44,7 +47,7 @@ class PermintaanAtkController extends Controller
 
             $data = new Permintaan();
 
-            $data->jenis = 'Reagen dan Bahan Laboratorium Lain';
+            $data->jenis = 'ATK';
             $data->bidang_id = null; //dibuat null untuk menyesuaikan bidang user auth (si mandalika), ini untuk permintaan baru setelah SSO
             $data->bidang_id_auth_external = $pemohon['employee']['fungsi_id']; // sbg ganti nya gunakan fungsi dari user auth external  
             $data->bidang_name_auth_external = $pemohon['employee']['fungsi']['name']; // ini untuk langsung simpan nama bidang juga biar gak ribet join ke tabel bidang
@@ -70,9 +73,9 @@ class PermintaanAtkController extends Controller
 
             // STORE LIST BARANG
             foreach ($listBarang as $value) {
-                $newInventory = new PermintaanList();
+                $newInventory = new PermintaanListAtk();
                 $newInventory->permintaan_id = $data->id; //permintaan id
-                $newInventory->barang_id = $value['id'];
+                $newInventory->atk_id = $value['id'];
                 $newInventory->jumlahpermintaan = $value['jumlah'];
                 $newInventory->keterangan = $value['keterangan'];
 

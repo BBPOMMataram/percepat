@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
-use App\Models\PerlengkapanKebersihan;
+use App\Models\Atk;
 use Illuminate\Http\Request;
 
-class PerlengkapanKebersihanAdminController extends Controller
+class AtkAdminController extends Controller
 {
     // UNTUK crud ADMIN PERCEPAT
     function index(Request $request)
@@ -15,8 +15,9 @@ class PerlengkapanKebersihanAdminController extends Controller
         $page = $request->query('page', 1);
         $name_query = $request->query('name');
 
-        $query = PerlengkapanKebersihan::where('name', 'like', '%' . $name_query . '%')
+        $query = Atk::where('name', 'like', '%' . $name_query . '%')
             ->orderBy('name', 'asc');
+
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
             // 'kode_or_name' => $kode_or_name
@@ -33,11 +34,11 @@ class PerlengkapanKebersihanAdminController extends Controller
             'satuan' => 'required|string|max:50',
         ]);
 
-        PerlengkapanKebersihan::create($request->only('name', 'stock', 'satuan'));
+        Atk::create($request->only('name', 'stock', 'satuan'));
         return response()->json(['message' => 'Data berhasil tersimpan!'], 201);
     }
 
-    function update(Request $request, PerlengkapanKebersihan $perlengkapanKebersihan)
+    function update(Request $request, Atk $atk)
     {
         $request->validate([
             'name' => 'required|string|max:255',
@@ -45,13 +46,13 @@ class PerlengkapanKebersihanAdminController extends Controller
             'satuan' => 'required|string|max:50',
         ]);
 
-        $perlengkapanKebersihan->update($request->only('name', 'stock', 'satuan'));
+        $atk->update($request->only('name', 'stock', 'satuan'));
         return response()->json(['message' => 'Data berhasil diupdate!']);
     }
 
-    function destroy(PerlengkapanKebersihan $perlengkapanKebersihan)
+    function destroy(Atk $atk)
     {
-        $perlengkapanKebersihan->delete();
+        $atk->delete();
         return response()->json(['message' => 'Data berhasil dihapus!'], 204);
     }
 }

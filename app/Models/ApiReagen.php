@@ -14,4 +14,11 @@ class ApiReagen extends Model
     protected $casts = [
         'expired' => 'datetime'
     ];
+
+    protected $fillable = [
+        'name',
+        'stock',
+        'satuan',
+        'expired',
+    ];
 }

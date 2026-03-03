@@ -8,6 +8,8 @@ use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
+use App\Http\Controllers\New\AtkAdminController;
+use App\Http\Controllers\New\ReagenAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanAtkController;
@@ -161,4 +163,6 @@ Route::middleware(['jwt'])->prefix('v1')->group(function () {
 
     // DATA MASTER
     Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
+    Route::apiResource('atk', AtkAdminController::class);
+    Route::apiResource('reagen', ReagenAdminController::class);
 });
