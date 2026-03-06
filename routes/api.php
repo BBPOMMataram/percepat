@@ -11,6 +11,7 @@ use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\New\AtkAdminController;
 use App\Http\Controllers\New\ReagenAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
+use App\Http\Controllers\New\PerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanPerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanAtkController;
 use App\Http\Controllers\New\PermintaanListPerlengkapanKebersihanController;
@@ -123,6 +124,7 @@ Route::prefix('v1')->group(function () {
     // PUBLIC ROUTES
     Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
     Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
+    Route::get('barang/perlengkapan', [PerlengkapanKebersihanController::class, 'get_data_perlengkapan']);
 
     // PROTECTED ROUTES
     Route::middleware(['jwt'])->group(function () {
