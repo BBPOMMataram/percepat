@@ -24,6 +24,7 @@ use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
 use App\Http\Controllers\PermintaanListAtkController;
 use App\Http\Controllers\New\PermintaanListAtkController as NewPermintaanListAtkController;
+use App\Http\Controllers\New\PenerimaanController as NewPenerimaanController;
 use App\Http\Controllers\PermintaanReagenController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SurveyPelananPublicController;
@@ -173,5 +174,10 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
         Route::apiResource('atk', AtkAdminController::class);
         Route::apiResource('reagen', ReagenAdminController::class);
+
+        // PERNERIMAAN
+        Route::apiResource('penerimaan-perlengkapan', PerlengkapanKebersihanAdminController::class);
+        Route::apiResource('penerimaan-atk', AtkAdminController::class);
+        Route::apiResource('penerimaan-reagen', NewPenerimaanController::class);
     });
 });

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// NAMA NYA INI UNTUK PENERIMAAN REAGEN, KALO ATK DAN PERLENGKAPAN NAMANYA PENERIMAAN
 class Pembelian extends Model
 {
     use HasFactory;

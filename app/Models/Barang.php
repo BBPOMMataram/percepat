@@ -14,9 +14,9 @@ class Barang extends Model
         'expired' => 'datetime'
     ];
 
-    // protected $fillable = [
-    //     'stock',
-    // ];
+    protected $fillable = [
+        'stock',
+    ];
 
     function getMsdsAttribute($value)
     {
