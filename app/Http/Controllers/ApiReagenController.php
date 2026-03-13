@@ -148,8 +148,16 @@ class ApiReagenController extends Controller
     function getAll(Request $request)
     {
         $name_query = $request->query('name');
+        $isGroupByName = $request->query('groupbyname', false);
 
-        $responseReagen = ApiReagen::where('name', 'like', '%' . $name_query . '%')->get();
+        $responseReagen = ApiReagen::where('name', 'like', '%' . $name_query . '%');
+
+        if ($isGroupByName) {
+            $responseReagen = $responseReagen->select('name')->distinct();
+        }
+
+        $responseReagen = $responseReagen->get();
+
         return response()->json($responseReagen);
     }
 

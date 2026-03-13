@@ -10,9 +10,15 @@ class Pembelian extends Model
 {
     use HasFactory;
     protected $dateFormat = 'Y-m-d H:i:s';
+
     protected $casts = [
         'expired' => 'datetime'
     ];
+
+    protected $fillable = [
+        'barangs_id',
+    ];
+
     /**
      * Get the barang associated with the Pembelian
      *

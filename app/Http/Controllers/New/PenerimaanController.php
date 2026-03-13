@@ -4,8 +4,10 @@ namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
 use App\Models\ApiReagen;
+use App\Models\Barang;
 use App\Models\Pembelian;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PenerimaanController extends Controller
 {
@@ -33,13 +35,37 @@ class PenerimaanController extends Controller
     function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'stock' => 'required|integer',
-            'satuan' => 'required|string|max:50',
+            'barangId' => 'required',
+            'jumlah' => 'required|integer',
+            'vendor' => 'required|string|max:255',
+            'tglTerima' => 'required|date',
             'expired' => 'nullable|date',
         ]);
 
-        ApiReagen::create($request->only('name', 'stock', 'satuan', 'expired'));
+        DB::transaction(function () use ($request) {
+            $barang = Barang::where('name', $request->barangNama)
+                ->where('expired', $request->expired)
+                ->first();
+
+            if ($barang) {
+                $barang->increment('stock', $request->jumlah);
+            } else {
+                $barang = Barang::create([
+                    'name' => $request->barangNama,
+                    'satuan' => $request->barangsatuan,
+                    'stock' => $request->jumlah,
+                    'expired' => $request->expired
+                ]);
+            }
+
+            Pembelian::create([
+                'barangs_id' => $barang->id,
+                'jumlah' => $request->jumlah,
+                'vendor' => $request->vendor,
+                'created_at' => $request->tglTerima
+            ]);
+        });
+
         return response()->json(['message' => 'Data berhasil tersimpan!'], 201);
     }
 
