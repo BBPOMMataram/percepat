@@ -17,6 +17,9 @@ class Pembelian extends Model
 
     protected $fillable = [
         'barangs_id',
+        'jumlah',
+        'vendor',
+        'created_at'
     ];
 
     /**

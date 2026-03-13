@@ -53,6 +53,7 @@ class PenerimaanController extends Controller
             // JIKA ADA BARANG YG SAMA NAMA DAN EXPIRED MAKA HANYA UPDATE STOCK
             if ($barangWithNameAndExpiredSameSelected) {
                 $barangWithNameAndExpiredSameSelected->increment('stock', $request->jumlah);
+                $newBarangId = $barangWithNameAndExpiredSameSelected->id;
             } else {
                 // JIKA TIDAK MAKA BUAT BARANG BARU
                 $barangNew = Barang::create([
@@ -61,10 +62,11 @@ class PenerimaanController extends Controller
                     'stock' => $request->jumlah,
                     'expired' => $request->tglExpired
                 ]);
+                $newBarangId = $barangNew->id;
             }
 
             Pembelian::create([
-                'barangs_id' => $barangWithNameAndExpiredSameSelected ? $barangWithNameAndExpiredSameSelected->id : $barangNew->id,
+                'barangs_id' => $newBarangId,
                 'jumlah' => $request->jumlah,
                 'vendor' => $request->vendor,
                 'created_at' => $request->tglTerima
@@ -84,38 +86,41 @@ class PenerimaanController extends Controller
             'tglExpired' => 'nullable|date',
         ]);
 
-        return [$request->all(), $penerimaan_reagen];
         DB::transaction(function () use ($request, $penerimaan_reagen) {
-            // Calculate stock delta, jumlah nya jadi jumlah dikurangi jumlah lama itu yg ditambahkan ke stock
-            $oldJumlah = $penerimaan_reagen->jumlah ?? 0;
-            $delta = $request->jumlah - $oldJumlah;
-
-            // JIKA BARANG NYA TIDAK DIGANTI MAKA HANYA UPDATE STOCK DAN SESUAIKAN DATA PEMBELIANNYA
-            if ($request->barangId == $penerimaan_reagen->barangs_id) {
-                $barang = Barang::where('name', $request->barangNama)
-                    ->where('expired', $request->expired)
-                    ->first();
-
-                if (!$barang) {
-                    $barang = Barang::create([
-                        'name' => $request->barangNama,
-                        'satuan' => $request->barangsatuan ?? $penerimaan_reagen->barang->satuan,
-                        'stock' => $request->jumlah,
-                        'expired' => $request->expired
-                    ]);
-                    // If new Barang, stock already set
-                } else {
-                    $barang->increment('stock', $delta);
-                }
-                $penerimaan_reagen->barangs_id = $barang->id;
+            // First, reverse the old stock addition (like destroy)
+            $oldBarang = $penerimaan_reagen->barang;
+            if ($oldBarang) {
+                $oldBarang->decrement('stock', $penerimaan_reagen->jumlah);
             }
-            // Update Pembelian
-            $penerimaan_reagen->jumlah = $request->jumlah;
-            $penerimaan_reagen->vendor = $request->vendor;
-            $penerimaan_reagen->received_at = $request->tglTerima; // Assume received_at column or map to updated_at
-            $penerimaan_reagen->save();
 
-            $penerimaan_reagen->load('barang'); // Ensure relation for delta
+            // Now handle new barang like in store
+            $barangWithNameAndExpiredSameSelected = Barang::where('name', $request->barangNama)
+                ->where('expired', $request->tglExpired)->first();
+
+            $barangSelected = Barang::where('name', $request->barangNama)->first();
+
+            if ($barangWithNameAndExpiredSameSelected) {
+                // Update stock of existing matching barang
+                $barangWithNameAndExpiredSameSelected->increment('stock', $request->jumlah);
+                $newBarangId = $barangWithNameAndExpiredSameSelected->id;
+            } else {
+                // Create new barang
+                $barangNew = Barang::create([
+                    'name' => $barangSelected->name,
+                    'satuan' => $barangSelected->satuan,
+                    'stock' => $request->jumlah,
+                    'expired' => $request->tglExpired
+                ]);
+                $newBarangId = $barangNew->id;
+            }
+
+            // Update the Pembelian record
+            $penerimaan_reagen->update([
+                'barangs_id' => $newBarangId,
+                'jumlah' => $request->jumlah,
+                'vendor' => $request->vendor,
+                'created_at' => $request->tglTerima
+            ]);
         });
 
         return response()->json(['message' => 'Data berhasil diupdate!']);
@@ -123,8 +128,12 @@ class PenerimaanController extends Controller
 
     function destroy(Pembelian $penerimaan_reagen)
     {
-        $penerimaan_reagen->barang()->decrement('stock', (int) $penerimaan_reagen->jumlah);
-        $penerimaan_reagen->delete();
+        DB::transaction(function () use ($penerimaan_reagen) {
+            if ($penerimaan_reagen->barang) {
+                $penerimaan_reagen->barang->decrement('stock', $penerimaan_reagen->jumlah);
+            }
+            $penerimaan_reagen->delete();
+        });
 
         return response()->json(['message' => 'Data berhasil dihapus!']);
     }
