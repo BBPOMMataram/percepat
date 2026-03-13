@@ -20,7 +20,7 @@ class AtkAdminController extends Controller
 
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
-            // 'kode_or_name' => $kode_or_name
+            'name' => $name_query
         ]);
 
         return response()->json($data);
