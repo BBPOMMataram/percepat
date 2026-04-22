@@ -85,4 +85,23 @@ class PermintaanReagenController extends Controller
 
         return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
     }
+
+    public function destroy($id)
+    {
+        $permintaan = Permintaan::find($id);
+
+        if (!$permintaan) {
+            return response()->json(['status' => 0, 'msg' => 'Data tidak ditemukan!'], 404);
+        }
+
+        DB::transaction(function () use ($permintaan) {
+            // Hapus list barang terlebih dahulu
+            PermintaanList::where('permintaan_id', $permintaan->id)->delete();
+
+            // Hapus permintaan
+            $permintaan->delete();
+        });
+
+        return response()->json(['status' => 1, 'msg' => 'Data berhasil dihapus!']);
+    }
 }

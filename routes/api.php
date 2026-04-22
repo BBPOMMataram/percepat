@@ -129,6 +129,7 @@ Route::prefix('v1')->group(function () {
 
     // PROTECTED ROUTES
     Route::middleware(['jwt'])->group(function () {
+
         // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
         Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
         Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
