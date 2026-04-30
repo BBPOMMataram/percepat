@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Bidang;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -199,5 +200,47 @@ class UserController extends Controller
             })
             ->rawColumns(['actions', 'photo', 'signature'])
             ->toJson();
+    }
+
+    public function updateSignature(Request $request)
+    {
+        $request->validate([
+            'signature_path' => 'required|string',
+        ]);
+
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        // Hapus signature lama jika ada
+        if ($user->signature && Storage::disk('public')->exists($user->signature)) {
+            Storage::disk('public')->delete($user->signature);
+        }
+
+        $signatureData = $request->input('signature_path');
+
+        if (str_starts_with($signatureData, 'data:')) {
+            $signatureData = preg_replace('/^data:image\/\w+;base64,/', '', $signatureData);
+            $decoded = base64_decode($signatureData);
+        } else {
+            $decoded = base64_decode($signatureData);
+        }
+
+        if ($decoded === false) {
+            return response()->json([
+                'message' => 'Invalid signature data',
+            ], 422);
+        }
+
+        $filename = 'signature-' . time() . '.png';
+        $path = 'signatures/' . $filename;
+
+        Storage::disk('public')->put($path, $decoded); // ← eksplisit disk public
+
+        $user->signature = $path;
+        $user->save();
+
+        return response()->json([
+            'message' => 'Signature updated successfully',
+        ]);
     }
 }

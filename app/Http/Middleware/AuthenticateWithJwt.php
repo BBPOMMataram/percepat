@@ -52,8 +52,8 @@ class AuthenticateWithJwt
             // Set supaya bisa pakai auth()->user(), tapi default guard nya harus set ke 'api' di config/auth.php
             // Auth::guard('api')->setUser($user);
             // 🔥 INI WAJIB
-            Auth::setUser($user);          // set user global
             Auth::shouldUse('api');        // paksa guard api
+            Auth::setUser($user);          // set user global
         } catch (\Exception $e) {
             return response()->json(['message' => 'Invalid token', 'error' => $e->getMessage()], 401);
         }
