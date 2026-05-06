@@ -61,4 +61,9 @@ class Permintaan extends Model
     {
         return $this->hasOne(User::class, 'id', 'penyerah_id');
     }
+
+    public function permintaanList()
+    {
+        return $this->hasMany(PermintaanList::class);
+    }
 }
