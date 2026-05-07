@@ -36,37 +36,10 @@ class PermintaanReagenController extends Controller
             'peminta'
         ])->findOrFail($id);
 
-        // Ambil external_user_id dari user lokal
-        // $createdByExternalId = $data->createdByUser?->external_user_id;
         $katimExternalId     = $data->katim?->external_user_id;
 
-        // Query ke database auth eksternal
-        // $externalUser = DB::connection('db_auth')
-        // ->table('users')  // sesuaikan nama tabel di DB auth
-        // ->where('id', $createdByExternalId)
-        // ->first();
-
-        // Reconstruct pemohon sesuai struktur di store
-        // $pemohon = $externalUser ? [
-        //     'id'       => $externalUser->id,
-        //     'name'     => $externalUser->name,
-        //     'employee' => [
-        //         'fungsi_id' => $data->bidang_id_auth_external,
-        //         'fungsi'    => [
-        //             'name' => $data->bidang_name_auth_external,
-        //         ],
-        //     ],
-        // ] : null;
-
         // Reconstruct listBarang
-        $listBarang = $data->permintaanList->map(function ($item) {
-            return [
-                'id'         => $item->barang_id,
-                'nama'       => $item->barang?->nama,
-                'jumlah'     => $item->jumlahpermintaan,
-                'keterangan' => $item->keterangan,
-            ];
-        });
+        $listBarang = $data->permintaanList;
 
         return response()->json([
             'status' => 1,

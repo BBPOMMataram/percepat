@@ -139,7 +139,8 @@ Route::prefix('v1')->group(function () {
 
         // PERMINTAAN
         Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
-        Route::apiResource('permintaan-perlengkapan-kebersihan', PermintaanPerlengkapanKebersihanController::class)->only(['index', 'store']);
+        Route::apiResource('permintaan-perlengkapan-kebersihan', PermintaanPerlengkapanKebersihanController::class)
+            ->parameters(['permintaan-perlengkapan-kebersihan' => 'ppk']);
         Route::apiResource('permintaan-atk', PermintaanAtkController::class);
 
         // DATA LIST PERMINTAAN PERLENGKAPAN KEBERSIHAN

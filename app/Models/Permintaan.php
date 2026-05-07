@@ -66,4 +66,14 @@ class Permintaan extends Model
     {
         return $this->hasMany(PermintaanList::class);
     }
+
+    public function permintaanListAtk()
+    {
+        return $this->hasMany(PermintaanListAtk::class);
+    }
+
+    public function permintaanListPerlengkapanKebersihan()
+    {
+        return $this->hasMany(PermintaanListPerlengkapanKebersihan::class);
+    }
 }

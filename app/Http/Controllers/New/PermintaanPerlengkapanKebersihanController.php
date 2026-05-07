@@ -28,6 +28,35 @@ class PermintaanPerlengkapanKebersihanController extends Controller
         return response()->json($data);
     }
 
+    public function show($id)
+    {
+        $data = Permintaan::with([
+            'permintaanListPerlengkapanKebersihan.barang',
+            // 'createdByUser',
+            'katim',
+            'peminta'
+        ])->findOrFail($id);
+
+        $katimExternalId     = $data->katim?->external_user_id;
+
+        // Reconstruct listBarang
+        $listBarang = $data->permintaanListPerlengkapanKebersihan;
+
+        return response()->json([
+            'status' => 1,
+            'data'   => [
+                'id'         => $data->id,
+                'pemohon'    => $data->peminta?->external_user_id, // cukup id eksternal saja karena nanti di frontend bisa query lagi untuk dapat data lengkap pemohon
+                'createdAt'  => $data->tgl_permintaan,
+                'listBarang' => $listBarang,
+                'katimId'    => $katimExternalId,
+                'nourut'     => $data->nourut,
+                'jenis'      => $data->jenis,
+                'created_at' => $data->created_at,
+            ],
+        ]);
+    }
+
     public function store(Request $request)
     {
         $this->validate($request, [
@@ -85,6 +114,71 @@ class PermintaanPerlengkapanKebersihanController extends Controller
         });
 
         return response(['status' => 1, 'msg' => 'Data berhasil tersimpan!']);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $this->validate($request, [
+            'pemohon'    => ['required'],
+            'createdAt'  => ['required'],
+            'listBarang' => ['required'],
+            'katimId'    => ['required'],
+        ]);
+
+        $listBarang = $request->listBarang;
+        if (!$listBarang) {
+            return response()->json(['status' => 1, 'msg' => 'Barang tidak boleh kosong !'], 400);
+        }
+
+        $data = Permintaan::findOrFail($id);
+
+        DB::transaction(function () use ($request, $listBarang, $data) {
+            $pemohon = $request->pemohon;
+
+            $data->bidang_id_auth_external    = $pemohon['employee']['fungsi_id'];
+            $data->bidang_name_auth_external  = $pemohon['employee']['fungsi']['name'];
+            $data->katim_selected             = User::where('external_user_id', $request->katimId)->first()->id;
+            $userInternalId                   = User::where('external_user_id', $pemohon['id'])->first()->id;
+            $data->created_by                 = $userInternalId;
+            $data->tgl_permintaan             = $request->createdAt;
+
+            $data->status_id = 1; // set status kembali ke "Permohonan" setiap kali data diupdate
+            $data->save();
+
+            // HAPUS LIST BARANG LAMA LALU INSERT ULANG
+            PermintaanListPerlengkapanKebersihan::where('permintaan_id', $data->id)->delete();
+
+            foreach ($listBarang as $value) {
+                $newInventory = new PermintaanListPerlengkapanKebersihan();
+                $newInventory->permintaan_id    = $data->id;
+                $newInventory->perlengkapan_kebersihan_id = $value['id'];
+                $newInventory->jumlahpermintaan = $value['jumlah'];
+                $newInventory->keterangan       = $value['keterangan'];
+
+                $newInventory->save();
+            }
+        });
+
+        return response(['status' => 1, 'msg' => 'Data berhasil diperbarui!']);
+    }
+
+    public function destroy($id)
+    {
+        $permintaan = Permintaan::find($id);
+
+        if (!$permintaan) {
+            return response()->json(['status' => 0, 'msg' => 'Data tidak ditemukan!'], 404);
+        }
+
+        DB::transaction(function () use ($permintaan) {
+            // Hapus list barang terlebih dahulu
+            PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->delete();
+
+            // Hapus permintaan
+            $permintaan->delete();
+        });
+
+        return response()->json(['status' => 1, 'msg' => 'Data berhasil dihapus!']);
     }
 
     // UNTUK DROPDOWN
