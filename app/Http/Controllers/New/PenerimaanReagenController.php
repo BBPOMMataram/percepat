@@ -9,7 +9,7 @@ use App\Models\Pembelian;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class PenerimaanController extends Controller
+class PenerimaanReagenController extends Controller
 {
     // UNTUK crud ADMIN PERCEPAT
     function index(Request $request)

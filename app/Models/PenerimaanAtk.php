@@ -9,6 +9,13 @@ class PenerimaanAtk extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'atk_id',
+        'jumlah',
+        'vendor',
+        'created_at'
+    ];
+
     public function atk()
     {
         return $this->belongsTo(Atk::class);
