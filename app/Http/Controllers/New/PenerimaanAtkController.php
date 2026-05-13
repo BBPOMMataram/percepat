@@ -78,47 +78,49 @@ class PenerimaanAtkController extends Controller
         return response()->json(['message' => 'Data berhasil tersimpan!'], 201);
     }
 
-    function update(Request $request, PenerimaanAtk $penerimaan_reagen)
+    function update(Request $request, PenerimaanAtk $penerimaan_atk)
     {
         $request->validate([
             'barangNama' => 'required',
             'jumlah' => 'required|integer',
             'vendor' => 'required|string|max:255',
             'tglTerima' => 'required|date',
-            'tglExpired' => 'nullable|date',
+            // 'tglExpired' => 'nullable|date',
         ]);
 
-        DB::transaction(function () use ($request, $penerimaan_reagen) {
+        DB::transaction(function () use ($request, $penerimaan_atk) {
             // First, reverse the old stock addition (like destroy)
-            $oldBarang = $penerimaan_reagen->barang;
+            $oldBarang = $penerimaan_atk->atk;
             if ($oldBarang) {
-                $oldBarang->decrement('stock', $penerimaan_reagen->jumlah);
+                $oldBarang->decrement('stock', $penerimaan_atk->jumlah);
             }
 
             // Now handle new barang like in store
-            $barangWithNameAndExpiredSameSelected = Atk::where('name', $request->barangNama)
-                ->where('expired', $request->tglExpired)->first();
+            // $barangWithNameAndExpiredSameSelected = Atk::where('name', $request->barangNama)
+            //     ->where('expired', $request->tglExpired)->first();
 
             $barangSelected = Atk::where('name', $request->barangNama)->first();
 
-            if ($barangWithNameAndExpiredSameSelected) {
-                // Update stock of existing matching barang
-                $barangWithNameAndExpiredSameSelected->increment('stock', $request->jumlah);
-                $newBarangId = $barangWithNameAndExpiredSameSelected->id;
-            } else {
-                // Create new barang
-                $barangNew = Atk::create([
-                    'name' => $barangSelected->name,
-                    'satuan' => $barangSelected->satuan,
-                    'stock' => $request->jumlah,
-                    'expired' => $request->tglExpired
-                ]);
-                $newBarangId = $barangNew->id;
-            }
+            $barangSelected->increment('stock', $request->jumlah);
+            $newBarangId = $barangSelected->id;
+            // if ($barangWithNameAndExpiredSameSelected) {
+            //     // Update stock of existing matching barang
+            //     $barangWithNameAndExpiredSameSelected->increment('stock', $request->jumlah);
+            //     $newBarangId = $barangWithNameAndExpiredSameSelected->id;
+            // } else {
+            //     // Create new barang
+            //     $barangNew = Atk::create([
+            //         'name' => $barangSelected->name,
+            //         'satuan' => $barangSelected->satuan,
+            //         'stock' => $request->jumlah,
+            //         'expired' => $request->tglExpired
+            //     ]);
+            //     $newBarangId = $barangNew->id;
+            // }
 
             // Update the PenerimaanAtk record
-            $penerimaan_reagen->update([
-                'barangs_id' => $newBarangId,
+            $penerimaan_atk->update([
+                'atk_id' => $newBarangId,
                 'jumlah' => $request->jumlah,
                 'vendor' => $request->vendor,
                 'created_at' => $request->tglTerima
@@ -128,13 +130,16 @@ class PenerimaanAtkController extends Controller
         return response()->json(['message' => 'Data berhasil diupdate!']);
     }
 
-    function destroy(PenerimaanAtk $penerimaan_reagen)
+    function destroy(PenerimaanAtk $penerimaan_atk)
     {
-        DB::transaction(function () use ($penerimaan_reagen) {
-            if ($penerimaan_reagen->barang) {
-                $penerimaan_reagen->barang->decrement('stock', $penerimaan_reagen->jumlah);
+        DB::transaction(function () use ($penerimaan_atk) {
+            if ($penerimaan_atk->atk) {
+                if ($penerimaan_atk->atk->stock < $penerimaan_atk->jumlah) {
+                    throw new \Exception('Stok tidak mencukupi untuk dibatalkan.');
+                }
+                $penerimaan_atk->atk->decrement('stock', $penerimaan_atk->jumlah);
             }
-            $penerimaan_reagen->delete();
+            $penerimaan_atk->delete();
         });
 
         return response()->json(['message' => 'Data berhasil dihapus!']);
