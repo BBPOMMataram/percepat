@@ -79,6 +79,9 @@ class PermintaanPerlengkapanKebersihanController extends Controller
 
             $data->jenis = 'PERLENGKAPAN KEBERSIHAN';
             $data->bidang_id = null; //dibuat null untuk menyesuaikan bidang user auth (si mandalika), ini untuk permintaan baru setelah SSO
+            if (!$pemohon['employee']['fungsi_id']) {
+                throw new \Exception('Anda belum memilih fungsi atau bidang di profile Anda. Silakan lengkapi data tersebut untuk dapat membuat permintaan.');
+            }
             $data->bidang_id_auth_external = $pemohon['employee']['fungsi_id']; // sbg ganti nya gunakan fungsi dari user auth external  
             $data->bidang_name_auth_external = $pemohon['employee']['fungsi']['name']; // ini untuk langsung simpan nama bidang juga biar gak ribet join ke tabel bidang
             // $data->kabid_id = $request->kabid_id; // cek dulu kenapa di comment, sepertinya nanti diisi setelah diapprove kabid (untuk menjadi kabid siapa yg approve duluan mgkn karena ada beberapa kabid di satu fungsi)
