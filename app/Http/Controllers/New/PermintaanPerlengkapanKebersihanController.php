@@ -16,13 +16,21 @@ class PermintaanPerlengkapanKebersihanController extends Controller
     {
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
+        $name_query = $request->query('name');
 
         $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
-            ->where('jenis', 'PERLENGKAPAN KEBERSIHAN')
-            ->latest();
+            ->where('jenis', 'PERLENGKAPAN KEBERSIHAN');
+
+        if ($name_query) {
+            $query->whereHas('permintaanListPerlengkapanKebersihan.barang', function ($q) use ($name_query) {
+                $q->where('name', 'like', '%' . $name_query . '%');
+            });
+        }
+
+        $query->latest();
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
-            // 'kode_or_name' => $kode_or_name
+            'name' => $name_query
         ]);
 
         return response()->json($data);
