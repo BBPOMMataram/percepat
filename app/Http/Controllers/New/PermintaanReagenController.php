@@ -8,6 +8,7 @@ use App\Models\PermintaanList;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PermintaanReagenController extends Controller
 {
@@ -33,6 +34,43 @@ class PermintaanReagenController extends Controller
         ]);
 
         return response()->json($data);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $perPage   = $request->query('per_page', 10);
+        $page      = $request->query('page', 1);
+        $nameQuery = $request->query('name');
+
+        $query = Permintaan::with([
+            'peminta',
+            'status',
+            'bidang',
+            'bidang.user',
+            'katim',
+            'penyerah',
+            'permintaanList.barang',
+        ])->where('jenis', 'Reagen dan Bahan Laboratorium Lain');
+
+        if ($nameQuery) {
+            $query->whereHas('permintaanList.barang', function ($q) use ($nameQuery) {
+                $q->where('name', 'like', '%' . $nameQuery . '%');
+            });
+        }
+
+        $query->latest();
+
+        $paginated = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $pdf = PDF::loadView('pdf.permintaan-reagen', [
+            'items'      => $paginated->items(),
+            'total'      => $paginated->total(),
+            'page' => $paginated->currentPage(),
+            'perPage'    => $paginated->perPage(),
+            'nameQuery'  => $nameQuery,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download("permintaan-reagen-hal{$page}.pdf");
     }
 
     public function show($id)

@@ -140,6 +140,9 @@ Route::prefix('v1')->group(function () {
         Route::get('barang-perlengkapan-kebersihan-all', [PermintaanPerlengkapanKebersihanController::class, 'getAll']);
         // tambah untuk baku pembanding dan suku cadang nanti
 
+        // DOWNLOAD PERMINTAAN
+        Route::get('/permintaan-reagen/export-pdf', [NewPermintaanReagenController::class, 'exportPdf']);
+
         // PERMINTAAN
         Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
         Route::apiResource('permintaan-perlengkapan-kebersihan', PermintaanPerlengkapanKebersihanController::class)
