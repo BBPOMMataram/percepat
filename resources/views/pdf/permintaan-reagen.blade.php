@@ -75,6 +75,14 @@
         @if ($nameQuery)
             &bull; Filter barang: <strong>{{ $nameQuery }}</strong>
         @endif
+        @if ($startDate || $endDate)
+            &bull; Periode:
+            <strong>
+                {{ $startDate ? \Carbon\Carbon::parse($startDate)->format('d/m/Y') : '...' }}
+                s/d
+                {{ $endDate ? \Carbon\Carbon::parse($endDate)->format('d/m/Y') : '...' }}
+            </strong>
+        @endif
     </div>
 
     <table>
