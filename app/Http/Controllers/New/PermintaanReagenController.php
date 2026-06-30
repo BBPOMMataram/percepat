@@ -70,7 +70,7 @@ class PermintaanReagenController extends Controller
             'nameQuery'  => $nameQuery,
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download("permintaan-reagen-hal{$page}.pdf");
+        return $pdf->download("permintaan-reagen.pdf");
     }
 
     public function show($id)

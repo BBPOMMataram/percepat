@@ -81,20 +81,20 @@
         <thead>
             <tr>
                 <th style="width:4%">No</th>
-                <th style="width:18%">Peminta</th>
-                <th style="width:15%">Bidang</th>
-                <th style="width:10%">Status</th>
-                <th style="width:13%">Katim</th>
-                <th style="width:13%">Penyerah</th>
-                <th style="width:27%">Daftar Barang</th>
+                <th style="width:15%">Tgl Permintaan</th>
+                <th style="width:14%">Peminta</th>
+                <th style="width:13%">Bidang</th>
+                <th style="width:9%">Status</th>
+                <th style="width:10%">Katim</th>
+                <th style="width:10%">Penyerah</th>
+                <th style="width:25%">Daftar Barang</th>
             </tr>
         </thead>
         <tbody>
             @forelse($items as $i => $item)
                 <tr>
                     <td>{{ ($page - 1) * $perPage + $i + 1 }}</td>
-
-                    {{-- Sesuaikan field dengan kolom di tabel kamu --}}
+                    <td>{{ \Carbon\Carbon::parse($item->tgl_permintaan)->format('d/m/Y') }}</td>
                     <td>{{ $item->peminta?->name ?? '-' }}</td>
                     <td>{{ $item->bidang?->name ?? '-' }}</td>
                     <td>
@@ -108,7 +108,13 @@
                         @if ($item->permintaanList && $item->permintaanList->count())
                             <ul class="barang-list">
                                 @foreach ($item->permintaanList as $list)
-                                    <li>{{ $list->barang?->name ?? '-' }}</li>
+                                    <li>
+                                        {{ $list->barang?->name ?? '-' }}
+                                        <span style="color:#6b7280">
+                                            (Minta: {{ $list->jumlahpermintaan }} / Realisasi:
+                                            {{ $list->jumlahrealisasi ?? '-' }})
+                                        </span>
+                                    </li>
                                 @endforeach
                             </ul>
                         @else
@@ -118,7 +124,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="7" style="text-align:center;padding:20px;color:#888">
+                    <td colspan="8" style="text-align:center;padding:20px;color:#888">
                         Tidak ada data
                     </td>
                 </tr>
