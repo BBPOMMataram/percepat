@@ -96,7 +96,7 @@
                     <td>{{ ($page - 1) * $perPage + $i + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($item->tgl_permintaan)->format('d/m/Y') }}</td>
                     <td>{{ $item->peminta?->name ?? '-' }}</td>
-                    <td>{{ $item->bidang?->name ?? '-' }}</td>
+                    <td>{{ $item->bidang?->name ?? ($item->bidang_name_auth_external ?? '-') }}</td>
                     <td>
                         <span class="badge" style="background:#dbeafe;color:#1d4ed8">
                             {{ $item->status?->name ?? '-' }}
