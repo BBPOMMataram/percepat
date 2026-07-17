@@ -96,7 +96,7 @@
                     <td style="text-align: left;" colspan="3">Tanggal Permintaan :
                         {{ $datapermintaan->tgl_permintaan->isoFormat('D MMMM Y') }}</td>
                     <td style="text-align: left;" colspan="3">Bidang atau Seksi :
-                        {{ $datapermintaan->bidang_name_auth_external }}
+                        {{ $datapermintaan->bidang_name_auth_external ?? $datapermintaan->bidang->name }}</td>
                     </td>
                 </tr>
                 <tr>

@@ -22,7 +22,8 @@ class PermintaanListReagenController extends Controller
 
     function download_permintaan_reagen($permintaanId)
     {
-        $datapermintaan = Permintaan::find($permintaanId);
+        $datapermintaan = Permintaan::with('bidang')->find($permintaanId);
+        // return $datapermintaan->bidang;
         $datapermintaanlist = PermintaanList::where('permintaan_id', $permintaanId)->get();
         $penyerah = $datapermintaan->penyerah_id ? ApiUser::find($datapermintaan->penyerah_id) : null;
         $kasub = ApiUser::where('position', 'kasubbagumum')->first();
