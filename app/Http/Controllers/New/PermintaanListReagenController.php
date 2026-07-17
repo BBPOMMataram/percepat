@@ -28,7 +28,7 @@ class PermintaanListReagenController extends Controller
         $penyerah = $datapermintaan->penyerah_id ? ApiUser::find($datapermintaan->penyerah_id) : null;
         $kasub = ApiUser::where('position', 'kasubbagumum')->first();
         $pemohon = ApiUser::find($datapermintaan->created_by);
-        $kabid = ApiUser::find($datapermintaan->katim_selected); // ga pake external_user_id karena saat membuat permintaan baru sudah menyimpan id user
+        $kabid = ApiUser::find($datapermintaan->katim_selected ?? $datapermintaan->kabid_id);
         function pdfSignature($model)
         {
             $signature = $model?->getRawOriginal('signature');

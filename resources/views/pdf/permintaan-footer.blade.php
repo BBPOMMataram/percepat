@@ -1,4 +1,3 @@
-
 <div id="footer">
     <table>
         <tr>
@@ -12,21 +11,29 @@
         <tr>
             <td>
                 @if ($datapermintaan->status_id >= 2)
-                @if ($kabid)
-                <span>@if ($kabidSignature) <img src="{{ $kabidSignature }}"
-                        alt="ttd kabid" width="150px" style="padding-left: 15px;">
-                    @endif</span><br />
-                <div style="width:180px; text-align:center;">{{ $kabid->name }}</div>
-                @endif
+                    @if ($kabid)
+                        <span>
+                            @if ($kabidSignature)
+                                <img src="{{ $kabidSignature }}" alt="ttd kabid" width="150px" style="padding-left: 15px;">
+                            @endif
+                        </span>
+                        <br />
+
+                        <div style="width:180px; text-align:center;">{{ $kabid->name }}</div>
+                    @endif
                 @endif
             </td>
             <td style="text-align: right; margin-right: 20px">
                 @if ($datapermintaan->status_id >= 1)
-                @if ($pemohon)
-                <span>@if($pemohonSignature) <img src={{ $pemohonSignature }} alt="ttd pemohon"
-                        width="150px">@endif</span><br />
-                <div style="width:180px; margin-left:auto; text-align:center;">{{ $pemohon->name }}</div>
-                @endif
+                    @if ($pemohon)
+                        <span>
+                            @if ($pemohonSignature)
+                                <img src={{ $pemohonSignature }} alt="ttd pemohon" width="150px">
+                            @endif
+                        </span>
+                        <br />
+                        <div style="width:180px; margin-left:auto; text-align:center;">{{ $pemohon->name }}</div>
+                    @endif
                 @endif
             </td>
         </tr>
@@ -36,8 +43,9 @@
         </tr>
         <br />
         <tr>
-            <td>Tanggal Penyerahan : {{ $datapermintaan->tgl_penyerahan ?
-                $datapermintaan->tgl_penyerahan->isoFormat('D MMM YYYY') : '' }}</td>
+            <td>Tanggal Penyerahan :
+                {{ $datapermintaan->tgl_penyerahan ? $datapermintaan->tgl_penyerahan->isoFormat('D MMM YYYY') : '' }}
+            </td>
         </tr>
         <tr>
             <td>
@@ -49,22 +57,29 @@
         <tr>
             <td>
                 @if ($datapermintaan->status_id >= 4)
-                @if ($kasub)
-                <span>@if ($kasubSignature) <img src="{{ $kasubSignature }}"
-                        alt="ttd kasub" width="150px" style="padding-left:15px">
-                    @endif</span><br />
-                <div style="width:180px; text-align:center;">{{ $kasub->name }}</div>
-                @endif
+                    @if ($kasub)
+                        <span>
+                            @if ($kasubSignature)
+                                <img src="{{ $kasubSignature }}" alt="ttd kasub" width="150px"
+                                    style="padding-left:15px">
+                            @endif
+                        </span>
+                        <br />
+                        <div style="width:180px; text-align:center;">{{ $kasub->name }}</div>
+                    @endif
                 @endif
             </td>
             <td style="text-align: right; margin-right: 20px">
                 {{-- MENAMPILKAN TTD PENYERAH SAAT SUDAH DISETUJUI OLEH PENYERAH, JADI TIDAK APA2 DEFAULT VALUE PENYERAH_ID PADA TABLE PERMINTAAN DIISI DULUAN BEGITU JUGA DENGAN YG LAINNYA --}}
-                @if ($datapermintaan->status_id >= 3) 
-                @if ($penyerah)
-                <span>@if($penyerahSignature) <img src="{{ $penyerahSignature }}" alt="ttd penyerah"
-                        width="150px">@endif</span><br />
-                <div style="width:180px; margin-left:auto; text-align:center;">{{ $penyerah->name }}</div>
-                @endif
+                @if ($datapermintaan->status_id >= 3)
+                    @if ($penyerah)
+                        <span>
+                            @if ($penyerahSignature)
+                                <img src="{{ $penyerahSignature }}" alt="ttd penyerah" width="150px">
+                            @endif
+                        </span><br />
+                        <div style="width:180px; margin-left:auto; text-align:center;">{{ $penyerah->name }}</div>
+                    @endif
                 @endif
             </td>
         </tr>
