@@ -142,6 +142,7 @@ Route::prefix('v1')->group(function () {
 
         // DOWNLOAD PERMINTAAN
         Route::get('/permintaan-reagen/export-pdf', [NewPermintaanReagenController::class, 'exportPdf']);
+        Route::get('/permintaan-atk/export-pdf', [PermintaanAtkController::class, 'exportPdf']);
 
         // PERMINTAAN
         Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);

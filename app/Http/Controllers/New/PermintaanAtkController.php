@@ -8,6 +8,7 @@ use App\Models\PermintaanListAtk;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PermintaanAtkController extends Controller
 {
@@ -32,6 +33,58 @@ class PermintaanAtkController extends Controller
         ]);
 
         return response()->json($data);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $perPage   = $request->query('per_page', 10);
+        $page      = $request->query('page', 1);
+        $nameQuery = $request->query('name');
+        $startDate = $request->query('start_date');
+        $endDate   = $request->query('end_date');
+
+        $query = Permintaan::with([
+            'peminta',
+            'status',
+            'bidang',
+            'bidang.user',
+            'katim',
+            'penyerah',
+            'permintaanListAtk.atk',
+        ])->where('jenis', 'ATK');
+
+        if ($nameQuery) {
+            $query->whereHas('permintaanListAtk.atk', function ($q) use ($nameQuery) {
+                $q->where('name', 'like', '%' . $nameQuery . '%');
+            });
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('tgl_permintaan', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59',
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('tgl_permintaan', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('tgl_permintaan', '<=', $endDate);
+        }
+
+        $query->latest();
+
+        $paginated = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $pdf = Pdf::loadView('pdf.permintaan-atk-export', [
+            'items'      => $paginated->items(),
+            'total'      => $paginated->total(),
+            'page'       => $paginated->currentPage(),
+            'perPage'    => $paginated->perPage(),
+            'nameQuery'  => $nameQuery,
+            'startDate'  => $startDate,
+            'endDate'    => $endDate,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download("permintaan-atk-hal{$page}.pdf");
     }
 
     public function show($id)
