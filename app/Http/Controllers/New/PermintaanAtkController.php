@@ -17,6 +17,8 @@ class PermintaanAtkController extends Controller
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
         $name_query = $request->query('name');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
         $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
             ->where('jenis', 'ATK');
@@ -26,10 +28,24 @@ class PermintaanAtkController extends Controller
                 $q->where('name', 'like', '%' . $name_query . '%');
             });
         }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('tgl_permintaan', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59',
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('tgl_permintaan', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('tgl_permintaan', '<=', $endDate);
+        }
+
         $query->latest();
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
-            'name' => $name_query
+            'name' => $name_query,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ]);
 
         return response()->json($data);
