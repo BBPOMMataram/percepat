@@ -186,6 +186,11 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('atk', AtkAdminController::class);
         Route::apiResource('reagen', ReagenAdminController::class);
 
+        // PENERIMAAN EXPORT PDF
+        Route::get('/penerimaan-reagen/export-pdf', [PenerimaanReagenController::class, 'exportPdf']);
+        Route::get('/penerimaan-atk/export-pdf', [NewPenerimaanAtkController::class, 'exportPdf']);
+        Route::get('/penerimaan-perlengkapan/export-pdf', [PenerimaanPerlengkapanController::class, 'exportPdf']);
+
         // PERNERIMAAN
         Route::apiResource('penerimaan-perlengkapan', PenerimaanPerlengkapanController::class);
         Route::apiResource('penerimaan-atk', NewPenerimaanAtkController::class);

@@ -7,6 +7,7 @@ use App\Models\PenerimaanPerlengkapanKebersihan;
 use App\Models\PerlengkapanKebersihan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class PenerimaanPerlengkapanController extends Controller
 {
@@ -46,6 +47,49 @@ class PenerimaanPerlengkapanController extends Controller
         ]);
 
         return response()->json($data);
+    }
+
+    function exportPdf(Request $request)
+    {
+        $perPage   = $request->query('per_page', 10);
+        $page      = $request->query('page', 1);
+        $nameQuery = $request->query('name');
+        $startDate = $request->query('start_date');
+        $endDate   = $request->query('end_date');
+
+        $query = PenerimaanPerlengkapanKebersihan::with('barang')->whereHas(
+            'barang',
+            function ($query) use ($nameQuery) {
+                $query->where('name', 'like', '%' . $nameQuery . '%');
+            }
+        );
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59',
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $query->latest();
+
+        $paginated = $query->paginate($perPage, ['*'], 'page', $page);
+
+        $pdf = PDF::loadView('pdf.penerimaan-perlengkapan-export', [
+            'items'      => $paginated->items(),
+            'total'      => $paginated->total(),
+            'page'       => $paginated->currentPage(),
+            'perPage'    => $paginated->perPage(),
+            'nameQuery'  => $nameQuery,
+            'startDate'  => $startDate,
+            'endDate'    => $endDate,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->download("penerimaan-perlengkapan-hal{$page}.pdf");
     }
 
     function store(Request $request)
