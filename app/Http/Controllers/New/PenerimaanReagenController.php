@@ -17,16 +17,33 @@ class PenerimaanReagenController extends Controller
         $perPage = $request->query('per_page', 10);
         $page = $request->query('page', 1);
         $name_query = $request->query('name');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
         $query = Pembelian::with('barang')->whereHas(
             'barang',
             function ($query) use ($name_query) {
                 $query->where('name', 'like', '%' . $name_query . '%');
             }
-        )->latest();
+        );
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('created_at', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59',
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('created_at', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('created_at', '<=', $endDate);
+        }
+
+        $query->latest();
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
-            // 'kode_or_name' => $kode_or_name
+            'name' => $name_query,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
         ]);
 
         return response()->json($data);
