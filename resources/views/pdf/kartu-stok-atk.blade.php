@@ -10,11 +10,6 @@
             margin: 0;
             padding: 15px 20px;
         }
-        #header {
-            border-bottom: 2px solid black;
-            padding-bottom: 8px;
-            margin-bottom: 12px;
-        }
         #header table {
             width: 100%;
             border-collapse: collapse;
@@ -29,35 +24,43 @@
         #logo img {
             width: 45px;
         }
-        #title {
+        #logo-text {
             text-align: center;
-        }
-        #title h2 {
-            margin: 0;
-            font-size: 13px;
             font-weight: bold;
-        }
-        #title h3 {
-            margin: 2px 0;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 10px;
         }
         #meta {
-            text-align: right;
+            width: 220px;
             font-size: 10px;
-            width: 180px;
         }
         #meta table {
             width: 100%;
+            border-collapse: collapse;
         }
         #meta table td {
-            padding: 1px 0;
+            padding: 2px 4px;
+            border: 1px solid black;
         }
         #meta table td:first-child {
-            width: 70px;
+            width: 100px;
+            font-weight: bold;
+        }
+        #title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 8px 0;
+        }
+        #lokasi {
+            border: 1px solid black;
+            padding: 4px 8px;
+            text-align: center;
+            font-size: 10px;
+            width: 80px;
+            margin-left: auto;
         }
         #info-barang {
-            margin-bottom: 10px;
+            margin: 8px 0;
         }
         #info-barang table {
             width: 100%;
@@ -66,7 +69,7 @@
             padding: 2px 0;
         }
         #info-barang table td:first-child {
-            width: 100px;
+            width: 60px;
         }
         #content table {
             width: 100%;
@@ -92,28 +95,26 @@
             <tr>
                 <td id="logo">
                     <img src="storage/bpomri.png" alt="Logo BBPOM">
+                    <div id="logo-text">BADAN POM RI</div>
                 </td>
-                <td id="title">
-                    <h2>BADAN POM RI</h2>
-                    <h3>KARTU STOK PERSIAAN</h3>
-                </td>
+                <td style="flex: 1;"></td>
                 <td id="meta">
                     <table>
                         <tr>
-                            <td>Form</td>
-                            <td>: POM-14.01CFM.01SOP.01IK.14A.02</td>
+                            <td>Nomor Formulir</td>
+                            <td>POM-14.01CFM.01SOP.01IK.14A.02</td>
                         </tr>
                         <tr>
-                            <td>Dibuat tanggal</td>
-                            <td>: 27 Juni 2019</td>
+                            <td>Tanggal Pembuatan</td>
+                            <td>27 Juni 2019</td>
                         </tr>
                         <tr>
-                            <td>Revisi</td>
-                            <td>: Oktober 2024</td>
+                            <td>Nomor / Tanggal Revisi</td>
+                            <td>04 / 21 Oktober 2024</td>
                         </tr>
                         <tr>
-                            <td>Halaman</td>
-                            <td>: 1 dari 1</td>
+                            <td>Nama Formulir</td>
+                            <td>Form Kartu Stok Persediaan</td>
                         </tr>
                     </table>
                 </td>
@@ -121,19 +122,22 @@
         </table>
     </div>
 
+    <div id="title">KARTU STOK PERSEDIAAN</div>
+
     <div id="info-barang">
         <table>
             <tr>
-                <td>Nama Barang</td>
+                <td>NAMA</td>
                 <td>: {{ $barang->name }}</td>
+                <td style="width: 80px;"></td>
+                <td>
+                    <div id="lokasi">LOKASI<br>(no.)</div>
+                </td>
             </tr>
             <tr>
-                <td>Satuan</td>
-                <td>: {{ $barang->satuan }}</td>
-            </tr>
-            <tr>
-                <td>Kode</td>
-                <td>: {{ $barang->code ?? '-' }}</td>
+                <td>SATUAN</td>
+                <td>: {{ $barang->satuan }} &lt; {{ $barang->code ?? '-' }} &gt;</td>
+                <td colspan="2"></td>
             </tr>
         </table>
     </div>
@@ -142,15 +146,11 @@
         <table>
             <thead>
                 <tr>
-                    <th rowspan="2">No</th>
-                    <th rowspan="2">Tanggal</th>
-                    <th rowspan="2">Uraian</th>
-                    <th colspan="3">Jumlah</th>
-                </tr>
-                <tr>
-                    <th>Terima</th>
-                    <th>Keluar</th>
-                    <th>Jumlah</th>
+                    <th>TANGGAL</th>
+                    <th>KETERANGAN</th>
+                    <th>TERIMA</th>
+                    <th>KELUAR</th>
+                    <th>JUMLAH</th>
                 </tr>
             </thead>
             <tbody>
@@ -162,7 +162,6 @@
                         $total = $total + $masuk - $keluar;
                     @endphp
                     <tr>
-                        <td>{{ $loop->iteration }}</td>
                         <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM Y') }}</td>
                         <td class="text-left">{{ $item->keterangan }}</td>
                         <td>{{ $masuk > 0 ? $masuk : '-' }}</td>
@@ -171,7 +170,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6">Belum ada transaksi</td>
+                        <td colspan="5">Belum ada transaksi</td>
                     </tr>
                 @endforelse
             </tbody>
