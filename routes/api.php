@@ -97,8 +97,13 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('download-reagen', [ApiReagenController::class, 'downloadReagen']);
     // DOWNLOAD ATK
     Route::get('download-atk', [ApiAtkController::class, 'downloadAtk']);
-    // KARTU STOK ATK
-    Route::get('kartu-stok/atk/{id}', [ApiAtkController::class, 'downloadKartuStokAtk']);
+});
+
+// KARTU STOK ATK (pakai jwt via v1)
+Route::prefix('v1')->group(function () {
+    Route::middleware(['jwt'])->group(function () {
+        Route::get('kartu-stok/atk/{id}', [ApiAtkController::class, 'downloadKartuStokAtk']);
+    });
 });
 
 Route::get('download-penerimaan-reagen', [PenerimaanController::class, 'downloadPenerimaanReagen']);
