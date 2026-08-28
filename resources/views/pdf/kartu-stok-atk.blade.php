@@ -19,11 +19,13 @@
         #header table td {
             vertical-align: top;
             border: 1px solid black;
+            border-left: none;
         }
         #logo-cell {
             width: 80px;
             text-align: center;
             padding: 8px;
+            border-left: none;
         }
         #logo-cell img {
             width: 40px;
