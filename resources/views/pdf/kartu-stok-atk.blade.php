@@ -145,12 +145,12 @@
                     <th rowspan="2">No</th>
                     <th rowspan="2">Tanggal</th>
                     <th rowspan="2">Uraian</th>
-                    <th colspan="2">Jumlah</th>
-                    <th rowspan="2">Jumlah</th>
+                    <th colspan="3">Jumlah</th>
                 </tr>
                 <tr>
                     <th>Terima</th>
                     <th>Keluar</th>
+                    <th>Jumlah</th>
                 </tr>
             </thead>
             <tbody>
