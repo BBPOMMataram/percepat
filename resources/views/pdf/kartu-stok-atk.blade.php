@@ -8,30 +8,53 @@
             font-family: Arial, sans-serif;
             font-size: 11px;
             margin: 0;
-            padding: 15px;
+            padding: 15px 20px;
         }
         #header {
-            text-align: center;
             border-bottom: 2px solid black;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
         }
-        #header img {
-            width: 50px;
-            display: block;
-            margin: 0 auto 5px;
+        #header table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        #header h2 {
+        #header table td {
+            vertical-align: top;
+        }
+        #logo {
+            width: 60px;
+            text-align: center;
+        }
+        #logo img {
+            width: 45px;
+        }
+        #title {
+            text-align: center;
+        }
+        #title h2 {
             margin: 0;
-            font-size: 14px;
+            font-size: 13px;
+            font-weight: bold;
         }
-        #header h3 {
+        #title h3 {
             margin: 2px 0;
             font-size: 12px;
+            font-weight: bold;
         }
-        #header p {
-            margin: 0;
+        #meta {
+            text-align: right;
             font-size: 10px;
+            width: 180px;
+        }
+        #meta table {
+            width: 100%;
+        }
+        #meta table td {
+            padding: 1px 0;
+        }
+        #meta table td:first-child {
+            width: 70px;
         }
         #info-barang {
             margin-bottom: 10px;
@@ -43,12 +66,12 @@
             padding: 2px 0;
         }
         #info-barang table td:first-child {
-            width: 120px;
+            width: 100px;
         }
         #content table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         #content table th, #content table td {
             border: 1px solid black;
@@ -61,29 +84,41 @@
         #content table td.text-left {
             text-align: left;
         }
-        #footer table {
-            width: 100%;
-        }
-        #footer table td {
-            width: 25%;
-            text-align: center;
-            vertical-align: top;
-            padding: 5px;
-        }
-        #footer .ttd {
-            height: 50px;
-        }
-        .text-right {
-            text-align: right;
-        }
     </style>
 </head>
 <body>
     <div id="header">
-        <img src="storage/bpomri.png" alt="Logo BBPOM">
-        <h2>BADAN POM RI</h2>
-        <h3>KARTU STOK PERSIAAN</h3>
-        <p>BALAI BESAR POM DI MATARAM</p>
+        <table>
+            <tr>
+                <td id="logo">
+                    <img src="storage/bpomri.png" alt="Logo BBPOM">
+                </td>
+                <td id="title">
+                    <h2>BADAN POM RI</h2>
+                    <h3>KARTU STOK PERSIAAN</h3>
+                </td>
+                <td id="meta">
+                    <table>
+                        <tr>
+                            <td>Form</td>
+                            <td>: POM-14.01CFM.01SOP.01IK.14A.02</td>
+                        </tr>
+                        <tr>
+                            <td>Dibuat tanggal</td>
+                            <td>: 27 Juni 2019</td>
+                        </tr>
+                        <tr>
+                            <td>Revisi</td>
+                            <td>: Oktober 2024</td>
+                        </tr>
+                        <tr>
+                            <td>Halaman</td>
+                            <td>: 1 dari 1</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
     </div>
 
     <div id="info-barang">
@@ -96,6 +131,10 @@
                 <td>Satuan</td>
                 <td>: {{ $barang->satuan }}</td>
             </tr>
+            <tr>
+                <td>Kode</td>
+                <td>: {{ $barang->code ?? '-' }}</td>
+            </tr>
         </table>
     </div>
 
@@ -105,12 +144,12 @@
                 <tr>
                     <th rowspan="2">No</th>
                     <th rowspan="2">Tanggal</th>
-                    <th rowspan="2">Keterangan</th>
+                    <th rowspan="2">Uraian</th>
                     <th colspan="2">Jumlah</th>
                     <th rowspan="2">Jumlah</th>
                 </tr>
                 <tr>
-                    <th>Masuk</th>
+                    <th>Terima</th>
                     <th>Keluar</th>
                 </tr>
             </thead>
@@ -136,32 +175,6 @@
                     </tr>
                 @endforelse
             </tbody>
-        </table>
-    </div>
-
-    <div id="footer">
-        <table>
-            <tr>
-                <td>
-                    Dibuat tanggal,<br>
-                    Mataram, {{ now()->isoFormat('D MMMM Y') }}<br>
-                    <div class="ttd"></div>
-                    <strong>Diisi,</strong><br>
-                    ...............................
-                </td>
-                <td>
-                    Diketahui,<br>
-                    <div class="ttd"></div>
-                    <strong>Penanggung Jawab,</strong><br>
-                    ...............................
-                </td>
-                <td>
-                    Mengetahui,<br>
-                    <div class="ttd"></div>
-                    <strong>Administrator,</strong><br>
-                    ...............................
-                </td>
-            </tr>
         </table>
     </div>
 </body>
