@@ -9,40 +9,49 @@
             font-size: 11px;
             margin: 0;
             padding: 15px 20px;
+            background-color: #fffde7;
         }
         #header table {
             width: 100%;
             border-collapse: collapse;
+            border: 1px solid black;
         }
         #header table td {
             vertical-align: top;
-        }
-        #logo {
-            width: 60px;
-            text-align: center;
-        }
-        #logo img {
-            width: 45px;
-        }
-        #logo-text {
-            text-align: center;
-            font-weight: bold;
-            font-size: 10px;
-        }
-        #meta {
-            width: 220px;
-            font-size: 10px;
-        }
-        #meta table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        #meta table td {
-            padding: 2px 4px;
             border: 1px solid black;
         }
-        #meta table td:first-child {
-            width: 100px;
+        #logo-cell {
+            width: 80px;
+            text-align: center;
+            padding: 8px;
+        }
+        #logo-cell img {
+            width: 40px;
+        }
+        #logo-cell .logo-text {
+            font-weight: bold;
+            font-size: 9px;
+            margin-top: 4px;
+        }
+        #logo-cell .logo-text-blue {
+            color: #0077b6;
+            font-size: 8px;
+        }
+        #meta-cell {
+            padding: 0;
+        }
+        #meta-cell table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+        }
+        #meta-cell table td {
+            padding: 3px 8px;
+            border: 1px solid black;
+            font-size: 10px;
+        }
+        #meta-cell table td:first-child {
+            width: 110px;
             font-weight: bold;
         }
         #title {
@@ -50,14 +59,6 @@
             font-weight: bold;
             font-size: 14px;
             padding: 8px 0;
-        }
-        #lokasi {
-            border: 1px solid black;
-            padding: 4px 8px;
-            text-align: center;
-            font-size: 10px;
-            width: 80px;
-            margin-left: auto;
         }
         #info-barang {
             margin: 8px 0;
@@ -70,6 +71,14 @@
         }
         #info-barang table td:first-child {
             width: 60px;
+        }
+        #lokasi {
+            border: 1px solid black;
+            padding: 4px 8px;
+            text-align: center;
+            font-size: 10px;
+            width: 80px;
+            margin-left: auto;
         }
         #content table {
             width: 100%;
@@ -93,12 +102,12 @@
     <div id="header">
         <table>
             <tr>
-                <td id="logo">
+                <td id="logo-cell" rowspan="4">
                     <img src="storage/bpomri.png" alt="Logo BBPOM">
-                    <div id="logo-text">BADAN POM RI</div>
+                    <div class="logo-text-blue">BADAN POM</div>
+                    <div class="logo-text">BADAN POM RI</div>
                 </td>
-                <td style="flex: 1;"></td>
-                <td id="meta">
+                <td id="meta-cell">
                     <table>
                         <tr>
                             <td>Nomor Formulir</td>
