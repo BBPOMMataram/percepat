@@ -97,6 +97,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('download-reagen', [ApiReagenController::class, 'downloadReagen']);
     // DOWNLOAD ATK
     Route::get('download-atk', [ApiAtkController::class, 'downloadAtk']);
+    // KARTU STOK ATK
+    Route::get('kartu-stok/atk/{id}', [ApiAtkController::class, 'downloadKartuStokAtk']);
 });
 
 Route::get('download-penerimaan-reagen', [PenerimaanController::class, 'downloadPenerimaanReagen']);

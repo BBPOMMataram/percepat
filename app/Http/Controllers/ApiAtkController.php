@@ -155,4 +155,43 @@ class ApiAtkController extends Controller
         $pdf = PDF::loadView('pdf.barang-atk', ['data' => $data]);
         return $pdf->download('data-atk.pdf');
     }
+
+    public function downloadKartuStokAtk($id)
+    {
+        $barang = ApiAtk::findOrFail($id);
+
+        // Get penerimaan (masuk)
+        $penerimaan = \App\Models\PenerimaanAtk::where('atk_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return (object) [
+                    'tanggal' => $item->created_at,
+                    'keterangan' => 'Pengadaan (' . ($item->vendor ?? '-') . ')',
+                    'tipe' => 'masuk',
+                    'jumlah' => $item->jumlah,
+                ];
+            });
+
+        // Get permintaan (keluar)
+        $permintaan = \App\Models\PermintaanListAtk::where('atk_id', $id)
+            ->get()
+            ->map(function ($item) {
+                return (object) [
+                    'tanggal' => $item->created_at,
+                    'keterangan' => $item->keterangan ?? 'Usulan',
+                    'tipe' => 'keluar',
+                    'jumlah' => $item->jumlahrealisasi ?? $item->jumlahpermintaan,
+                ];
+            });
+
+        // Merge and sort by date
+        $transaksi = $penerimaan->merge($permintaan)->sortBy('tanggal')->values();
+
+        $pdf = PDF::loadView('pdf.kartu-stok-atk', [
+            'barang' => $barang,
+            'transaksi' => $transaksi,
+        ]);
+
+        return $pdf->download('kartu-stok-atk-' . $barang->name . '.pdf');
+    }
 }
