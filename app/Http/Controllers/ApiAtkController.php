@@ -162,30 +162,34 @@ class ApiAtkController extends Controller
 
         // Get penerimaan (masuk)
         $penerimaan = \App\Models\PenerimaanAtk::where('atk_id', $id)
+            ->whereNotNull('created_at')
+            ->orderBy('created_at', 'asc')
             ->get()
             ->map(function ($item) {
                 return [
-                    'tanggal' => $item->created_at,
+                    'tanggal' => $item->created_at->toDateTimeString(),
                     'keterangan' => 'Pengadaan (' . ($item->vendor ?? '-') . ')',
                     'tipe' => 'masuk',
-                    'jumlah' => $item->jumlah,
+                    'jumlah' => (int) $item->jumlah,
                 ];
             });
 
         // Get permintaan (keluar)
         $permintaan = \App\Models\PermintaanListAtk::where('atk_id', $id)
+            ->whereNotNull('created_at')
+            ->orderBy('created_at', 'asc')
             ->get()
             ->map(function ($item) {
                 return [
-                    'tanggal' => $item->created_at,
+                    'tanggal' => $item->created_at->toDateTimeString(),
                     'keterangan' => $item->keterangan ?? 'Usulan',
                     'tipe' => 'keluar',
-                    'jumlah' => $item->jumlahrealisasi ?? $item->jumlahpermintaan,
+                    'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
                 ];
             });
 
         // Merge and sort by date
-        $transaksi = $penerimaan->merge($permintaan)->sortBy('tanggal')->values();
+        $transaksi = $penerimaan->concat($permintaan)->sortBy('tanggal')->values();
 
         $pdf = PDF::loadView('pdf.kartu-stok-atk', [
             'barang' => $barang,
