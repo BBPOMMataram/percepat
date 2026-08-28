@@ -104,8 +104,6 @@
             <tr>
                 <td id="logo-cell" rowspan="4">
                     <img src="storage/bpomri.png" alt="Logo BBPOM">
-                    <div class="logo-text-blue">BADAN POM</div>
-                    <div class="logo-text">BADAN POM RI</div>
                 </td>
                 <td id="meta-cell">
                     <table>

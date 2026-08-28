@@ -164,7 +164,7 @@ class ApiAtkController extends Controller
         $penerimaan = \App\Models\PenerimaanAtk::where('atk_id', $id)
             ->get()
             ->map(function ($item) {
-                return (object) [
+                return [
                     'tanggal' => $item->created_at,
                     'keterangan' => 'Pengadaan (' . ($item->vendor ?? '-') . ')',
                     'tipe' => 'masuk',
@@ -176,7 +176,7 @@ class ApiAtkController extends Controller
         $permintaan = \App\Models\PermintaanListAtk::where('atk_id', $id)
             ->get()
             ->map(function ($item) {
-                return (object) [
+                return [
                     'tanggal' => $item->created_at,
                     'keterangan' => $item->keterangan ?? 'Usulan',
                     'tipe' => 'keluar',
