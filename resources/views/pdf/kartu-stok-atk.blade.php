@@ -166,13 +166,13 @@
                 @php $total = 0; @endphp
                 @forelse($transaksi as $item)
                     @php
-                        $masuk = $item->tipe == 'masuk' ? $item->jumlah : 0;
-                        $keluar = $item->tipe == 'keluar' ? $item->jumlah : 0;
+                        $masuk = $item['tipe'] == 'masuk' ? $item['jumlah'] : 0;
+                        $keluar = $item['tipe'] == 'keluar' ? $item['jumlah'] : 0;
                         $total = $total + $masuk - $keluar;
                     @endphp
                     <tr>
-                        <td>{{ \Carbon\Carbon::parse($item->tanggal)->isoFormat('D MMM Y') }}</td>
-                        <td class="text-left">{{ $item->keterangan }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item['tanggal'])->isoFormat('D MMM Y') }}</td>
+                        <td class="text-left">{{ $item['keterangan'] }}</td>
                         <td>{{ $masuk > 0 ? $masuk : '-' }}</td>
                         <td>{{ $keluar > 0 ? $keluar : '-' }}</td>
                         <td>{{ $total }}</td>
