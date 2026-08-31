@@ -33,9 +33,12 @@
             width: 80px;
             text-align: center;
             vertical-align: middle;
+            padding: 4px;
         }
         #logo-cell img {
             width: 50px;
+            display: block;
+            vertical-align: middle;
         }
         #meta-cell table {
             width: 100%;
