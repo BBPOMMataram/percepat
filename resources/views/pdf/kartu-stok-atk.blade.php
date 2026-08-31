@@ -59,7 +59,7 @@
             text-align: center;
             font-weight: bold;
             font-size: 14px;
-            padding: 4px 0;
+            padding: 2px 0;
         }
         #info-barang {
             margin: 4px 0;
