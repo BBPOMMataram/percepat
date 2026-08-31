@@ -36,6 +36,7 @@
             vertical-align: middle;
             padding: 4px;
             position: relative;
+            border: 1px solid black;
         }
         #logo-cell img {
             position: absolute;
