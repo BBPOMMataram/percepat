@@ -26,6 +26,10 @@
         }
 
         /* Header */
+        #header-table {
+            border-collapse: collapse;
+            border: 1px solid black;
+        }
         #header-table td {
             vertical-align: middle;
         }
@@ -36,7 +40,10 @@
             vertical-align: middle;
             padding: 4px;
             position: relative;
-            border: 1px solid black;
+            border-right: 1px solid black;
+            border-top: none;
+            border-bottom: none;
+            border-left: none;
         }
         #logo-cell img {
             position: absolute;
@@ -47,8 +54,8 @@
             margin-top: -22px;
             margin-left: -22px;
         }
-        #meta-cell table {
-            width: 100%;
+        #meta-cell {
+            border-left: 1px solid black;
         }
         #meta-cell table td {
             padding: 2px 8px;
