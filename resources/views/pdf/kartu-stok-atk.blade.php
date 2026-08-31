@@ -13,7 +13,6 @@
         }
         #header {
             border: 1px solid black;
-            border-bottom: none;
         }
         #header table {
             width: 100%;
@@ -25,7 +24,7 @@
         #logo-cell {
             width: 90px;
             text-align: center;
-            padding: 8px;
+            padding: 6px;
             border-right: 1px solid black;
             vertical-align: middle;
         }
@@ -40,12 +39,13 @@
             border-collapse: collapse;
         }
         #meta-cell table td {
-            padding: 4px 8px;
+            padding: 3px 8px;
             font-size: 10px;
             border: 1px solid black;
             border-top: none;
             border-right: none;
             white-space: nowrap;
+            line-height: 1.2;
         }
         #meta-cell table td:first-child {
             width: 120px;
@@ -65,6 +65,7 @@
             padding: 2px 0;
             margin: 0;
             line-height: 1.2;
+            border-top: 1px solid black;
         }
         #info-barang {
             margin: 2px 0;
@@ -74,6 +75,7 @@
         }
         #info-barang table td {
             padding: 1px 0;
+            line-height: 1.2;
         }
         #info-barang table td:first-child {
             width: 60px;
@@ -133,9 +135,8 @@
                 </td>
             </tr>
         </table>
+        <div id="title">KARTU STOK PERSEDIAAN</div>
     </div>
-
-    <div id="title">KARTU STOK PERSEDIAAN</div>
 
     <div id="info-barang">
         <table>
