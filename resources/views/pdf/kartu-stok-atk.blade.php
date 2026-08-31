@@ -17,17 +17,17 @@
             border: 1px solid black;
         }
         .header-table td {
-            vertical-align: top;
+            vertical-align: middle;
             padding: 0;
         }
         .logo-cell {
-            width: 70px;
+            width: 90px;
             text-align: center;
-            padding: 6px;
+            padding: 8px;
             border-right: 1px solid black;
         }
         .logo-cell img {
-            width: 45px;
+            width: 55px;
         }
         .meta-cell {
             padding: 0;
@@ -37,14 +37,15 @@
             border-collapse: collapse;
         }
         .meta-cell table td {
-            padding: 3px 8px;
+            padding: 4px 8px;
             font-size: 10px;
             border: 1px solid black;
             border-top: none;
             border-right: none;
+            white-space: nowrap;
         }
         .meta-cell table td:first-child {
-            width: 100px;
+            width: 120px;
             font-weight: bold;
             border-left: none;
         }
