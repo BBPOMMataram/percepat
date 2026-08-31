@@ -30,16 +30,21 @@
             vertical-align: middle;
         }
         #logo-cell {
-            width: 80px;
+            width: 70px;
+            height: 55px;
             text-align: center;
             vertical-align: middle;
             padding: 4px;
-            display: table-cell;
+            position: relative;
         }
         #logo-cell img {
-            width: 50px;
-            vertical-align: middle;
-            margin: 0 auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 45px;
+            height: 45px;
+            margin-top: -22px;
+            margin-left: -22px;
         }
         #meta-cell table {
             width: 100%;
