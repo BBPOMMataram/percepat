@@ -11,10 +11,13 @@
             padding: 15px 20px;
             background-color: #fffde7;
         }
+        #header {
+            border: 1px solid black;
+            border-bottom: none;
+        }
         #header table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid black;
         }
         #header table td {
             vertical-align: top;
@@ -59,17 +62,18 @@
             text-align: center;
             font-weight: bold;
             font-size: 14px;
-            padding: 0;
+            padding: 2px 0;
             margin: 0;
+            line-height: 1.2;
         }
         #info-barang {
-            margin: 4px 0;
+            margin: 2px 0;
         }
         #info-barang table {
             width: 100%;
         }
         #info-barang table td {
-            padding: 2px 0;
+            padding: 1px 0;
         }
         #info-barang table td:first-child {
             width: 60px;
