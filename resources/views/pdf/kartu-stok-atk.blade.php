@@ -34,11 +34,12 @@
             text-align: center;
             vertical-align: middle;
             padding: 4px;
+            display: table-cell;
         }
         #logo-cell img {
             width: 50px;
-            display: block;
             vertical-align: middle;
+            margin: 0 auto;
         }
         #meta-cell table {
             width: 100%;
