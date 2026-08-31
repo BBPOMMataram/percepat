@@ -14,33 +14,24 @@
         #header table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid black;
         }
         #header table td {
             vertical-align: top;
-            border: 1px solid black;
-            border-left: none;
         }
         #logo-cell {
             width: 80px;
             text-align: center;
             padding: 8px;
-            border-left: none;
+            border: 1px solid black;
         }
         #logo-cell img {
-            width: 40px;
-        }
-        #logo-cell .logo-text {
-            font-weight: bold;
-            font-size: 9px;
-            margin-top: 4px;
-        }
-        #logo-cell .logo-text-blue {
-            color: #0077b6;
-            font-size: 8px;
+            width: 50px;
         }
         #meta-cell {
             padding: 0;
+            border-top: 1px solid black;
+            border-bottom: 1px solid black;
+            border-right: 1px solid black;
         }
         #meta-cell table {
             width: 100%;
@@ -48,22 +39,32 @@
             border: none;
         }
         #meta-cell table td {
-            padding: 3px 8px;
+            padding: 4px 8px;
             border: 1px solid black;
             font-size: 10px;
+            border-top: none;
+            border-bottom: none;
+            border-right: none;
+        }
+        #meta-cell table tr:first-child td {
+            border-top: none;
+        }
+        #meta-cell table tr:last-child td {
+            border-bottom: none;
         }
         #meta-cell table td:first-child {
             width: 110px;
             font-weight: bold;
+            border-left: none;
         }
         #title {
             text-align: center;
             font-weight: bold;
             font-size: 14px;
-            padding: 8px 0;
+            padding: 4px 0;
         }
         #info-barang {
-            margin: 8px 0;
+            margin: 4px 0;
         }
         #info-barang table {
             width: 100%;
