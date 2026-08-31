@@ -14,46 +14,39 @@
         .header-table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid black;
-        }
-        .header-table td {
-            vertical-align: middle;
-            padding: 0;
         }
         .logo-cell {
             width: 90px;
             text-align: center;
             padding: 8px;
-            border-right: 1px solid black;
+            border: 1px solid black;
+            border-bottom: none;
+            vertical-align: middle;
         }
         .logo-cell img {
             width: 55px;
         }
-        .meta-cell {
-            padding: 0;
+        .meta-row {
+            display: flex;
+            border: 1px solid black;
+            border-left: none;
+            border-bottom: none;
         }
-        .meta-cell table {
-            width: 100%;
-            border-collapse: collapse;
+        .meta-row:last-child {
+            border-bottom: 1px solid black;
         }
-        .meta-cell table td {
+        .meta-label {
+            width: 120px;
             padding: 4px 8px;
             font-size: 10px;
-            border: 1px solid black;
-            border-top: none;
-            border-right: none;
+            font-weight: bold;
+            border-right: 1px solid black;
             white-space: nowrap;
         }
-        .meta-cell table td:first-child {
-            width: 120px;
-            font-weight: bold;
-            border-left: none;
-        }
-        .meta-cell table tr:first-child td {
-            border-top: none;
-        }
-        .meta-cell table tr:last-child td {
-            border-bottom: none;
+        .meta-value {
+            padding: 4px 8px;
+            font-size: 10px;
+            white-space: nowrap;
         }
         .title {
             text-align: center;
@@ -105,28 +98,24 @@
             <td class="logo-cell" rowspan="4">
                 <img src="storage/bpomri.png" alt="Logo BBPOM">
             </td>
-            <td class="meta-cell">
-                <table>
-                    <tr>
-                        <td>Nomor Formulir</td>
-                        <td>POM-14.01CFM.01SOP.01IK.14A.02</td>
-                    </tr>
-                    <tr>
-                        <td>Tanggal Pembuatan</td>
-                        <td>27 Juni 2019</td>
-                    </tr>
-                    <tr>
-                        <td>Nomor / Tanggal Revisi</td>
-                        <td>04 / 21 Oktober 2024</td>
-                    </tr>
-                    <tr>
-                        <td>Nama Formulir</td>
-                        <td>Form Kartu Stok Persediaan</td>
-                    </tr>
-                </table>
-            </td>
         </tr>
     </table>
+    <div class="meta-row">
+        <span class="meta-label">Nomor Formulir</span>
+        <span class="meta-value">POM-14.01CFM.01SOP.01IK.14A.02</span>
+    </div>
+    <div class="meta-row">
+        <span class="meta-label">Tanggal Pembuatan</span>
+        <span class="meta-value">27 Juni 2019</span>
+    </div>
+    <div class="meta-row">
+        <span class="meta-label">Nomor / Tanggal Revisi</span>
+        <span class="meta-value">04 / 21 Oktober 2024</span>
+    </div>
+    <div class="meta-row">
+        <span class="meta-label">Nama Formulir</span>
+        <span class="meta-value">Form Kartu Stok Persediaan</span>
+    </div>
 
     <div class="title">KARTU STOK PERSEDIAAN</div>
 
