@@ -32,6 +32,7 @@
         #logo-cell {
             width: 80px;
             text-align: center;
+            vertical-align: middle;
         }
         #logo-cell img {
             width: 50px;
@@ -59,6 +60,7 @@
             font-weight: bold;
             font-size: 14px;
             padding: 4px 0;
+            border: none;
         }
 
         /* Info Barang */
