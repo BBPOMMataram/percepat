@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiAtkController;
 use App\Http\Controllers\ApiBidangController;
 use App\Http\Controllers\ApiReagenController;
+use App\Http\Controllers\ApiSukuCadangController;
 use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\AtkController;
 use App\Http\Controllers\BarangController;
@@ -54,10 +55,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // PENERIMAAN
     Route::apiResource('penerimaan-reagen', PenerimaanController::class);
     Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
+    Route::apiResource('penerimaan-suku-cadang', PenerimaanSukuCadangController::class);
 
     // PERMINTAAN
     Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
     Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
+    Route::apiResource('permintaan-suku-cadang', PermintaanSukuCadangController::class);
 
     // DOWNLOAD PERMINTAAN
     Route::get('download-permintaan-reagen/{id_permintaan}', [PermintaanReagenController::class, 'downloadPermintaanReagen']);
@@ -71,14 +74,20 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('list-permintaan-atk/{permintaan}', [PermintaanListAtkController::class, 'addListPermintaanAtk']);
     Route::delete('list-permintaan-atk/{permintaan}/{atk}', [PermintaanListAtkController::class, 'removeListPermintaanAtk']);
 
+    Route::get('list-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'index']);
+    Route::post('list-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'store']);
+    Route::delete('list-permintaan-suku-cadang/{permintaan}/{sukuCadang}', [PermintaanSukuCadangController::class, 'destroy']);
+
     Route::post('acc-permintaan/{permintaan}', [PermintaanReagenController::class, 'accPermintaan']);
 
     // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
     Route::get('barang-reagen/getAll', [ApiReagenController::class, 'getAll']);
     Route::get('barang-atk/getAll', [ApiAtkController::class, 'getAll']);
+    Route::get('barang-suku-cadang/getAll', [ApiSukuCadangController::class, 'getAll']);
 
     Route::apiResource('barang-reagen', ApiReagenController::class);
     Route::apiResource('barang-atk', ApiAtkController::class);
+    Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
     Route::get('barang-reagen-expired', [ApiReagenController::class, 'reagenExpired']);
     Route::get('barang-reagen-expired-count', [ApiReagenController::class, 'reagenExpiredCount']);
 
@@ -97,6 +106,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('download-reagen', [ApiReagenController::class, 'downloadReagen']);
     // DOWNLOAD ATK
     Route::get('download-atk', [ApiAtkController::class, 'downloadAtk']);
+    // DOWNLOAD SUKU CADANG
+    Route::get('download-suku-cadang', [ApiSukuCadangController::class, 'downloadSukuCadang']);
 });
 
 // KARTU STOK ATK (pakai jwt via v1)
@@ -122,6 +133,8 @@ Route::get('users-count', [ApiUserController::class, 'users_count']);
 
 // DATA WEBISTE DI HOMEPAGE
 Route::get('site', [SiteController::class, 'getSites']);
+Route::post('site', [SiteController::class, 'store']);
+Route::put('site/{id}', [SiteController::class, 'update']);
 
 // DATA SURVEY PELAYANAN PUBLIC
 Route::post('spp', [SurveyPelananPublicController::class, 'store']);
