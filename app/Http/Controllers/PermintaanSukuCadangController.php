@@ -41,4 +41,10 @@ class PermintaanSukuCadangController extends Controller
         PermintaanListSukuCadang::destroy($id);
         return response()->json(['status' => 1]);
     }
+
+    public function download_permintaan_suku_cadang($permintaan)
+    {
+        $data = PermintaanListSukuCadang::with(['sukuCadang', 'permintaan'])->where('permintaan_id', $permintaan)->get();
+        return response()->json($data);
+    }
 }

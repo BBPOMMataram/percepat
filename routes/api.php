@@ -11,6 +11,7 @@ use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\New\AtkAdminController;
 use App\Http\Controllers\New\ReagenAdminController;
+use App\Http\Controllers\SukuCadangController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanPerlengkapanKebersihanController;
@@ -23,6 +24,8 @@ use App\Http\Controllers\New\VerifReagenController;
 use App\Http\Controllers\New\VerifAtkController;
 use App\Http\Controllers\PenerimaanAtkController;
 use App\Http\Controllers\PenerimaanController;
+use App\Http\Controllers\PenerimaanSukuCadangController;
+use App\Http\Controllers\PermintaanSukuCadangController;
 use App\Http\Controllers\PermintaanListAtkController;
 use App\Http\Controllers\New\PermintaanListAtkController as NewPermintaanListAtkController;
 use App\Http\Controllers\New\PenerimaanController as NewPenerimaanController;
@@ -55,12 +58,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
     // PENERIMAAN
     Route::apiResource('penerimaan-reagen', PenerimaanController::class);
     Route::apiResource('penerimaan-atk', PenerimaanAtkController::class);
-    Route::apiResource('penerimaan-suku-cadang', PenerimaanSukuCadangController::class);
 
     // PERMINTAAN
     Route::apiResource('permintaan-reagen', PermintaanReagenController::class);
     Route::apiResource('permintaan-atk', PermintaanListAtkController::class);
-    Route::apiResource('permintaan-suku-cadang', PermintaanSukuCadangController::class);
 
     // DOWNLOAD PERMINTAAN
     Route::get('download-permintaan-reagen/{id_permintaan}', [PermintaanReagenController::class, 'downloadPermintaanReagen']);
@@ -158,6 +159,10 @@ Route::prefix('v1')->group(function () {
         Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
         Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
         Route::get('barang-perlengkapan-kebersihan-all', [PermintaanPerlengkapanKebersihanController::class, 'getAll']);
+        Route::get('barang-suku-cadang-all', [ApiSukuCadangController::class, 'getAll']);
+
+        // BARANG SUKU CADANG (API Resource)
+        Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
         // tambah untuk baku pembanding dan suku cadang nanti
 
         // DOWNLOAD PERMINTAAN
@@ -201,20 +206,29 @@ Route::prefix('v1')->group(function () {
         Route::post('verif-kabagtu-atk/{id}', [VerifAtkController::class, 'verif_kabagtu']);
         Route::post('verif-petugas-atk/{id}', [VerifAtkController::class, 'verif_petugas']);
 
+        // DATA LIST PERMINTAAN SUKU CADANG
+        Route::get('list-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'index']);
+        Route::post('list-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'store']);
+        Route::delete('list-permintaan-suku-cadang/{permintaan}/{sukuCadang}', [PermintaanSukuCadangController::class, 'destroy']);
+        Route::get('download-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'download_permintaan_suku_cadang']);
+        Route::post('verif-petugas-suku-cadang/{id}', [VerifAtkController::class, 'verif_petugas']);
+
         // DATA MASTER
         Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
         Route::apiResource('atk', AtkAdminController::class);
         Route::apiResource('reagen', ReagenAdminController::class);
+        Route::apiResource('suku-cadang', SukuCadangController::class);
 
         // PENERIMAAN EXPORT PDF
         Route::get('/penerimaan-reagen/export-pdf', [PenerimaanReagenController::class, 'exportPdf']);
         Route::get('/penerimaan-atk/export-pdf', [NewPenerimaanAtkController::class, 'exportPdf']);
         Route::get('/penerimaan-perlengkapan/export-pdf', [PenerimaanPerlengkapanController::class, 'exportPdf']);
 
-        // PERNERIMAAN
+        // PENERIMAAN
         Route::apiResource('penerimaan-perlengkapan', PenerimaanPerlengkapanController::class);
         Route::apiResource('penerimaan-atk', NewPenerimaanAtkController::class);
         Route::apiResource('penerimaan-reagen', PenerimaanReagenController::class);
+        Route::apiResource('penerimaan-suku-cadang', PenerimaanSukuCadangController::class);
 
         // UPDATE SIGNATURE
         Route::patch('update-signature', [UserController::class, 'updateSignature']);
