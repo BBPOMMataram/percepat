@@ -88,7 +88,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     Route::apiResource('barang-reagen', ApiReagenController::class);
     Route::apiResource('barang-atk', ApiAtkController::class);
-    Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
     Route::get('barang-reagen-expired', [ApiReagenController::class, 'reagenExpired']);
     Route::get('barang-reagen-expired-count', [ApiReagenController::class, 'reagenExpiredCount']);
 
@@ -159,10 +158,6 @@ Route::prefix('v1')->group(function () {
         Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
         Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
         Route::get('barang-perlengkapan-kebersihan-all', [PermintaanPerlengkapanKebersihanController::class, 'getAll']);
-        Route::get('barang-suku-cadang-all', [ApiSukuCadangController::class, 'getAll']);
-
-        // BARANG SUKU CADANG (API Resource)
-        Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
         // tambah untuk baku pembanding dan suku cadang nanti
 
         // DOWNLOAD PERMINTAAN
