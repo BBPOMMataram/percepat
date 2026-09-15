@@ -158,7 +158,11 @@ Route::prefix('v1')->group(function () {
         Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
         Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
         Route::get('barang-perlengkapan-kebersihan-all', [PermintaanPerlengkapanKebersihanController::class, 'getAll']);
+        Route::get('barang-suku-cadang-all', [ApiSukuCadangController::class, 'getAll']);
         // tambah untuk baku pembanding dan suku cadang nanti
+
+        // BARANG SUKU CADANG (API Resource)
+        Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
 
         // DOWNLOAD PERMINTAAN
         Route::get('/permintaan-reagen/export-pdf', [NewPermintaanReagenController::class, 'exportPdf']);

@@ -7,6 +7,21 @@ use Illuminate\Http\Request;
 
 class ApiSukuCadangController extends Controller
 {
+    public function index(Request $request)
+    {
+        $perPage = $request->query('per_page', 10);
+        $name = $request->query('name');
+
+        $query = SukuCadang::query();
+
+        if ($name) {
+            $query->where('name', 'like', '%' . $name . '%');
+        }
+
+        $data = $query->paginate($perPage);
+        return response()->json($data);
+    }
+
     public function getAll(Request $request)
     {
         $perPage = $request->query('per_page', 10);
