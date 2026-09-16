@@ -9,7 +9,7 @@ class ApiSukuCadangController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = (int) $request->query('per_page', 10);
         $name = $request->query('name');
 
         $query = SukuCadang::query();
@@ -24,7 +24,7 @@ class ApiSukuCadangController extends Controller
 
     public function getAll(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = (int) $request->query('per_page', 10);
         $name = $request->query('name');
 
         $query = SukuCadang::query();
@@ -49,7 +49,7 @@ class ApiSukuCadangController extends Controller
         $data->name = $request->name;
         $data->satuan = $request->satuan;
         $data->stock = $request->stock;
-        $data->description = $request->desc;
+        $data->description = $request->description;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
@@ -73,7 +73,7 @@ class ApiSukuCadangController extends Controller
         $data->name = $request->name;
         $data->satuan = $request->satuan;
         $data->stock = $request->stock;
-        $data->description = $request->desc;
+        $data->description = $request->description;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);

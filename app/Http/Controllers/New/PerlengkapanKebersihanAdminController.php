@@ -11,7 +11,7 @@ class PerlengkapanKebersihanAdminController extends Controller
     // UNTUK crud ADMIN PERCEPAT
     function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = (int) $request->query('per_page', 10);
         $page = $request->query('page', 1);
         $name_query = $request->query('name');
 

@@ -10,7 +10,7 @@ class PenerimaanSukuCadangController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = (int) $request->query('per_page', 10);
         $name = $request->query('name');
 
         $query = PenerimaanSukuCadang::with('sukuCadang');

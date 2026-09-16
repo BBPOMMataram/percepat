@@ -14,7 +14,7 @@ class PermintaanAtkController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = (int) $request->query('per_page', 10);
         $page = $request->query('page', 1);
         $name_query = $request->query('name');
         $startDate = $request->query('start_date');
@@ -53,7 +53,7 @@ class PermintaanAtkController extends Controller
 
     public function exportPdf(Request $request)
     {
-        $perPage   = $request->query('per_page', 10);
+        $perPage   = (int) $request->query('per_page', 10);
         $page      = $request->query('page', 1);
         $nameQuery = $request->query('name');
         $startDate = $request->query('start_date');

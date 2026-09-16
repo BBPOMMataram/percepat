@@ -15,7 +15,7 @@ class VerifPerlengkapanKebersihanController extends Controller
 
     public function index(Request $request)
     {
-        $perPage = $request->query('per_page', 10);
+        $perPage = (int) $request->query('per_page', 10);
         $page = $request->query('page', 1);
         $katim_id = User::where('external_user_id', $request->query('katim_id'))->first()->id;
         $is_kabagtu = $request->query('is_kabagtu', 0);

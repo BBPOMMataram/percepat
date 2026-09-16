@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permintaan;
 use App\Models\PermintaanListSukuCadang;
-use App\Models\SukuCadang;
 use Illuminate\Http\Request;
 
 class PermintaanSukuCadangController extends Controller
@@ -11,17 +11,47 @@ class PermintaanSukuCadangController extends Controller
     public function index(Request $request)
     {
         $perPage = (int) $request->query('per_page', 10);
-        $name = $request->query('name');
+        $page = $request->query('page', 1);
+        $nameQuery = $request->query('name');
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
 
-        $query = PermintaanListSukuCadang::with(['sukuCadang', 'permintaan']);
+        $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
+            ->where('jenis', 'suku_cadang');
 
-        if ($name) {
-            $query->whereHas('sukuCadang', function ($q) use ($name) {
-                $q->where('name', 'like', '%' . $name . '%');
+        if ($nameQuery) {
+            $query->whereHas('permintaanListSukuCadang.sukuCadang', function ($q) use ($nameQuery) {
+                $q->where('name', 'like', '%' . $nameQuery . '%');
             });
         }
 
-        $data = $query->latest()->paginate($perPage);
+        if ($startDate && $endDate) {
+            $query->whereBetween('tgl_permintaan', [
+                $startDate . ' 00:00:00',
+                $endDate . ' 23:59:59',
+            ]);
+        } elseif ($startDate) {
+            $query->whereDate('tgl_permintaan', '>=', $startDate);
+        } elseif ($endDate) {
+            $query->whereDate('tgl_permintaan', '<=', $endDate);
+        }
+
+        $query->latest();
+
+        $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
+            'name' => $nameQuery,
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ]);
+
+        return response()->json($data);
+    }
+
+    public function show($id)
+    {
+        $data = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
+            ->where('jenis', 'suku_cadang')
+            ->find($id);
         return response()->json($data);
     }
 
@@ -34,12 +64,6 @@ class PermintaanSukuCadangController extends Controller
         $data->save();
 
         return response()->json(['status' => 1, 'data' => $data]);
-    }
-
-    public function show($id)
-    {
-        $data = PermintaanListSukuCadang::with(['sukuCadang', 'permintaan'])->find($id);
-        return response()->json($data);
     }
 
     public function update(Request $request, $id)
