@@ -24,7 +24,6 @@ class ApiSukuCadangController extends Controller
 
     public function getAll(Request $request)
     {
-        $perPage = (int) $request->query('per_page', 10);
         $name = $request->query('name');
 
         $query = SukuCadang::query();
@@ -33,7 +32,7 @@ class ApiSukuCadangController extends Controller
             $query->where('name', 'like', '%' . $name . '%');
         }
 
-        $data = $query->paginate($perPage);
+        $data = $query->get();
         return response()->json($data);
     }
 
