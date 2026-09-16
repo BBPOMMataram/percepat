@@ -211,6 +211,7 @@ Route::prefix('v1')->group(function () {
         Route::post('list-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'store']);
         Route::delete('list-permintaan-suku-cadang/{permintaan}/{sukuCadang}', [PermintaanSukuCadangController::class, 'destroy']);
         Route::get('download-permintaan-suku-cadang/{permintaan}', [PermintaanSukuCadangController::class, 'download_permintaan_suku_cadang']);
+        Route::get('/permintaan-suku-cadang/export-pdf', [PermintaanSukuCadangController::class, 'exportPdf']);
         Route::post('verif-petugas-suku-cadang/{id}', [VerifAtkController::class, 'verif_petugas']);
 
         // DATA MASTER
