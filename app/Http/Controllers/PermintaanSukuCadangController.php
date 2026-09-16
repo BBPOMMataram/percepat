@@ -30,7 +30,24 @@ class PermintaanSukuCadangController extends Controller
         $data = new PermintaanListSukuCadang();
         $data->permintaan_id = $request->permintaan_id;
         $data->suku_cadang_id = $request->suku_cadang_id;
-        $data->jumlah = $request->jumlah;
+        $data->jumlahpermintaan = $request->jumlahpermintaan ?? $request->jumlah;
+        $data->save();
+
+        return response()->json(['status' => 1, 'data' => $data]);
+    }
+
+    public function show($id)
+    {
+        $data = PermintaanListSukuCadang::with(['sukuCadang', 'permintaan'])->find($id);
+        return response()->json($data);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $data = PermintaanListSukuCadang::find($id);
+        $data->permintaan_id = $request->permintaan_id;
+        $data->suku_cadang_id = $request->suku_cadang_id;
+        $data->jumlahpermintaan = $request->jumlahpermintaan ?? $request->jumlah;
         $data->save();
 
         return response()->json(['status' => 1, 'data' => $data]);

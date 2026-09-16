@@ -49,7 +49,7 @@ class ApiSukuCadangController extends Controller
         $data->name = $request->name;
         $data->satuan = $request->satuan;
         $data->stock = $request->stock;
-        $data->description = $request->description;
+        $data->description = $request->desc;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is added successfully!']);
@@ -73,7 +73,7 @@ class ApiSukuCadangController extends Controller
         $data->name = $request->name;
         $data->satuan = $request->satuan;
         $data->stock = $request->stock;
-        $data->description = $request->description;
+        $data->description = $request->desc;
         $data->save();
 
         return response(['status' => 1, 'data' => $data, 'msg' => 'Data is updated successfully!']);

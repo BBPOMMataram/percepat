@@ -163,6 +163,7 @@ Route::prefix('v1')->group(function () {
 
         // BARANG SUKU CADANG (API Resource)
         Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
+        Route::apiResource('permintaan-suku-cadang', PermintaanSukuCadangController::class);
 
         // DOWNLOAD PERMINTAAN
         Route::get('/permintaan-reagen/export-pdf', [NewPermintaanReagenController::class, 'exportPdf']);
