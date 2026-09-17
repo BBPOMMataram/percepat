@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApiUser;
 use App\Models\Permintaan;
 use App\Models\PermintaanListSukuCadang;
-use App\Models\User;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -84,8 +84,8 @@ class PermintaanSukuCadangController extends Controller
             }
             $data->bidang_id_auth_external = $pemohon['employee']['fungsi_id'];
             $data->bidang_name_auth_external = $pemohon['employee']['fungsi']['name'];
-            $data->katim_selected = User::where('external_user_id', $request->katimId)->first()->id;
-            $userInternalId = User::where('external_user_id', $pemohon['id'])->first()->id;
+            $data->katim_selected = ApiUser::where('external_user_id', $request->katimId)->first()->id;
+            $userInternalId = ApiUser::where('external_user_id', $pemohon['id'])->first()->id;
             $data->created_by = $userInternalId;
             $data->tgl_permintaan = $request->createdAt;
 
@@ -137,8 +137,8 @@ class PermintaanSukuCadangController extends Controller
 
             $data->bidang_id_auth_external    = $pemohon['employee']['fungsi_id'];
             $data->bidang_name_auth_external  = $pemohon['employee']['fungsi']['name'];
-            $data->katim_selected             = User::where('external_user_id', $request->katimId)->first()->id;
-            $userInternalId                   = User::where('external_user_id', $pemohon['id'])->first()->id;
+            $data->katim_selected             = ApiUser::where('external_user_id', $request->katimId)->first()->id;
+            $userInternalId                   = ApiUser::where('external_user_id', $pemohon['id'])->first()->id;
             $data->created_by                 = $userInternalId;
             $data->tgl_permintaan             = $request->createdAt;
 
@@ -167,10 +167,25 @@ class PermintaanSukuCadangController extends Controller
         return response()->json(['status' => 1]);
     }
 
-    public function download_permintaan_suku_cadang($permintaan)
+    public function download_permintaan_suku_cadang($permintaanId)
     {
-        $data = PermintaanListSukuCadang::with(['sukuCadang', 'permintaan'])->where('permintaan_id', $permintaan)->get();
-        return response()->json($data);
+        $datapermintaan = Permintaan::find($permintaanId);
+        $datapermintaanlist = PermintaanListSukuCadang::with('sukuCadang')->where('permintaan_id', $permintaanId)->get();
+        $penyerah = $datapermintaan->penyerah_id ? ApiUser::find($datapermintaan->penyerah_id) : null;
+        $kasub = ApiUser::where('position', 'kasubbagumum')->first();
+        $pemohon = ApiUser::find($datapermintaan->created_by);
+        $kabid = ApiUser::find($datapermintaan->katim_selected);
+
+        $pdf = PDF::loadView('pdf/permintaan-suku-cadang', compact(
+            'datapermintaan',
+            'datapermintaanlist',
+            'penyerah',
+            'kasub',
+            'pemohon',
+            'kabid',
+        ));
+
+        return $pdf->download("SPB-SukuCadang-{$permintaanId}.pdf");
     }
 
     public function exportPdf(Request $request)
