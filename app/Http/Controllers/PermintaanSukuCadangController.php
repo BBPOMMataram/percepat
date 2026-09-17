@@ -88,7 +88,7 @@ class PermintaanSukuCadangController extends Controller
             $data->jenis = 'suku_cadang';
             $data->bidang_id = null;
             if (!$pemohon['employee']['fungsi_id']) {
-                throw new \Exception('Anda belum memilih fungsi atau bidang di profile Anda. Silakan lengkapi data tersebut untuk dapat membuat permintaan.');
+                throw new \Exception('Anda belum memilih fungsi atau bidang di profile Anda.');
             }
             $data->bidang_id_auth_external = $pemohon['employee']['fungsi_id'];
             $data->bidang_name_auth_external = $pemohon['employee']['fungsi']['name'];
@@ -170,12 +170,6 @@ class PermintaanSukuCadangController extends Controller
     }
 
     public function destroy($id)
-    {
-        PermintaanListSukuCadang::destroy($id);
-        return response()->json(['status' => 1]);
-    }
-
-    public function destroyPermintaan($id)
     {
         PermintaanListSukuCadang::where('permintaan_id', $id)->delete();
         Permintaan::destroy($id);
