@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ApiUser;
 use App\Models\Permintaan;
 use App\Models\PermintaanListSukuCadang;
+use App\Models\SukuCadang;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -52,10 +53,20 @@ class PermintaanSukuCadangController extends Controller
 
     public function showListBarang($permintaanId)
     {
-        $data = PermintaanListSukuCadang::with(['sukuCadang'])
-            ->where('permintaan_id', $permintaanId)
-            ->get();
-        return response()->json(['status' => 1, 'data' => $data]);
+        $items = PermintaanListSukuCadang::where('permintaan_id', $permintaanId)->get();
+        $result = $items->map(function ($item) {
+            $sukuCadang = SukuCadang::find($item->suku_cadang_id);
+            return [
+                'id' => $item->id,
+                'permintaan_id' => $item->permintaan_id,
+                'suku_cadang_id' => $item->suku_cadang_id,
+                'jumlahpermintaan' => $item->jumlahpermintaan,
+                'jumlahrealisasi' => $item->jumlahrealisasi,
+                'keterangan' => $item->keterangan,
+                'sukuCadang' => $sukuCadang,
+            ];
+        });
+        return response()->json(['status' => 1, 'data' => $result]);
     }
 
     public function show($id)
@@ -63,6 +74,21 @@ class PermintaanSukuCadangController extends Controller
         $data = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
             ->where('jenis', 'suku_cadang')
             ->find($id);
+        
+        // Load list barang for edit mode
+        $listBarang = PermintaanListSukuCadang::where('permintaan_id', $id)->get();
+        $listBarangResult = $listBarang->map(function ($item) {
+            $sukuCadang = SukuCadang::find($item->suku_cadang_id);
+            return [
+                'id' => $item->id,
+                'suku_cadang_id' => $item->suku_cadang_id,
+                'jumlah' => $item->jumlahpermintaan,
+                'keterangan' => $item->keterangan,
+                'sukuCadang' => $sukuCadang,
+            ];
+        });
+        
+        $data->listBarang = $listBarangResult;
         return response()->json($data);
     }
 
@@ -185,21 +211,6 @@ class PermintaanSukuCadangController extends Controller
         $pemohon = ApiUser::find($datapermintaan->created_by);
         $kabid = ApiUser::find($datapermintaan->katim_selected);
 
-        function pdfSignatureSukuCadang($model)
-        {
-            $signature = $model?->getRawOriginal('signature');
-            if ($signature && file_exists(public_path('storage/' . $signature))) {
-                return public_path('storage/' . $signature);
-            }
-            return public_path('vendor/assets/images/image-not-found.webp');
-        }
-
-        $penyerahSignature = pdfSignatureSukuCadang($penyerah);
-        $kasubSignature    = pdfSignatureSukuCadang($kasub);
-        $pemohonSignature  = pdfSignatureSukuCadang($pemohon);
-        $kabidSignature    = pdfSignatureSukuCadang($kabid);
-
-        $logobpom = 'storage/bpomri.jpg';
         $pdf = PDF::loadView('pdf/permintaan-suku-cadang', compact(
             'datapermintaan',
             'datapermintaanlist',
@@ -207,11 +218,6 @@ class PermintaanSukuCadangController extends Controller
             'kasub',
             'pemohon',
             'kabid',
-            'penyerahSignature',
-            'kasubSignature',
-            'pemohonSignature',
-            'kabidSignature',
-            'logobpom',
         ));
 
         return $pdf->download("SPB-SukuCadang-{$permintaanId}.pdf");

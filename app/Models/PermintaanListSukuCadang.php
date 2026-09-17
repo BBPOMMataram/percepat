@@ -9,11 +9,13 @@ class PermintaanListSukuCadang extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['permintaan_id', 'suku_cadang_id', 'jumlah'];
+    protected $table = 'permintaan_list_suku_cadangs';
+
+    protected $fillable = ['permintaan_id', 'suku_cadang_id', 'jumlahpermintaan', 'jumlahrealisasi', 'keterangan'];
 
     public function sukuCadang()
     {
-        return $this->belongsTo(SukuCadang::class);
+        return $this->belongsTo(SukuCadang::class, 'suku_cadang_id', 'id');
     }
 
     public function permintaan()
