@@ -50,6 +50,14 @@ class PermintaanSukuCadangController extends Controller
         return response()->json($data);
     }
 
+    public function showListBarang($permintaanId)
+    {
+        $data = PermintaanListSukuCadang::with(['sukuCadang'])
+            ->where('permintaan_id', $permintaanId)
+            ->get();
+        return response()->json(['status' => 1, 'data' => $data]);
+    }
+
     public function show($id)
     {
         $data = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
@@ -164,6 +172,13 @@ class PermintaanSukuCadangController extends Controller
     public function destroy($id)
     {
         PermintaanListSukuCadang::destroy($id);
+        return response()->json(['status' => 1]);
+    }
+
+    public function destroyPermintaan($id)
+    {
+        PermintaanListSukuCadang::where('permintaan_id', $id)->delete();
+        Permintaan::destroy($id);
         return response()->json(['status' => 1]);
     }
 
