@@ -75,7 +75,13 @@ class PermintaanSukuCadangController extends Controller
             ->where('jenis', 'suku_cadang')
             ->find($id);
         
-        // Load list barang for edit mode
+        if (!$data) {
+            return response()->json(['status' => 0, 'message' => 'Data tidak ditemukan'], 404);
+        }
+        
+        $katimExternalId = $data->katim?->external_user_id;
+
+        // Reconstruct listBarang
         $listBarang = PermintaanListSukuCadang::where('permintaan_id', $id)->get();
         $listBarangResult = $listBarang->map(function ($item) {
             $sukuCadang = SukuCadang::find($item->suku_cadang_id);
@@ -83,13 +89,27 @@ class PermintaanSukuCadangController extends Controller
                 'id' => $item->id,
                 'suku_cadang_id' => $item->suku_cadang_id,
                 'jumlah' => $item->jumlahpermintaan,
+                'jumlahpermintaan' => $item->jumlahpermintaan,
                 'keterangan' => $item->keterangan,
                 'sukuCadang' => $sukuCadang,
+                'atk' => $sukuCadang,
+                'barang' => $sukuCadang,
             ];
         });
-        
-        $data->listBarang = $listBarangResult;
-        return response()->json($data);
+
+        return response()->json([
+            'status' => 1,
+            'data' => [
+                'id' => $data->id,
+                'pemohon' => $data->peminta?->external_user_id,
+                'createdAt' => $data->tgl_permintaan,
+                'listBarang' => $listBarangResult,
+                'katimId' => $katimExternalId,
+                'nourut' => $data->nourut,
+                'jenis' => $data->jenis,
+                'created_at' => $data->created_at,
+            ],
+        ]);
     }
 
     public function store(Request $request)
