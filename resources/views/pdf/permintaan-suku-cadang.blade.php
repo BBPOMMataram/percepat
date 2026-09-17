@@ -45,18 +45,6 @@
         #nourut {
             margin-bottom: 5px;
         }
-
-        #footer {
-            margin-top: 5px;
-        }
-
-        #footer table {
-            width: 100%;
-        }
-
-        #footer table tr td {
-            /* border: 1px solid black; */
-        }
     </style>
 </head>
 
@@ -125,35 +113,10 @@
                         <td colspan="6" style="text-align: center; padding: 20px;">Tidak ada data</td>
                     </tr>
                 @endforelse
-                <tr>
-                    <td colspan="6" style="text-align: left;">Tanggal Penyerahan :
-                        {{ $datapermintaan->tgl_penyerahan ? $datapermintaan->tgl_penyerahan->isoFormat('D MMMM Y') : '-' }}
-                    </td>
-                </tr>
             </thead>
         </table>
     </div>
-    <div id="footer">
-        <table style="width: 100%;">
-            <tr>
-                <td style="text-align: center; width: 33%;">
-                    <div>Yang Meminta</div>
-                    <div style="height: 40px;">&nbsp;</div>
-                    <div>{{ $pemohon?->name ?? '-' }}</div>
-                </td>
-                <td style="text-align: center; width: 33%;">
-                    <div>KaTim</div>
-                    <div style="height: 40px;">&nbsp;</div>
-                    <div>{{ $kabid?->name ?? '-' }}</div>
-                </td>
-                <td style="text-align: center; width: 33%;">
-                    <div>Penyerah</div>
-                    <div style="height: 40px;">&nbsp;</div>
-                    <div>{{ $penyerah?->name ?? '-' }}</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    @include('pdf.permintaan-footer')
 </body>
 
 </html>

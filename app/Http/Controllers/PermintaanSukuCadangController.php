@@ -176,6 +176,21 @@ class PermintaanSukuCadangController extends Controller
         $pemohon = ApiUser::find($datapermintaan->created_by);
         $kabid = ApiUser::find($datapermintaan->katim_selected);
 
+        function pdfSignatureSukuCadang($model)
+        {
+            $signature = $model?->getRawOriginal('signature');
+            if ($signature && file_exists(public_path('storage/' . $signature))) {
+                return public_path('storage/' . $signature);
+            }
+            return public_path('vendor/assets/images/image-not-found.webp');
+        }
+
+        $penyerahSignature = pdfSignatureSukuCadang($penyerah);
+        $kasubSignature    = pdfSignatureSukuCadang($kasub);
+        $pemohonSignature  = pdfSignatureSukuCadang($pemohon);
+        $kabidSignature    = pdfSignatureSukuCadang($kabid);
+
+        $logobpom = 'storage/bpomri.jpg';
         $pdf = PDF::loadView('pdf/permintaan-suku-cadang', compact(
             'datapermintaan',
             'datapermintaanlist',
@@ -183,6 +198,11 @@ class PermintaanSukuCadangController extends Controller
             'kasub',
             'pemohon',
             'kabid',
+            'penyerahSignature',
+            'kasubSignature',
+            'pemohonSignature',
+            'kabidSignature',
+            'logobpom',
         ));
 
         return $pdf->download("SPB-SukuCadang-{$permintaanId}.pdf");

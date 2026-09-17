@@ -1,86 +1,83 @@
 <div id="footer">
     <table>
         <tr>
-            <td>
-                <div style="width:180px; text-align:center;">Mengetahui Atasan langsung</div>
-                <div style="width:180px; text-align:center;">Ketua Tim / Penyelia</div>
+            <td style="width: 25%;">
+                <div style="width:100%; text-align:center;">Mengetahui Atasan langsung</div>
+                <div style="width:100%; text-align:center;">Ketua Tim / Penyelia</div>
             </td>
-            <td style="text-align: right; padding-right: 35px;">Pemohon / Penerima <br />
+            <td style="width: 25%;">
+                <div style="width:100%; text-align:center;">Pemohon / Penerima</div>
+            </td>
+            <td style="width: 25%;">
+                <div style="width:100%; text-align:center;">Mengetahui</div>
+                <div style="width:100%; text-align:center;">Kepala Bagian Tata Usaha</div>
+            </td>
+            <td style="width: 25%;">
+                <div style="width:100%; text-align:center;">Yang menyerahkan /</div>
+                <div style="width:100%; text-align:center;">Petugas Gudang</div>
             </td>
         </tr>
         <tr>
-            <td>
+            <td style="text-align: center; height: 60px;">
                 @if ($datapermintaan->status_id >= 2)
                     @if ($kabid)
-                        <span>
-                            @if ($kabidSignature)
-                                <img src="{{ $kabidSignature }}" alt="ttd kabid" width="150px" style="padding-left: 15px;">
-                            @endif
-                        </span>
-                        <br />
-
-                        <div style="width:180px; text-align:center;">{{ $kabid->name }}</div>
+                        @if ($kabidSignature ?? null)
+                            <img src="{{ $kabidSignature }}" alt="ttd kabid" width="80px" style="padding-left: 15px;">
+                        @endif
                     @endif
                 @endif
             </td>
-            <td style="text-align: right; margin-right: 20px">
+            <td style="text-align: center; height: 60px;">
                 @if ($datapermintaan->status_id >= 1)
                     @if ($pemohon)
-                        <span>
-                            @if ($pemohonSignature)
-                                <img src={{ $pemohonSignature }} alt="ttd pemohon" width="150px">
-                            @endif
-                        </span>
-                        <br />
-                        <div style="width:180px; margin-left:auto; text-align:center;">{{ $pemohon->name }}</div>
+                        @if ($pemohonSignature ?? null)
+                            <img src="{{ $pemohonSignature }}" alt="ttd pemohon" width="80px">
+                        @endif
                     @endif
                 @endif
             </td>
-        </tr>
-        <br />
-        <tr>
-            <td colspan="2" style="text-align: center; border: 1px solid black;">Penyerahan Barang</td>
-        </tr>
-        <br />
-        <tr>
-            <td>Tanggal Penyerahan :
-                {{ $datapermintaan->tgl_penyerahan ? $datapermintaan->tgl_penyerahan->isoFormat('D MMM YYYY') : '' }}
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <div style="width:180px; text-align:center;">Mengetahui</div>
-                <div style="width:180px; text-align:center;">Kepala Bagian Tata Usaha</div>
-            </td>
-            <td style="text-align: center; padding-left: 305px;">Yang menyerahkan /<br /> Petugas Gudang</td>
-        </tr>
-        <tr>
-            <td>
+            <td style="text-align: center; height: 60px;">
                 @if ($datapermintaan->status_id >= 4)
                     @if ($kasub)
-                        <span>
-                            @if ($kasubSignature)
-                                <img src="{{ $kasubSignature }}" alt="ttd kasub" width="150px"
-                                    style="padding-left:15px">
-                            @endif
-                        </span>
-                        <br />
-                        <div style="width:180px; text-align:center;">{{ $kasub->name }}</div>
+                        @if ($kasubSignature ?? null)
+                            <img src="{{ $kasubSignature }}" alt="ttd kasub" width="80px" style="padding-left: 15px;">
+                        @endif
                     @endif
                 @endif
             </td>
-            <td style="text-align: right; margin-right: 20px">
-                {{-- MENAMPILKAN TTD PENYERAH SAAT SUDAH DISETUJUI OLEH PENYERAH, JADI TIDAK APA2 DEFAULT VALUE PENYERAH_ID PADA TABLE PERMINTAAN DIISI DULUAN BEGITU JUGA DENGAN YG LAINNYA --}}
+            <td style="text-align: center; height: 60px;">
                 @if ($datapermintaan->status_id >= 3)
                     @if ($penyerah)
-                        <span>
-                            @if ($penyerahSignature)
-                                <img src="{{ $penyerahSignature }}" alt="ttd penyerah" width="150px">
-                            @endif
-                        </span><br />
-                        <div style="width:180px; margin-left:auto; text-align:center;">{{ $penyerah->name }}</div>
+                        @if ($penyerahSignature ?? null)
+                            <img src="{{ $penyerahSignature }}" alt="ttd penyerah" width="80px">
+                        @endif
                     @endif
                 @endif
+            </td>
+        </tr>
+        <tr>
+            <td style="text-align: center;">
+                {{ $kabid?->name ?? '' }}
+            </td>
+            <td style="text-align: center;">
+                {{ $pemohon?->name ?? '' }}
+            </td>
+            <td style="text-align: center;">
+                {{ $kasub?->name ?? '' }}
+            </td>
+            <td style="text-align: center;">
+                {{ $penyerah?->name ?? '' }}
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table style="width: 100%;">
+        <tr>
+            <td colspan="4" style="text-align: center; border: 1px solid black; padding: 5px;">Penyerahan Barang</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align: left;">Tanggal Penyerahan :
+                {{ $datapermintaan->tgl_penyerahan ? $datapermintaan->tgl_penyerahan->isoFormat('D MMM YYYY') : '' }}
             </td>
         </tr>
     </table>
