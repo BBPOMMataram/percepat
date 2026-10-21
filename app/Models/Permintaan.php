@@ -14,6 +14,7 @@ class Permintaan extends Model
         'status_id',
         'kasubbagumum_id',
         'penyerah_id',
+        'tgl_penyerahan',
     ];
 
     protected $casts = [
@@ -75,5 +76,10 @@ class Permintaan extends Model
     public function permintaanListPerlengkapanKebersihan()
     {
         return $this->hasMany(PermintaanListPerlengkapanKebersihan::class);
+    }
+
+    public function permintaanListBakuPembanding()
+    {
+        return $this->hasMany(PermintaanListBakuPembanding::class);
     }
 }

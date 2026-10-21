@@ -180,4 +180,40 @@ class BarangController extends Controller
 
         return response()->json($data);
     }
+
+    public function getDetailReagen($id)
+    {
+        $barang = Barang::find($id);
+        if (!$barang) {
+            return response()->json(['message' => 'Barang tidak ditemukan'], 404);
+        }
+
+        // Get latest completed and delivered permintaan for this reagen
+        $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta'])
+            ->where('barang_id', $id)
+            ->whereHas('permintaan', function ($q) {
+                $q->where('status_id', 4)
+                  ->whereNotNull('tgl_penyerahan');
+            })
+            ->latest('id')
+            ->first();
+
+        $permintaan = $latestPermintaanList?->permintaan;
+        $diterimaTanggal = $permintaan?->tgl_penyerahan;
+        $diterimaPenerima = $permintaan?->peminta?->name;
+
+        return response()->json([
+            'id' => $barang->id,
+            'name' => $barang->name,
+            'code' => $barang->code ?? ('RG-' . str_pad($barang->id, 4, '0', STR_PAD_LEFT)),
+            'stock' => $barang->stock,
+            'satuan' => $barang->satuan,
+            'expired' => $barang->expired ? $barang->expired->format('Y-m-d') : null,
+            'msds' => $barang->msds,
+            'diterima_tanggal' => $diterimaTanggal ? \Carbon\Carbon::parse($diterimaTanggal)->format('Y-m-d') : null,
+            'diterima_penerima' => $diterimaPenerima,
+            'created_at' => $barang->created_at,
+            'updated_at' => $barang->updated_at,
+        ]);
+    }
 }

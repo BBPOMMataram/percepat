@@ -204,4 +204,47 @@ class ApiReagenController extends Controller
 
         return $pdf->download();
     }
+
+    public function downloadKartuStokReagen($id)
+    {
+        $barang = ApiReagen::findOrFail($id);
+
+        // Get penerimaan (masuk)
+        $penerimaan = \App\Models\Pembelian::where('barangs_id', $id)
+            ->whereNotNull('created_at')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->created_at->toDateTimeString(),
+                    'keterangan' => 'Pengadaan (' . ($item->vendor ?? '-') . ')',
+                    'tipe' => 'masuk',
+                    'jumlah' => (int) $item->jumlah,
+                ];
+            });
+
+        // Get permintaan (keluar)
+        $permintaan = \App\Models\PermintaanList::where('barang_id', $id)
+            ->whereNotNull('created_at')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'tanggal' => $item->created_at->toDateTimeString(),
+                    'keterangan' => $item->keterangan ?? 'Permintaan',
+                    'tipe' => 'keluar',
+                    'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
+                ];
+            });
+
+        // Merge and sort by date
+        $transaksi = $penerimaan->concat($permintaan)->sortBy('tanggal')->values();
+
+        $pdf = PDF::loadView('pdf.kartu-stok-reagen', [
+            'barang' => $barang,
+            'transaksi' => $transaksi,
+        ]);
+
+        return $pdf->download('kartu-stok-reagen-' . $barang->name . '.pdf');
+    }
 }

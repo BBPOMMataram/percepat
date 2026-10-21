@@ -92,6 +92,7 @@ class VerifAtkController extends Controller
         $permintaan->update([
             'status_id' => 4,
             'penyerah_id' => User::where('external_user_id', $request->user["id"])->first()->id,
+            'tgl_penyerahan' => now(),
         ]);
 
         return response()->json([

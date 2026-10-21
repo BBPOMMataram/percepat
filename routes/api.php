@@ -1,16 +1,23 @@
 <?php
 
 use App\Http\Controllers\ApiAtkController;
+use App\Http\Controllers\ApiBakuPembandingController;
 use App\Http\Controllers\ApiBidangController;
 use App\Http\Controllers\ApiReagenController;
 use App\Http\Controllers\ApiSukuCadangController;
 use App\Http\Controllers\ApiUserController;
 use App\Http\Controllers\AtkController;
+use App\Http\Controllers\BakuPembandingController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\LaporanPermintaanController;
 use App\Http\Controllers\New\AtkAdminController;
+use App\Http\Controllers\New\BakuPembandingAdminController;
+use App\Http\Controllers\New\PenerimaanBakuPembandingController;
+use App\Http\Controllers\New\PermintaanBakuPembandingController;
+use App\Http\Controllers\New\PermintaanListBakuPembandingController;
 use App\Http\Controllers\New\ReagenAdminController;
+use App\Http\Controllers\New\VerifBakuPembandingController;
 use App\Http\Controllers\SukuCadangController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
@@ -148,18 +155,28 @@ Route::post('spp', [SurveyPelananPublicController::class, 'store']);
 Route::prefix('v1')->group(function () {
     // PUBLIC ROUTES
     Route::get('barang/reagen', [BarangController::class, 'getDataReagen']);
+    Route::get('barang/baku-pembanding', [BakuPembandingController::class, 'getDataBakuPembanding']);
     Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
     Route::get('barang/perlengkapan', [PerlengkapanKebersihanController::class, 'get_data_perlengkapan']);
+
+    // PUBLIC ITEM DETAILS (For QR Scan & public detail view)
+    Route::get('detail/reagen/{id}', [BarangController::class, 'getDetailReagen']);
+    Route::get('detail/baku-pembanding/{id}', [BakuPembandingController::class, 'getDetailBakuPembanding']);
 
     // PROTECTED ROUTES
     Route::middleware(['jwt'])->group(function () {
 
         // BARANG UNTUK REACT SELECT-OPTION (harus di atas routes barang)
         Route::get('barang-reagen-all', [ApiReagenController::class, 'getAll']);
+        Route::get('barang-baku-pembanding-all', [ApiBakuPembandingController::class, 'getAll']);
         Route::get('barang-atk-all', [ApiAtkController::class, 'getAll']);
         Route::get('barang-perlengkapan-kebersihan-all', [PermintaanPerlengkapanKebersihanController::class, 'getAll']);
         Route::get('barang-suku-cadang-all', [ApiSukuCadangController::class, 'getAll']);
-        // tambah untuk baku pembanding dan suku cadang nanti
+        Route::get('barang-baku-pembanding-expired', [ApiBakuPembandingController::class, 'bakuPembandingExpired']);
+        Route::get('barang-baku-pembanding-expired-count', [ApiBakuPembandingController::class, 'bakuPembandingExpiredCount']);
+        Route::get('download-baku-pembanding', [ApiBakuPembandingController::class, 'downloadBakuPembanding']);
+        Route::get('kartu-stok/reagen/{id}', [ApiReagenController::class, 'downloadKartuStokReagen']);
+        Route::get('kartu-stok/baku-pembanding/{id}', [ApiBakuPembandingController::class, 'downloadKartuStokBakuPembanding']);
 
         // BARANG SUKU CADANG (API Resource)
         Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
@@ -167,11 +184,13 @@ Route::prefix('v1')->group(function () {
 
         // DOWNLOAD PERMINTAAN
         Route::get('/permintaan-reagen/export-pdf', [NewPermintaanReagenController::class, 'exportPdf']);
+        Route::get('/permintaan-baku-pembanding/export-pdf', [PermintaanBakuPembandingController::class, 'exportPdf']);
         Route::get('/permintaan-atk/export-pdf', [PermintaanAtkController::class, 'exportPdf']);
         Route::get('/permintaan-perlengkapan/export-pdf', [PermintaanPerlengkapanKebersihanController::class, 'exportPdf']);
 
         // PERMINTAAN
         Route::apiResource('permintaan-reagen', NewPermintaanReagenController::class);
+        Route::apiResource('permintaan-baku-pembanding', PermintaanBakuPembandingController::class);
         Route::apiResource('permintaan-perlengkapan-kebersihan', PermintaanPerlengkapanKebersihanController::class)
             ->parameters(['permintaan-perlengkapan-kebersihan' => 'ppk']);
         Route::apiResource('permintaan-atk', PermintaanAtkController::class);
@@ -183,6 +202,14 @@ Route::prefix('v1')->group(function () {
         // DATA LIST PERMINTAAN REAGEN
         Route::get('list-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'list_permintaan_reagen']);
         Route::get('download-permintaan-reagen/{permintaan}', [PermintaanListReagenController::class, 'download_permintaan_reagen']);
+
+        // DATA LIST PERMINTAAN BAKU PEMBANDING
+        Route::get('list-permintaan-baku-pembanding/{permintaan}', [PermintaanListBakuPembandingController::class, 'list_permintaan_baku_pembanding']);
+        Route::get('download-permintaan-baku-pembanding/{permintaan}', [PermintaanListBakuPembandingController::class, 'download_permintaan_baku_pembanding']);
+
+        // Fallback aliases for SPB download
+        Route::get('download-reagen/{permintaan}', [PermintaanListReagenController::class, 'download_permintaan_reagen']);
+        Route::get('download-baku-pembanding/{permintaan}', [PermintaanListBakuPembandingController::class, 'download_permintaan_baku_pembanding']);
 
         // DATA LIST PERMINTAAN ATK
         Route::get('list-permintaan-atk/{permintaan}', [NewPermintaanListAtkController::class, 'list_permintaan_atk']);
@@ -199,6 +226,12 @@ Route::prefix('v1')->group(function () {
         Route::post('verif-katim-reagen/{id}', [VerifReagenController::class, 'verif_katim']);
         Route::post('verif-kabagtu-reagen/{id}', [VerifReagenController::class, 'verif_kabagtu']);
         Route::post('verif-petugas-reagen/{id}', [VerifReagenController::class, 'verif_petugas']);
+
+        // VERIFIKASI PERMINTAAN BAKU PEMBANDING
+        Route::get('verif-baku-pembanding', [VerifBakuPembandingController::class, 'index']);
+        Route::post('verif-katim-baku-pembanding/{id}', [VerifBakuPembandingController::class, 'verif_katim']);
+        Route::post('verif-kabagtu-baku-pembanding/{id}', [VerifBakuPembandingController::class, 'verif_kabagtu']);
+        Route::post('verif-petugas-baku-pembanding/{id}', [VerifBakuPembandingController::class, 'verif_petugas']);
 
         // VERIFIKASI PERMINTAAN ATK
         Route::get('verif-atk', [VerifAtkController::class, 'index']);
@@ -219,10 +252,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('perlengkapan-kebersihan', PerlengkapanKebersihanAdminController::class);
         Route::apiResource('atk', AtkAdminController::class);
         Route::apiResource('reagen', ReagenAdminController::class);
+        Route::apiResource('baku-pembanding', BakuPembandingAdminController::class);
         Route::apiResource('suku-cadang', SukuCadangController::class);
 
         // PENERIMAAN EXPORT PDF
         Route::get('/penerimaan-reagen/export-pdf', [PenerimaanReagenController::class, 'exportPdf']);
+        Route::get('/penerimaan-baku-pembanding/export-pdf', [PenerimaanBakuPembandingController::class, 'exportPdf']);
         Route::get('/penerimaan-atk/export-pdf', [NewPenerimaanAtkController::class, 'exportPdf']);
         Route::get('/penerimaan-perlengkapan/export-pdf', [PenerimaanPerlengkapanController::class, 'exportPdf']);
 
@@ -230,6 +265,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('penerimaan-perlengkapan', PenerimaanPerlengkapanController::class);
         Route::apiResource('penerimaan-atk', NewPenerimaanAtkController::class);
         Route::apiResource('penerimaan-reagen', PenerimaanReagenController::class);
+        Route::apiResource('penerimaan-baku-pembanding', PenerimaanBakuPembandingController::class);
         Route::apiResource('penerimaan-suku-cadang', PenerimaanSukuCadangController::class);
 
         // UPDATE SIGNATURE

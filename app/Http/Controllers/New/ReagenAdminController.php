@@ -51,6 +51,34 @@ class ReagenAdminController extends Controller
         return response()->json(['message' => 'Data berhasil diupdate!']);
     }
 
+    function show($id)
+    {
+        $reagen = ApiReagen::findOrFail($id);
+        $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta'])
+            ->where('barang_id', $id)
+            ->whereHas('permintaan', function ($q) {
+                $q->where('status_id', 4);
+            })
+            ->latest('id')
+            ->first();
+
+        if (!$latestPermintaanList) {
+            $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta'])
+                ->where('barang_id', $id)
+                ->latest('id')
+                ->first();
+        }
+
+        $permintaan = $latestPermintaanList?->permintaan;
+        $diterimaTanggal = $permintaan?->tgl_penyerahan 
+            ?? $permintaan?->updated_at 
+            ?? $permintaan?->tgl_permintaan 
+            ?? $reagen->created_at;
+        $reagen->diterima_tanggal = $diterimaTanggal ? \Carbon\Carbon::parse($diterimaTanggal)->format('Y-m-d') : null;
+        $reagen->diterima_penerima = $permintaan?->peminta?->name ?? 'Petugas Laboratorium';
+        return response()->json($reagen);
+    }
+
     function destroy(ApiReagen $reagen)
     {
         $reagen->delete();
