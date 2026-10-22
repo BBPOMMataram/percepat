@@ -88,10 +88,12 @@ class VerifPerlengkapanKebersihanController extends Controller
             }
         });
 
+        $tglPenyerahan = $request->filled('tgl_penyerahan') ? \Carbon\Carbon::parse($request->tgl_penyerahan) : now();
+
         $permintaan->update([
             'status_id' => 4,
             'penyerah_id' => User::where('external_user_id', $request->user["id"])->first()->id,
-            'tgl_penyerahan' => now(),
+            'tgl_penyerahan' => $tglPenyerahan,
         ]);
 
 

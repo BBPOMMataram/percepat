@@ -69,30 +69,52 @@ class VerifAtkController extends Controller
     {
         $permintaan = Permintaan::findOrFail($id);
 
-        $listBarang = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
-
-
         $realisasi = $request->realisasi; // array
 
-        DB::transaction(function () use ($listBarang, $realisasi) {
-            foreach ($listBarang as $key => $item) {
-                $item->jumlahrealisasi = $realisasi[$key];
-                $item->save();
+        if ($permintaan->jenis === 'suku_cadang') {
+            $listSukuCadang = \App\Models\PermintaanListSukuCadang::where('permintaan_id', $permintaan->id)->get();
+            DB::transaction(function () use ($listSukuCadang, $realisasi) {
+                foreach ($listSukuCadang as $key => $item) {
+                    $val = isset($realisasi[$key]) ? $realisasi[$key] : $item->jumlahpermintaan;
+                    $item->jumlahrealisasi = $val;
+                    $item->save();
 
-                $barang = ApiAtk::lockForUpdate()->find($item->atk_id);
-
-                if ($barang->stock < $realisasi[$key]) {
-                    throw new \Exception("Stock tidak mencukupi");
+                    $barang = \App\Models\SukuCadang::lockForUpdate()->find($item->suku_cadang_id);
+                    if ($barang && $barang->stock < $val) {
+                        throw new \Exception("Stock suku cadang tidak mencukupi");
+                    }
+                    if ($barang) {
+                        $barang->decrement('stock', $val);
+                    }
                 }
+            });
+        } else {
+            $listBarang = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+            DB::transaction(function () use ($listBarang, $realisasi) {
+                foreach ($listBarang as $key => $item) {
+                    $val = isset($realisasi[$key]) ? $realisasi[$key] : $item->jumlahpermintaan;
+                    $item->jumlahrealisasi = $val;
+                    $item->save();
 
-                $barang->decrement('stock', $realisasi[$key]);
-            }
-        });
+                    $barang = ApiAtk::lockForUpdate()->find($item->atk_id);
+
+                    if ($barang && $barang->stock < $val) {
+                        throw new \Exception("Stock tidak mencukupi");
+                    }
+
+                    if ($barang) {
+                        $barang->decrement('stock', $val);
+                    }
+                }
+            });
+        }
+
+        $tglPenyerahan = $request->filled('tgl_penyerahan') ? \Carbon\Carbon::parse($request->tgl_penyerahan) : now();
 
         $permintaan->update([
             'status_id' => 4,
             'penyerah_id' => User::where('external_user_id', $request->user["id"])->first()->id,
-            'tgl_penyerahan' => now(),
+            'tgl_penyerahan' => $tglPenyerahan,
         ]);
 
         return response()->json([

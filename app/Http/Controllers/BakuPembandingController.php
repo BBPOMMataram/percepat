@@ -12,6 +12,8 @@ class BakuPembandingController extends Controller
     {
         $value_per_page = $request->query('value_per_page', 10);
         $name_query = $request->query('name');
+        $expiring_months = $request->query('expiring_months');
+        $has_stock = $request->query('has_stock');
 
         $query = BakuPembanding::query();
 
@@ -23,10 +25,23 @@ class BakuPembandingController extends Controller
             });
         }
 
+        if ($request->filled('expiring_months')) {
+            $months = (int) $expiring_months;
+            $query->whereNotNull('expired')
+                  ->whereDate('expired', '<=', now()->addMonths($months));
+        }
+
+        if ($has_stock === '1' || $has_stock === 'true') {
+            $query->where('stock', '>', 0);
+        }
+
+        if ($request->filled('expiring_months')) {
+            $query->orderBy('expired', 'asc');
+        }
+
         $data = $query->paginate($value_per_page);
 
-        $data->appends(['value_per_page' => $value_per_page]);
-        $data->appends(['name' => $name_query]);
+        $data->appends($request->query());
 
         return response()->json($data);
     }

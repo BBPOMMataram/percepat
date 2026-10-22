@@ -40,6 +40,9 @@ jobs:
             echo "[Deploy] Run migrations..."
             $PHP_BIN artisan migrate --force
 
+            echo "[Deploy] Backfill tgl penyerahan..."
+            $PHP_BIN artisan permintaan:backfill-tgl-penyerahan --no-interaction
+
             echo "[Deploy] Clear caches..."
             $PHP_BIN artisan optimize:clear
 

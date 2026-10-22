@@ -158,6 +158,7 @@ Route::prefix('v1')->group(function () {
     Route::get('barang/baku-pembanding', [BakuPembandingController::class, 'getDataBakuPembanding']);
     Route::get('barang/atk', [AtkController::class, 'getDataAtk']);
     Route::get('barang/perlengkapan', [PerlengkapanKebersihanController::class, 'get_data_perlengkapan']);
+    Route::get('barang/suku-cadang', [SukuCadangController::class, 'getDataSukuCadang']);
 
     // PUBLIC ITEM DETAILS (For QR Scan & public detail view)
     Route::get('detail/reagen/{id}', [BarangController::class, 'getDetailReagen']);
