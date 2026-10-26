@@ -18,6 +18,7 @@ use App\Http\Controllers\New\PermintaanBakuPembandingController;
 use App\Http\Controllers\New\PermintaanListBakuPembandingController;
 use App\Http\Controllers\New\ReagenAdminController;
 use App\Http\Controllers\New\VerifBakuPembandingController;
+use App\Http\Controllers\New\StokOpnameController;
 use App\Http\Controllers\SukuCadangController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
@@ -255,6 +256,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('reagen', ReagenAdminController::class);
         Route::apiResource('baku-pembanding', BakuPembandingAdminController::class);
         Route::apiResource('suku-cadang', SukuCadangController::class);
+        Route::post('master/import-items', [StokOpnameController::class, 'importMaster']);
+
+        // STOK OPNAME
+        Route::get('stok-opname', [StokOpnameController::class, 'index']);
+        Route::get('stok-opname/lookup', [StokOpnameController::class, 'lookup']);
+        Route::post('stok-opname', [StokOpnameController::class, 'store']);
 
         // PENERIMAAN EXPORT PDF
         Route::get('/penerimaan-reagen/export-pdf', [PenerimaanReagenController::class, 'exportPdf']);

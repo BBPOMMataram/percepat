@@ -67,7 +67,7 @@ class BakuPembandingAdminController extends Controller
     function show($id)
     {
         $baku_pembanding = BakuPembanding::findOrFail($id);
-        $latestPermintaanList = \App\Models\PermintaanListBakuPembanding::with(['permintaan.peminta'])
+        $latestPermintaanList = \App\Models\PermintaanListBakuPembanding::with(['permintaan.peminta', 'permintaan.bidang'])
             ->where('baku_pembanding_id', $id)
             ->whereHas('permintaan', function ($q) {
                 $q->where('status_id', 4);
@@ -76,7 +76,7 @@ class BakuPembandingAdminController extends Controller
             ->first();
 
         if (!$latestPermintaanList) {
-            $latestPermintaanList = \App\Models\PermintaanListBakuPembanding::with(['permintaan.peminta'])
+            $latestPermintaanList = \App\Models\PermintaanListBakuPembanding::with(['permintaan.peminta', 'permintaan.bidang'])
                 ->where('baku_pembanding_id', $id)
                 ->latest('id')
                 ->first();
@@ -89,6 +89,7 @@ class BakuPembandingAdminController extends Controller
             ?? $baku_pembanding->created_at;
         $baku_pembanding->diterima_tanggal = $diterimaTanggal ? \Carbon\Carbon::parse($diterimaTanggal)->format('Y-m-d') : null;
         $baku_pembanding->diterima_penerima = $permintaan?->peminta?->name ?? 'Petugas Laboratorium';
+        $baku_pembanding->diterima_lab = $permintaan?->bidang?->name ?? $permintaan?->bidang_name_auth_external ?? null;
         return response()->json($baku_pembanding);
     }
 

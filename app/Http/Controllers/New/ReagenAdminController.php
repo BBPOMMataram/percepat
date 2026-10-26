@@ -54,7 +54,7 @@ class ReagenAdminController extends Controller
     function show($id)
     {
         $reagen = ApiReagen::findOrFail($id);
-        $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta'])
+        $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta', 'permintaan.bidang'])
             ->where('barang_id', $id)
             ->whereHas('permintaan', function ($q) {
                 $q->where('status_id', 4);
@@ -63,7 +63,7 @@ class ReagenAdminController extends Controller
             ->first();
 
         if (!$latestPermintaanList) {
-            $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta'])
+            $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta', 'permintaan.bidang'])
                 ->where('barang_id', $id)
                 ->latest('id')
                 ->first();
@@ -76,6 +76,7 @@ class ReagenAdminController extends Controller
             ?? $reagen->created_at;
         $reagen->diterima_tanggal = $diterimaTanggal ? \Carbon\Carbon::parse($diterimaTanggal)->format('Y-m-d') : null;
         $reagen->diterima_penerima = $permintaan?->peminta?->name ?? 'Petugas Laboratorium';
+        $reagen->diterima_lab = $permintaan?->bidang?->name ?? $permintaan?->bidang_name_auth_external ?? null;
         return response()->json($reagen);
     }
 

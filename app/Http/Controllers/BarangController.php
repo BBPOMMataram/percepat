@@ -169,6 +169,7 @@ class BarangController extends Controller
         $name_query = $request->query('name');
         $expiring_months = $request->query('expiring_months');
         $has_stock = $request->query('has_stock');
+        $expired_status = $request->query('expired_status');
 
         $query = Barang::query();
 
@@ -176,7 +177,15 @@ class BarangController extends Controller
             $query->where('name', 'like', '%' . $name_query . '%');
         }
 
-        if ($request->filled('expiring_months')) {
+        if ($expired_status === 'expired') {
+            $query->whereNotNull('expired')
+                  ->whereDate('expired', '<', now());
+        } elseif ($expired_status === 'expiring_soon') {
+            $months = $request->filled('expiring_months') ? (int) $expiring_months : 3;
+            $query->whereNotNull('expired')
+                  ->whereDate('expired', '>=', now())
+                  ->whereDate('expired', '<=', now()->addMonths($months));
+        } elseif ($request->filled('expiring_months')) {
             $months = (int) $expiring_months;
             $query->whereNotNull('expired')
                   ->whereDate('expired', '<=', now()->addMonths($months));
@@ -186,7 +195,7 @@ class BarangController extends Controller
             $query->where('stock', '>', 0);
         }
 
-        if ($request->filled('expiring_months')) {
+        if ($expired_status || $request->filled('expiring_months')) {
             $query->orderBy('expired', 'asc');
         }
 
@@ -206,7 +215,7 @@ class BarangController extends Controller
         }
 
         // Get latest completed and delivered permintaan for this reagen
-        $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta'])
+        $latestPermintaanList = \App\Models\PermintaanList::with(['permintaan.peminta', 'permintaan.bidang'])
             ->where('barang_id', $id)
             ->whereHas('permintaan', function ($q) {
                 $q->where('status_id', 4)
@@ -218,6 +227,7 @@ class BarangController extends Controller
         $permintaan = $latestPermintaanList?->permintaan;
         $diterimaTanggal = $permintaan?->tgl_penyerahan;
         $diterimaPenerima = $permintaan?->peminta?->name;
+        $diterimaLab = $permintaan?->bidang?->name ?? $permintaan?->bidang_name_auth_external;
 
         return response()->json([
             'id' => $barang->id,
@@ -229,6 +239,7 @@ class BarangController extends Controller
             'msds' => $barang->msds,
             'diterima_tanggal' => $diterimaTanggal ? \Carbon\Carbon::parse($diterimaTanggal)->format('Y-m-d') : null,
             'diterima_penerima' => $diterimaPenerima,
+            'diterima_lab' => $diterimaLab,
             'created_at' => $barang->created_at,
             'updated_at' => $barang->updated_at,
         ]);

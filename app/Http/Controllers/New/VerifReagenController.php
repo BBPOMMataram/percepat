@@ -19,7 +19,8 @@ class VerifReagenController extends Controller
     {
         $perPage = (int) $request->query('per_page', 10);
         $page = $request->query('page', 1);
-        $katim_id = User::where('external_user_id', $request->query('katim_id'))->first()->id;
+        $userObj = User::where('external_user_id', $request->query('katim_id'))->first();
+        $katim_id = $userObj ? $userObj->id : 0;
         $is_kabagtu = $request->query('is_kabagtu', 0);
 
         $query = Permintaan::with(['peminta', 'status', 'bidang', 'bidang.user', 'katim', 'penyerah'])
@@ -55,9 +56,12 @@ class VerifReagenController extends Controller
     public function verif_kabagtu(Request $request, $id)
     {
         $permintaan = Permintaan::findOrFail($id);
+        $userObj = isset($request->user['id']) ? User::where('external_user_id', $request->user['id'])->first() : null;
+        $kasubbagumum_id = $userObj ? $userObj->id : null;
+
         $permintaan->update([
             'status_id' => 3,
-            'kasubbagumum_id' => User::where('external_user_id', $request->user["id"])->first()->id,
+            'kasubbagumum_id' => $kasubbagumum_id,
         ]);
 
         return response()->json([
@@ -77,24 +81,29 @@ class VerifReagenController extends Controller
 
         DB::transaction(function () use ($listBarang, $realisasi) {
             foreach ($listBarang as $key => $item) {
-                $item->jumlahrealisasi = $realisasi[$key];
+                $val = isset($realisasi[$key]) ? $realisasi[$key] : $item->jumlahpermintaan;
+                $item->jumlahrealisasi = $val;
                 $item->save();
 
                 $barang = Barang::lockForUpdate()->find($item->barang_id);
 
-                if ($barang->stock < $realisasi[$key]) {
+                if ($barang && $barang->stock < $val) {
                     throw new \Exception("Stock tidak mencukupi");
                 }
 
-                $barang->decrement('stock', $realisasi[$key]);
+                if ($barang) {
+                    $barang->decrement('stock', $val);
+                }
             }
         });
 
         $tglPenyerahan = $request->filled('tgl_penyerahan') ? \Carbon\Carbon::parse($request->tgl_penyerahan) : now();
+        $userObj = isset($request->user['id']) ? User::where('external_user_id', $request->user['id'])->first() : null;
+        $penyerah_id = $userObj ? $userObj->id : null;
 
         $permintaan->update([
             'status_id' => 4,
-            'penyerah_id' => User::where('external_user_id', $request->user["id"])->first()->id,
+            'penyerah_id' => $penyerah_id,
             'tgl_penyerahan' => $tglPenyerahan,
         ]);
 
