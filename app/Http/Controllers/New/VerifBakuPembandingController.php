@@ -36,9 +36,33 @@ class VerifBakuPembandingController extends Controller
         return response()->json($data);
     }
 
-    public function verif_katim($id)
+    public function verif_katim(Request $request, $id)
     {
-        $permintaan = Permintaan::findOrFail($id);
+        $permintaan = Permintaan::with('katim')->findOrFail($id);
+        if ($permintaan->status_id != 1) {
+            return response()->json([
+                'message' => 'Permintaan ini sudah diverifikasi sebelumnya.'
+            ], 400);
+        }
+
+        if ($request->filled('user')) {
+            $reqUser = $request->input('user');
+            $roleLevel = data_get($reqUser, 'role.level');
+            $isSuperAdmin = $roleLevel === 'superadmin' || data_get($reqUser, 'is_admin');
+            $extUserId = data_get($reqUser, 'id');
+            $userObj = $extUserId ? User::where('external_user_id', $extUserId)->first() : null;
+            $intUserId = $userObj ? $userObj->id : null;
+
+            $isKatim = ($permintaan->katim_selected && $intUserId && $permintaan->katim_selected == $intUserId)
+                || ($permintaan->katim && $extUserId && $permintaan->katim->external_user_id == $extUserId);
+
+            if (!$isSuperAdmin && !$isKatim) {
+                return response()->json([
+                    'message' => 'Anda tidak memiliki hak akses untuk memverifikasi permintaan ini sebagai KaTim.'
+                ], 403);
+            }
+        }
+
         $permintaan->update([
             'status_id' => 2,
         ]);
@@ -51,7 +75,24 @@ class VerifBakuPembandingController extends Controller
 
     public function verif_kabagtu(Request $request, $id)
     {
+        $userData = $request->user;
+        $groupJabatanId = data_get($userData, 'employee.group_jabatan_id') ?? data_get($userData, 'group_jabatan_id');
+        $roleLevel = data_get($userData, 'role.level');
+        $isAdmin = data_get($userData, 'is_admin') || $roleLevel === 'superadmin';
+
+        if ($groupJabatanId != 2 && !$isAdmin) {
+            return response()->json([
+                'message' => 'Hanya Kepala Bagian Tata Usaha (Kabag TU) yang berwenang melakukan verifikasi ini.'
+            ], 403);
+        }
+
         $permintaan = Permintaan::findOrFail($id);
+        if ($permintaan->status_id != 2) {
+            return response()->json([
+                'message' => 'Permintaan ini belum diverifikasi oleh KaTim atau sudah disetujui sebelumnya.'
+            ], 400);
+        }
+
         $userObj = isset($request->user['id']) ? User::where('external_user_id', $request->user['id'])->first() : null;
         $kasubbagumum_id = $userObj ? $userObj->id : null;
 

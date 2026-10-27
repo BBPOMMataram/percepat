@@ -191,7 +191,7 @@ class BarangController extends Controller
                   ->whereDate('expired', '<=', now()->addMonths($months));
         }
 
-        if ($has_stock === '1' || $has_stock === 'true') {
+        if ($has_stock === '1' || $has_stock === 'true' || !$request->has('include_zero_stock')) {
             $query->where('stock', '>', 0);
         }
 
