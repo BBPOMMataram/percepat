@@ -15,10 +15,12 @@ class Barang extends Model
     ];
 
     protected $fillable = [
-        'stock',
         'name',
+        'code',
+        'stock',
         'satuan',
         'expired',
+        'lokasi',
     ];
 
     function getMsdsAttribute($value)

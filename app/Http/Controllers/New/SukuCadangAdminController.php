@@ -13,11 +13,13 @@ class SukuCadangAdminController extends Controller
     {
         $perPage = (int) $request->query('per_page', 10);
         $page = $request->query('page', 1);
-        $name_query = $request->query('name');
+        $name_query = $request->query('name') ?? $request->query('search');
 
-        $query = SukuCadang::where('name', 'like', '%' . $name_query . '%')
-            ->orderBy('name', 'asc');
-
+        $query = SukuCadang::query();
+        if (!empty($name_query)) {
+            $query->where('name', 'like', '%' . $name_query . '%');
+        }
+        $query->orderBy('name', 'asc');
 
         $data = $query->paginate($perPage, ['*'], 'page', $page)->appends([
             'name' => $name_query

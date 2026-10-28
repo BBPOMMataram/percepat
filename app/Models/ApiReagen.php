@@ -17,8 +17,10 @@ class ApiReagen extends Model
 
     protected $fillable = [
         'name',
+        'code',
         'stock',
         'satuan',
         'expired',
+        'lokasi',
     ];
 }

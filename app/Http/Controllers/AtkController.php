@@ -154,4 +154,23 @@ class AtkController extends Controller
 
         return response()->json($data);
     }
+
+    public function getDetailAtk($id)
+    {
+        $atk = Atk::find($id);
+        if (!$atk) {
+            return response()->json(['message' => 'ATK tidak ditemukan'], 404);
+        }
+        return response()->json([
+            'id' => $atk->id,
+            'name' => $atk->name,
+            'code' => 'ATK-' . str_pad($atk->id, 4, '0', STR_PAD_LEFT),
+            'stock' => $atk->stock,
+            'satuan' => $atk->satuan,
+            'expired' => null,
+            'created_at' => $atk->created_at,
+            'updated_at' => $atk->updated_at,
+        ]);
+    }
 }
+

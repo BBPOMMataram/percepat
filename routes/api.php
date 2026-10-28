@@ -20,6 +20,7 @@ use App\Http\Controllers\New\ReagenAdminController;
 use App\Http\Controllers\New\VerifBakuPembandingController;
 use App\Http\Controllers\New\StokOpnameController;
 use App\Http\Controllers\SukuCadangController;
+use App\Http\Controllers\New\SukuCadangAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanAdminController;
 use App\Http\Controllers\New\PerlengkapanKebersihanController;
 use App\Http\Controllers\New\PermintaanPerlengkapanKebersihanController;
@@ -164,6 +165,9 @@ Route::prefix('v1')->group(function () {
     // PUBLIC ITEM DETAILS (For QR Scan & public detail view)
     Route::get('detail/reagen/{id}', [BarangController::class, 'getDetailReagen']);
     Route::get('detail/baku-pembanding/{id}', [BakuPembandingController::class, 'getDetailBakuPembanding']);
+    Route::get('detail/atk/{id}', [AtkController::class, 'getDetailAtk']);
+    Route::get('detail/perlengkapan/{id}', [PerlengkapanKebersihanController::class, 'getDetailPerlengkapan']);
+    Route::get('detail/suku-cadang/{id}', [SukuCadangController::class, 'getDetailSukuCadang']);
 
     // PROTECTED ROUTES
     Route::middleware(['jwt'])->group(function () {
@@ -257,13 +261,16 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('atk', AtkAdminController::class);
         Route::apiResource('reagen', ReagenAdminController::class);
         Route::apiResource('baku-pembanding', BakuPembandingAdminController::class);
-        Route::apiResource('suku-cadang', SukuCadangController::class);
+        Route::apiResource('suku-cadang', SukuCadangAdminController::class);
         Route::post('master/import-items', [StokOpnameController::class, 'importMaster']);
+        Route::post('master/pemusnahan', [StokOpnameController::class, 'deleteAllMaster']);
 
         // STOK OPNAME
         Route::get('stok-opname', [StokOpnameController::class, 'index']);
         Route::get('stok-opname/lookup', [StokOpnameController::class, 'lookup']);
         Route::post('stok-opname', [StokOpnameController::class, 'store']);
+        Route::put('stok-opname/{id}', [StokOpnameController::class, 'update']);
+        Route::delete('stok-opname/{id}', [StokOpnameController::class, 'destroy']);
 
         // PENERIMAAN EXPORT PDF
         Route::get('/penerimaan-reagen/export-pdf', [PenerimaanReagenController::class, 'exportPdf']);

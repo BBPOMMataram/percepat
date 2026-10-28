@@ -163,13 +163,113 @@ class StokOpnameController extends Controller
                     'code' => $item->code ?? null,
                     'kode_baru' => null,
                     'satuan' => $item->satuan,
-                    'lokasi' => null,
+                    'lokasi' => $item->lokasi ?? null,
                     'expired' => $item->expired ? Carbon::parse($item->expired)->format('Y-m-d') : null,
                     'stock' => (int) $item->stock,
                 ];
             });
 
             $results = array_merge($results, $rList->toArray());
+        }
+
+        // 3. Cari ATK
+        if (($type === 'all' || $type === 'atk') && (!$parsedType || $parsedType === 'atk')) {
+            $atkQuery = Atk::query();
+            if ($parsedId && ($parsedType === 'atk' || !$parsedType)) {
+                $atkQuery->where('id', $parsedId);
+            } else {
+                $atkQuery->where(function ($q) use ($queryText) {
+                    $q->where('name', 'like', "%{$queryText}%")
+                      ->orWhere('satuan', 'like', "%{$queryText}%");
+                    if (is_numeric($queryText)) {
+                        $q->orWhere('id', (int) $queryText);
+                    }
+                });
+            }
+
+            $atkList = $atkQuery->limit(10)->get()->map(function ($item) {
+                return [
+                    'barang_type' => 'atk',
+                    'barang_type_label' => 'ATK',
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'code' => "ATK-{$item->id}",
+                    'kode_baru' => null,
+                    'satuan' => $item->satuan,
+                    'lokasi' => null,
+                    'expired' => null,
+                    'stock' => (int) $item->stock,
+                ];
+            });
+
+            $results = array_merge($results, $atkList->toArray());
+        }
+
+        // 4. Cari Perlengkapan Kebersihan
+        if (($type === 'all' || $type === 'perlengkapan' || $type === 'perlengkapan-kebersihan') && (!$parsedType || $parsedType === 'perlengkapan' || $parsedType === 'perlengkapan-kebersihan')) {
+            $pkQuery = PerlengkapanKebersihan::query();
+            if ($parsedId && ($parsedType === 'perlengkapan' || $parsedType === 'perlengkapan-kebersihan' || !$parsedType)) {
+                $pkQuery->where('id', $parsedId);
+            } else {
+                $pkQuery->where(function ($q) use ($queryText) {
+                    $q->where('name', 'like', "%{$queryText}%")
+                      ->orWhere('satuan', 'like', "%{$queryText}%");
+                    if (is_numeric($queryText)) {
+                        $q->orWhere('id', (int) $queryText);
+                    }
+                });
+            }
+
+            $pkList = $pkQuery->limit(10)->get()->map(function ($item) {
+                return [
+                    'barang_type' => 'perlengkapan',
+                    'barang_type_label' => 'Perlengkapan Kebersihan',
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'code' => "PK-{$item->id}",
+                    'kode_baru' => null,
+                    'satuan' => $item->satuan,
+                    'lokasi' => null,
+                    'expired' => null,
+                    'stock' => (int) $item->stock,
+                ];
+            });
+
+            $results = array_merge($results, $pkList->toArray());
+        }
+
+        // 5. Cari Suku Cadang
+        if (($type === 'all' || $type === 'suku-cadang') && (!$parsedType || $parsedType === 'suku-cadang')) {
+            $scQuery = SukuCadang::query();
+            if ($parsedId && ($parsedType === 'suku-cadang' || !$parsedType)) {
+                $scQuery->where('id', $parsedId);
+            } else {
+                $scQuery->where(function ($q) use ($queryText) {
+                    $q->where('name', 'like', "%{$queryText}%")
+                      ->orWhere('satuan', 'like', "%{$queryText}%")
+                      ->orWhere('description', 'like', "%{$queryText}%");
+                    if (is_numeric($queryText)) {
+                        $q->orWhere('id', (int) $queryText);
+                    }
+                });
+            }
+
+            $scList = $scQuery->limit(10)->get()->map(function ($item) {
+                return [
+                    'barang_type' => 'suku-cadang',
+                    'barang_type_label' => 'Suku Cadang',
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'code' => "SC-{$item->id}",
+                    'kode_baru' => null,
+                    'satuan' => $item->satuan,
+                    'lokasi' => null,
+                    'expired' => null,
+                    'stock' => (int) $item->stock,
+                ];
+            });
+
+            $results = array_merge($results, $scList->toArray());
         }
 
         return response()->json([
@@ -214,6 +314,7 @@ class StokOpnameController extends Controller
             $namaBarang = $targetItem->name;
             $kodeBarang = $targetItem->code ?? null;
             $satuan = $targetItem->satuan;
+            $lokasi = $targetItem->lokasi ?? null;
         } elseif ($barangType === 'atk') {
             $targetItem = Atk::findOrFail($barangId);
             $namaBarang = $targetItem->name;
@@ -251,7 +352,7 @@ class StokOpnameController extends Controller
                 'keterangan' => $request->keterangan ?: ($selisih === 0 ? 'Stok Sesuai' : ($selisih > 0 ? 'Stok Lebih' : 'Stok Kurang')),
                 'petugas_name' => $request->petugas_name,
                 'petugas_external_id' => $request->petugas_external_id,
-                'tanggal_opname' => $request->tanggal_opname ? Carbon::parse($request->tanggal_opname) : now(),
+                'tanggal_opname' => $this->parseSafeDate($request->tanggal_opname, now()),
             ]);
 
             DB::commit();
@@ -272,22 +373,30 @@ class StokOpnameController extends Controller
     }
 
     /**
-     * Bulk Import Data Barang Masuk ke Master (dari file Excel / Spreadsheet hasil parse)
+     * Bulk Import Data Barang Masuk ke Master (dari file Excel / PDF Berita Acara hasil parse)
      */
     public function importMaster(Request $request)
     {
         $request->validate([
-            'barang_type' => 'required|string|in:reagen,baku-pembanding',
+            'barang_type' => 'nullable|string|in:all,reagen,baku-pembanding,atk,perlengkapan,perlengkapan-kebersihan,suku-cadang',
             'items' => 'required|array|min:1',
             'items.*.name' => 'required|string',
             'items.*.stock' => 'nullable|numeric',
             'items.*.satuan' => 'nullable|string',
             'items.*.expired' => 'nullable|string',
+            'items.*.lokasi' => 'nullable|string',
+            'items.*.letak' => 'nullable|string',
+            'items.*.barang_type' => 'nullable|string',
         ]);
 
-        $barangType = $request->barang_type;
+        $defaultBarangType = $request->barang_type ?: 'reagen';
         $items = $request->items;
-        $stockMode = $request->input('stock_mode', 'add'); // 'add' (tambah stok) or 'replace' (timpa stok)
+        $stockMode = $request->input('stock_mode', 'replace'); // default replace untuk Berita Acara Stok Opname
+        $shouldLogOpname = $request->boolean('catat_opname', true);
+        $tanggalOpname = $this->parseSafeDate($request->input('tanggal_opname'), now());
+        $petugasName = $request->input('petugas_name', 'Admin');
+        $keteranganUmum = $request->input('keterangan', 'Penyesuaian Berita Acara Stock Opname');
+
         $createdCount = 0;
         $updatedCount = 0;
 
@@ -297,38 +406,42 @@ class StokOpnameController extends Controller
                 $name = trim($row['name']);
                 if (!$name) continue;
 
+                $barangType = !empty($row['barang_type']) ? $row['barang_type'] : $defaultBarangType;
+                if ($barangType === 'all') $barangType = 'reagen';
+
                 $stock = isset($row['stock']) ? (int) $row['stock'] : 0;
-                $satuan = !empty($row['satuan']) ? trim($row['satuan']) : ($barangType === 'baku-pembanding' ? 'Vial' : 'Botol');
-                $expired = !empty($row['expired']) ? Carbon::parse($row['expired'])->format('Y-m-d') : null;
+                $satuan = !empty($row['satuan']) ? trim($row['satuan']) : ($barangType === 'baku-pembanding' ? 'Vial' : ($barangType === 'reagen' ? 'Botol' : 'Pcs'));
+                $parsedExp = !empty($row['expired']) ? $this->parseSafeDate($row['expired']) : null;
+                $expired = $parsedExp ? $parsedExp->format('Y-m-d') : null;
                 $kodeBaru = !empty($row['kode_baru']) ? trim($row['kode_baru']) : null;
                 $code = !empty($row['code']) ? trim($row['code']) : (!empty($row['no_kontrol']) ? trim($row['no_kontrol']) : null);
                 $letak = !empty($row['letak']) ? trim($row['letak']) : (!empty($row['lokasi']) ? trim($row['lokasi']) : null);
 
+                $targetItem = null;
+                $stokSistemAwal = 0;
+
                 if ($barangType === 'baku-pembanding') {
-                    // Cari jika ada kode_baru atau nama sama
-                    $existing = null;
-                    if ($kodeBaru) {
+                    // 1. Prioritaskan pencocokan nama barang (zat kimia unik)
+                    $existing = BakuPembanding::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])->first();
+
+                    // 2. Fallback kode_baru hanya jika bukan penomoran 6-digit BMN yang berulang
+                    if (!$existing && $kodeBaru && !preg_match('/^\d{6}$/', $kodeBaru)) {
                         $existing = BakuPembanding::where('kode_baru', $kodeBaru)->first();
-                    }
-                    if (!$existing) {
-                        $existing = BakuPembanding::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])->first();
                     }
 
                     if ($existing) {
-                        if ($stockMode === 'replace') {
-                            $existing->stock = $stock;
-                        } else {
-                            $existing->stock += $stock;
-                        }
+                        $stokSistemAwal = (int) $existing->stock;
+                        $existing->stock = ($stockMode === 'add') ? ($existing->stock + $stock) : $stock;
                         if ($satuan) $existing->satuan = $satuan;
                         if ($expired) $existing->expired = $expired;
                         if ($letak) $existing->letak = $letak;
                         if ($kodeBaru) $existing->kode_baru = $kodeBaru;
                         if ($code) $existing->code = $code;
                         $existing->save();
+                        $targetItem = $existing;
                         $updatedCount++;
                     } else {
-                        BakuPembanding::create([
+                        $targetItem = BakuPembanding::create([
                             'name' => $name,
                             'code' => $code,
                             'kode_baru' => $kodeBaru,
@@ -337,32 +450,113 @@ class StokOpnameController extends Controller
                             'expired' => $expired,
                             'letak' => $letak,
                         ]);
+                        $stokSistemAwal = 0;
                         $createdCount++;
                     }
                 } elseif ($barangType === 'reagen') {
                     $existing = ApiReagen::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])->first();
 
                     if ($existing) {
-                        if ($stockMode === 'replace') {
-                            $existing->stock = $stock;
-                        } else {
-                            $existing->stock += $stock;
-                        }
+                        $stokSistemAwal = (int) $existing->stock;
+                        $existing->stock = ($stockMode === 'add') ? ($existing->stock + $stock) : $stock;
                         if ($satuan) $existing->satuan = $satuan;
                         if ($expired) $existing->expired = $expired;
                         if ($code) $existing->code = $code;
+                        if ($letak) $existing->lokasi = $letak;
                         $existing->save();
+                        $targetItem = $existing;
                         $updatedCount++;
                     } else {
-                        ApiReagen::create([
+                        $targetItem = ApiReagen::create([
                             'name' => $name,
                             'code' => $code,
                             'stock' => $stock,
                             'satuan' => $satuan,
                             'expired' => $expired,
+                            'lokasi' => $letak,
                         ]);
+                        $stokSistemAwal = 0;
                         $createdCount++;
                     }
+                } elseif ($barangType === 'atk') {
+                    $existing = Atk::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])->first();
+
+                    if ($existing) {
+                        $stokSistemAwal = (int) $existing->stock;
+                        $existing->stock = ($stockMode === 'add') ? ($existing->stock + $stock) : $stock;
+                        if ($satuan) $existing->satuan = $satuan;
+                        $existing->save();
+                        $targetItem = $existing;
+                        $updatedCount++;
+                    } else {
+                        $targetItem = Atk::create([
+                            'name' => $name,
+                            'stock' => $stock,
+                            'satuan' => $satuan ?: 'Pcs',
+                        ]);
+                        $stokSistemAwal = 0;
+                        $createdCount++;
+                    }
+                } elseif ($barangType === 'perlengkapan' || $barangType === 'perlengkapan-kebersihan') {
+                    $existing = PerlengkapanKebersihan::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])->first();
+
+                    if ($existing) {
+                        $stokSistemAwal = (int) $existing->stock;
+                        $existing->stock = ($stockMode === 'add') ? ($existing->stock + $stock) : $stock;
+                        if ($satuan) $existing->satuan = $satuan;
+                        $existing->save();
+                        $targetItem = $existing;
+                        $updatedCount++;
+                    } else {
+                        $targetItem = PerlengkapanKebersihan::create([
+                            'name' => $name,
+                            'stock' => $stock,
+                            'satuan' => $satuan ?: 'Pcs',
+                        ]);
+                        $stokSistemAwal = 0;
+                        $createdCount++;
+                    }
+                } elseif ($barangType === 'suku-cadang') {
+                    $existing = SukuCadang::whereRaw('LOWER(TRIM(name)) = ?', [strtolower(trim($name))])->first();
+
+                    if ($existing) {
+                        $stokSistemAwal = (int) $existing->stock;
+                        $existing->stock = ($stockMode === 'add') ? ($existing->stock + $stock) : $stock;
+                        if ($satuan) $existing->satuan = $satuan;
+                        $existing->save();
+                        $targetItem = $existing;
+                        $updatedCount++;
+                    } else {
+                        $targetItem = SukuCadang::create([
+                            'name' => $name,
+                            'stock' => $stock,
+                            'satuan' => $satuan ?: 'Pcs',
+                        ]);
+                        $stokSistemAwal = 0;
+                        $createdCount++;
+                    }
+                }
+
+                // Catat otomatis ke log riwayat Stok Opname jika diminta
+                if ($shouldLogOpname && $targetItem) {
+                    $stokFisikAkhir = (int) $targetItem->stock;
+                    $selisih = $stokFisikAkhir - $stokSistemAwal;
+                    $kodeBarangLog = $kodeBaru ?: ($code ?: ($targetItem->code ?? "ID-{$targetItem->id}"));
+
+                    StokOpname::create([
+                        'barang_type' => $barangType,
+                        'barang_id' => $targetItem->id,
+                        'kode_barang' => $kodeBarangLog,
+                        'nama_barang' => $targetItem->name,
+                        'satuan' => $targetItem->satuan ?? $satuan,
+                        'lokasi' => $letak ?: ($targetItem->lokasi ?? ($targetItem->letak ?? null)),
+                        'stok_sistem' => $stokSistemAwal,
+                        'stok_fisik' => $stokFisikAkhir,
+                        'selisih' => $selisih,
+                        'keterangan' => $row['keterangan'] ?? $keteranganUmum,
+                        'petugas_name' => $petugasName,
+                        'tanggal_opname' => $tanggalOpname,
+                    ]);
                 }
             }
 
@@ -370,7 +564,7 @@ class StokOpnameController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => "Import berhasil: {$createdCount} barang baru ditambahkan, {$updatedCount} barang diperbarui stoknya.",
+                'message' => "Import Berita Acara berhasil: {$createdCount} barang baru ditambahkan, {$updatedCount} barang diperbarui stoknya.",
                 'data' => [
                     'created' => $createdCount,
                     'updated' => $updatedCount,
@@ -383,6 +577,164 @@ class StokOpnameController extends Controller
                 'success' => false,
                 'message' => 'Gagal melakukan import data: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    /**
+     * Update catatan riwayat stok opname
+     */
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'keterangan' => 'nullable|string|max:500',
+            'tanggal_opname' => 'nullable|date',
+            'petugas_name' => 'nullable|string|max:255',
+            'stok_fisik' => 'nullable|integer|min:0',
+        ]);
+
+        $opname = StokOpname::findOrFail($id);
+        if ($request->has('keterangan')) {
+            $opname->keterangan = $request->keterangan;
+        }
+        if ($request->has('tanggal_opname')) {
+            $opname->tanggal_opname = $this->parseSafeDate($request->tanggal_opname, $opname->tanggal_opname);
+        }
+        if ($request->has('petugas_name')) {
+            $opname->petugas_name = $request->petugas_name;
+        }
+        if ($request->has('stok_fisik')) {
+            $stokFisikBaru = (int) $request->stok_fisik;
+            $opname->stok_fisik = $stokFisikBaru;
+            $opname->selisih = $stokFisikBaru - (int) $opname->stok_sistem;
+        }
+        $opname->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Catatan riwayat stok opname berhasil diperbarui.',
+            'data' => $opname
+        ]);
+    }
+
+    /**
+     * Hapus catatan riwayat stok opname
+     */
+    public function destroy($id)
+    {
+        $opname = StokOpname::findOrFail($id);
+        $opname->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Catatan riwayat stok opname berhasil dihapus.'
+        ]);
+    }
+
+    /**
+     * Hapus Semua Data Master Barang (Pemusnahan Barang di BPOM)
+     */
+    public function deleteAllMaster(Request $request)
+    {
+        $request->validate([
+            'category' => 'required|string|in:reagen,baku-pembanding,atk,perlengkapan,perlengkapan-kebersihan,suku-cadang',
+        ]);
+
+        $category = $request->input('category');
+        $deletedCount = 0;
+        $categoryLabel = '';
+
+        DB::beginTransaction();
+        try {
+            switch ($category) {
+                case 'reagen':
+                    $categoryLabel = 'Reagen';
+                    $deletedCount = ApiReagen::query()->delete();
+                    break;
+                case 'baku-pembanding':
+                    $categoryLabel = 'Baku Pembanding';
+                    $deletedCount = BakuPembanding::query()->delete();
+                    break;
+                case 'atk':
+                    $categoryLabel = 'ATK';
+                    $deletedCount = Atk::query()->delete();
+                    break;
+                case 'perlengkapan':
+                case 'perlengkapan-kebersihan':
+                    $categoryLabel = 'Perlengkapan Kebersihan';
+                    $deletedCount = PerlengkapanKebersihan::query()->delete();
+                    break;
+                case 'suku-cadang':
+                    $categoryLabel = 'Suku Cadang';
+                    $deletedCount = SukuCadang::query()->delete();
+                    break;
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Pemusnahan berhasil: seluruh data {$categoryLabel} ({$deletedCount} barang) telah dihapus dari sistem.",
+                'deleted_count' => $deletedCount,
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal melakukan pemusnahan data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Helper untuk mem-parsing tanggal secara aman dari berbagai format (ISO '2025-12-31', Indonesia '31 Desember 2025', d/m/Y, dll)
+     */
+    private function parseSafeDate($dateStr, $default = null)
+    {
+        if (!$dateStr) {
+            return $default;
+        }
+
+        if ($dateStr instanceof Carbon) {
+            return $dateStr;
+        }
+
+        $dateStr = trim((string) $dateStr);
+
+        // Jika sudah format YYYY-MM-DD
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $dateStr)) {
+            try {
+                return Carbon::createFromFormat('Y-m-d', $dateStr);
+            } catch (\Throwable $e) {}
+        }
+
+        // Terjemahkan nama bulan Indonesia ke Inggris untuk Carbon
+        $indoMonths = [
+            'januari' => 'january', 'februari' => 'february', 'maret' => 'march',
+            'april' => 'april', 'mei' => 'may', 'juni' => 'june',
+            'juli' => 'july', 'agustus' => 'august', 'september' => 'september',
+            'oktober' => 'october', 'november' => 'november', 'desember' => 'december',
+            'agt' => 'aug', 'agu' => 'aug', 'okt' => 'oct', 'des' => 'dec'
+        ];
+
+        $lower = strtolower($dateStr);
+        foreach ($indoMonths as $id => $en) {
+            if (str_contains($lower, $id)) {
+                $lower = str_replace($id, $en, $lower);
+                break;
+            }
+        }
+
+        try {
+            return Carbon::parse($lower);
+        } catch (\Throwable $e) {
+            try {
+                if (preg_match('#^\d{1,2}[/-]\d{1,2}[/-]\d{4}$#', $dateStr)) {
+                    $sep = str_contains($dateStr, '/') ? '/' : '-';
+                    return Carbon::createFromFormat("d{$sep}m{$sep}Y", $dateStr);
+                }
+            } catch (\Throwable $e2) {}
+
+            return $default;
         }
     }
 }

@@ -115,4 +115,23 @@ class SukuCadangController extends Controller
 
         return response()->json($data);
     }
+
+    public function getDetailSukuCadang($id)
+    {
+        $item = SukuCadang::find($id);
+        if (!$item) {
+            return response()->json(['message' => 'Suku cadang tidak ditemukan'], 404);
+        }
+        return response()->json([
+            'id' => $item->id,
+            'name' => $item->name,
+            'code' => 'SC-' . str_pad($item->id, 4, '0', STR_PAD_LEFT),
+            'stock' => $item->stock,
+            'satuan' => $item->satuan,
+            'expired' => null,
+            'created_at' => $item->created_at,
+            'updated_at' => $item->updated_at,
+        ]);
+    }
 }
+

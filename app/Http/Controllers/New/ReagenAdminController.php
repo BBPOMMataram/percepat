@@ -32,9 +32,10 @@ class ReagenAdminController extends Controller
             'stock' => 'required|integer',
             'satuan' => 'required|string|max:50',
             'expired' => 'nullable|date',
+            'lokasi' => 'nullable|string|max:255',
         ]);
 
-        ApiReagen::create($request->only('name', 'stock', 'satuan', 'expired'));
+        ApiReagen::create($request->only('name', 'stock', 'satuan', 'expired', 'lokasi'));
         return response()->json(['message' => 'Data berhasil tersimpan!'], 201);
     }
 
@@ -45,9 +46,10 @@ class ReagenAdminController extends Controller
             'stock' => 'required|integer',
             'satuan' => 'required|string|max:50',
             'expired' => 'nullable|date',
+            'lokasi' => 'nullable|string|max:255',
         ]);
 
-        $reagen->update($request->only('name', 'stock', 'satuan', 'expired'));
+        $reagen->update($request->only('name', 'stock', 'satuan', 'expired', 'lokasi'));
         return response()->json(['message' => 'Data berhasil diupdate!']);
     }
 
