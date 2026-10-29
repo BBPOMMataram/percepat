@@ -148,9 +148,13 @@ class ApiAtkController extends Controller
         return response()->json($responseReagen);
     }
 
-    public function downloadAtk()
+    public function downloadAtk(Request $request)
     {
-        $data = ApiAtk::all();
+        $query = ApiAtk::query();
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        }
+        $data = $query->orderBy('name', 'asc')->get();
 
         $pdf = PDF::loadView('pdf.barang-atk', ['data' => $data]);
         return $pdf->download('data-atk.pdf');
@@ -159,37 +163,7 @@ class ApiAtkController extends Controller
     public function downloadKartuStokAtk($id)
     {
         $barang = ApiAtk::findOrFail($id);
-
-        // Get penerimaan (masuk)
-        $penerimaan = \App\Models\PenerimaanAtk::where('atk_id', $id)
-            ->whereNotNull('created_at')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'tanggal' => $item->created_at->toDateTimeString(),
-                    'keterangan' => 'Pengadaan (' . ($item->vendor ?? '-') . ')',
-                    'tipe' => 'masuk',
-                    'jumlah' => (int) $item->jumlah,
-                ];
-            });
-
-        // Get permintaan (keluar)
-        $permintaan = \App\Models\PermintaanListAtk::where('atk_id', $id)
-            ->whereNotNull('created_at')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'tanggal' => $item->created_at->toDateTimeString(),
-                    'keterangan' => $item->keterangan ?? 'Usulan',
-                    'tipe' => 'keluar',
-                    'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
-                ];
-            });
-
-        // Merge and sort by date
-        $transaksi = $penerimaan->concat($permintaan)->sortBy('tanggal')->values();
+        $transaksi = \App\Services\KartuStokService::buildTransaksi('atk', $barang);
 
         $pdf = PDF::loadView('pdf.kartu-stok-atk', [
             'barang' => $barang,

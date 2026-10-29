@@ -4,6 +4,7 @@ namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
 use App\Models\PerlengkapanKebersihan;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class PerlengkapanKebersihanAdminController extends Controller
@@ -53,5 +54,30 @@ class PerlengkapanKebersihanAdminController extends Controller
     {
         $perlengkapanKebersihan->delete();
         return response()->json(['message' => 'Data berhasil dihapus!'], 204);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = PerlengkapanKebersihan::query();
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        }
+        $data = $query->orderBy('name', 'asc')->get();
+
+        $pdf = PDF::loadView('pdf.barang-perlengkapan', ['data' => $data]);
+        return $pdf->download('data-perlengkapan-kebersihan.pdf');
+    }
+
+    public function downloadKartuStokPerlengkapan($id)
+    {
+        $barang = PerlengkapanKebersihan::findOrFail($id);
+        $transaksi = \App\Services\KartuStokService::buildTransaksi('perlengkapan', $barang);
+
+        $pdf = PDF::loadView('pdf.kartu-stok-perlengkapan', [
+            'barang' => $barang,
+            'transaksi' => $transaksi,
+        ]);
+
+        return $pdf->download('kartu-stok-perlengkapan-' . $barang->name . '.pdf');
     }
 }

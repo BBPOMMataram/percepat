@@ -166,9 +166,18 @@ class ApiBakuPembandingController extends Controller
         return response()->json($count);
     }
 
-    public function downloadBakuPembanding()
+    public function downloadBakuPembanding(Request $request)
     {
-        $data = BakuPembanding::all();
+        $query = BakuPembanding::query();
+        if ($request->filled('name')) {
+            $name_query = $request->query('name');
+            $query->where(function ($q) use ($name_query) {
+                $q->where('name', 'like', '%' . $name_query . '%')
+                  ->orWhere('kode_baru', 'like', '%' . $name_query . '%')
+                  ->orWhere('letak', 'like', '%' . $name_query . '%');
+            });
+        }
+        $data = $query->orderBy('name', 'asc')->get();
 
         $pdf = PDF::loadView(
             'pdf/barang-baku-pembanding',
@@ -181,37 +190,7 @@ class ApiBakuPembandingController extends Controller
     public function downloadKartuStokBakuPembanding($id)
     {
         $barang = BakuPembanding::findOrFail($id);
-
-        // Get penerimaan (masuk)
-        $penerimaan = PenerimaanBakuPembanding::where('baku_pembanding_id', $id)
-            ->whereNotNull('created_at')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'tanggal' => $item->created_at->toDateTimeString(),
-                    'keterangan' => 'Pengadaan (' . ($item->vendor ?? '-') . ')',
-                    'tipe' => 'masuk',
-                    'jumlah' => (int) $item->jumlah,
-                ];
-            });
-
-        // Get permintaan (keluar)
-        $permintaan = PermintaanListBakuPembanding::where('baku_pembanding_id', $id)
-            ->whereNotNull('created_at')
-            ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'tanggal' => $item->created_at->toDateTimeString(),
-                    'keterangan' => $item->keterangan ?? 'Permintaan',
-                    'tipe' => 'keluar',
-                    'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
-                ];
-            });
-
-        // Merge and sort by date
-        $transaksi = $penerimaan->concat($permintaan)->sortBy('tanggal')->values();
+        $transaksi = \App\Services\KartuStokService::buildTransaksi('baku-pembanding', $barang);
 
         $pdf = PDF::loadView('pdf.kartu-stok-baku-pembanding', [
             'barang' => $barang,

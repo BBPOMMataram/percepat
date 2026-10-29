@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\SukuCadang;
+use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Http\Request;
 
 class ApiSukuCadangController extends Controller
@@ -106,5 +107,30 @@ class ApiSukuCadangController extends Controller
         fclose($handle);
 
         return response()->download($filename)->deleteFileAfterSend(true);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = SukuCadang::query();
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%' . $request->query('name') . '%');
+        }
+        $data = $query->orderBy('name', 'asc')->get();
+
+        $pdf = PDF::loadView('pdf.barang-suku-cadang', ['data' => $data]);
+        return $pdf->download('data-suku-cadang.pdf');
+    }
+
+    public function downloadKartuStokSukuCadang($id)
+    {
+        $barang = SukuCadang::findOrFail($id);
+        $transaksi = \App\Services\KartuStokService::buildTransaksi('suku-cadang', $barang);
+
+        $pdf = PDF::loadView('pdf.kartu-stok-suku-cadang', [
+            'barang' => $barang,
+            'transaksi' => $transaksi,
+        ]);
+
+        return $pdf->download('kartu-stok-suku-cadang-' . $barang->name . '.pdf');
     }
 }

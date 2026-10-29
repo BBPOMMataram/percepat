@@ -631,6 +631,103 @@ class StokOpnameController extends Controller
     }
 
     /**
+     * Daftar Dokumen PDF Berita Acara Stok Opname yang Tersimpan
+     */
+    public function listBeritaAcara(Request $request)
+    {
+        \App\Services\KartuStokService::ensureTablesExist();
+
+        $items = \App\Models\StokOpnameBeritaAcara::orderBy('created_at', 'desc')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $items,
+        ]);
+    }
+
+    /**
+     * Upload & Simpan Dokumen PDF Berita Acara Stok Opname
+     */
+    public function uploadBeritaAcara(Request $request)
+    {
+        \App\Services\KartuStokService::ensureTablesExist();
+
+        $request->validate([
+            'file' => 'required|file|mimes:pdf|max:51200',
+            'judul' => 'nullable|string|max:255',
+            'nomor_ba' => 'nullable|string|max:150',
+            'tanggal_ba' => 'nullable|date',
+            'uploaded_by' => 'nullable|string|max:255',
+        ]);
+
+        $file = $request->file('file');
+        $originalName = $file->getClientOriginalName();
+        $safeFileName = time() . '_' . preg_replace('/[^A-Za-z0-9._-]/', '_', $originalName);
+        $storedPath = $file->storeAs('berita-acara-so', $safeFileName, 'public');
+
+        $ba = \App\Models\StokOpnameBeritaAcara::create([
+            'judul' => $request->input('judul') ?: pathinfo($originalName, PATHINFO_FILENAME),
+            'nomor_ba' => $request->input('nomor_ba'),
+            'tanggal_ba' => $request->input('tanggal_ba') ? $this->parseSafeDate($request->input('tanggal_ba'), now())->format('Y-m-d') : now()->format('Y-m-d'),
+            'file_name' => $originalName,
+            'file_path' => $storedPath,
+            'file_size' => $file->getSize(),
+            'uploaded_by' => $request->input('uploaded_by') ?: 'Admin Gudang BPOM',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen PDF Berita Acara berhasil disimpan.',
+            'data' => $ba,
+        ], 201);
+    }
+
+    /**
+     * Stream / Preview atau Download Dokumen PDF Berita Acara Stok Opname
+     */
+    public function streamBeritaAcara(Request $request, $id)
+    {
+        \App\Services\KartuStokService::ensureTablesExist();
+
+        $ba = \App\Models\StokOpnameBeritaAcara::findOrFail($id);
+        $fullPath = storage_path('app/public/' . $ba->file_path);
+
+        if (!file_exists($fullPath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File PDF Berita Acara tidak ditemukan di server.',
+            ], 404);
+        }
+
+        $isDownload = $request->boolean('download', false);
+        $disposition = $isDownload ? 'attachment' : 'inline';
+        $downloadName = $ba->file_name ?: ('Berita_Acara_Stok_Opname_' . $ba->id . '.pdf');
+
+        return response()->file($fullPath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => $disposition . '; filename="' . addslashes($downloadName) . '"',
+        ]);
+    }
+
+    /**
+     * Hapus Dokumen PDF Berita Acara dari daftar
+     */
+    public function deleteBeritaAcara($id)
+    {
+        \App\Services\KartuStokService::ensureTablesExist();
+
+        $ba = \App\Models\StokOpnameBeritaAcara::findOrFail($id);
+        $ba->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen Berita Acara berhasil dihapus dari daftar.',
+        ]);
+    }
+
+    /**
      * Hapus Semua Data Master Barang (Pemusnahan Barang di BPOM)
      */
     public function deleteAllMaster(Request $request)

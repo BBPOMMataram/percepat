@@ -191,7 +191,11 @@
                 @php
                     $masuk = $item['tipe'] == 'masuk' ? $item['jumlah'] : 0;
                     $keluar = $item['tipe'] == 'keluar' ? $item['jumlah'] : 0;
-                    $total = $total + $masuk - $keluar;
+                    if (!empty($item['is_opname']) && isset($item['stok_akhir'])) {
+                        $total = (int) $item['stok_akhir'];
+                    } else {
+                        $total = $total + $masuk - $keluar;
+                    }
                 @endphp
                 <tr>
                     <td>{{ \Carbon\Carbon::parse($item['tanggal'])->isoFormat('D MMM Y') }}</td>

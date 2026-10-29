@@ -16,6 +16,7 @@ use App\Http\Controllers\New\BakuPembandingAdminController;
 use App\Http\Controllers\New\PenerimaanBakuPembandingController;
 use App\Http\Controllers\New\PermintaanBakuPembandingController;
 use App\Http\Controllers\New\PermintaanListBakuPembandingController;
+use App\Http\Controllers\New\PersediaanKeluarController;
 use App\Http\Controllers\New\ReagenAdminController;
 use App\Http\Controllers\New\VerifBakuPembandingController;
 use App\Http\Controllers\New\StokOpnameController;
@@ -169,6 +170,13 @@ Route::prefix('v1')->group(function () {
     Route::get('detail/perlengkapan/{id}', [PerlengkapanKebersihanController::class, 'getDetailPerlengkapan']);
     Route::get('detail/suku-cadang/{id}', [SukuCadangController::class, 'getDetailSukuCadang']);
 
+    // EXPORT PDF DATA MASTER / KARTU STOK (di atas apiResource agar tidak tertangkap oleh {id})
+    Route::get('reagen/export-pdf', [ApiReagenController::class, 'downloadReagen']);
+    Route::get('baku-pembanding/export-pdf', [ApiBakuPembandingController::class, 'downloadBakuPembanding']);
+    Route::get('atk/export-pdf', [ApiAtkController::class, 'downloadAtk']);
+    Route::get('perlengkapan-kebersihan/export-pdf', [PerlengkapanKebersihanAdminController::class, 'exportPdf']);
+    Route::get('suku-cadang/export-pdf', [ApiSukuCadangController::class, 'exportPdf']);
+
     // PROTECTED ROUTES
     Route::middleware(['jwt'])->group(function () {
 
@@ -183,6 +191,9 @@ Route::prefix('v1')->group(function () {
         Route::get('download-baku-pembanding', [ApiBakuPembandingController::class, 'downloadBakuPembanding']);
         Route::get('kartu-stok/reagen/{id}', [ApiReagenController::class, 'downloadKartuStokReagen']);
         Route::get('kartu-stok/baku-pembanding/{id}', [ApiBakuPembandingController::class, 'downloadKartuStokBakuPembanding']);
+        Route::get('kartu-stok/suku-cadang/{id}', [ApiSukuCadangController::class, 'downloadKartuStokSukuCadang']);
+        Route::get('kartu-stok/perlengkapan/{id}', [PerlengkapanKebersihanAdminController::class, 'downloadKartuStokPerlengkapan']);
+        Route::get('download-perlengkapan/{id}', [PerlengkapanKebersihanAdminController::class, 'downloadKartuStokPerlengkapan']);
 
         // BARANG SUKU CADANG (API Resource)
         Route::apiResource('barang-suku-cadang', ApiSukuCadangController::class);
@@ -265,12 +276,22 @@ Route::prefix('v1')->group(function () {
         Route::post('master/import-items', [StokOpnameController::class, 'importMaster']);
         Route::post('master/pemusnahan', [StokOpnameController::class, 'deleteAllMaster']);
 
-        // STOK OPNAME
+        // STOK OPNAME & BERITA ACARA PDF
+        Route::get('stok-opname/berita-acara', [StokOpnameController::class, 'listBeritaAcara']);
+        Route::post('stok-opname/berita-acara', [StokOpnameController::class, 'uploadBeritaAcara']);
+        Route::get('stok-opname/berita-acara/{id}/stream', [StokOpnameController::class, 'streamBeritaAcara']);
+        Route::delete('stok-opname/berita-acara/{id}', [StokOpnameController::class, 'deleteBeritaAcara']);
         Route::get('stok-opname', [StokOpnameController::class, 'index']);
         Route::get('stok-opname/lookup', [StokOpnameController::class, 'lookup']);
         Route::post('stok-opname', [StokOpnameController::class, 'store']);
         Route::put('stok-opname/{id}', [StokOpnameController::class, 'update']);
         Route::delete('stok-opname/{id}', [StokOpnameController::class, 'destroy']);
+
+        // PERSEDIAAN KELUAR (BARANG USANG / RUSAK)
+        Route::get('persediaan-keluar', [PersediaanKeluarController::class, 'index']);
+        Route::post('persediaan-keluar', [PersediaanKeluarController::class, 'store']);
+        Route::put('persediaan-keluar/{id}', [PersediaanKeluarController::class, 'update']);
+        Route::delete('persediaan-keluar/{id}', [PersediaanKeluarController::class, 'destroy']);
 
         // PENERIMAAN EXPORT PDF
         Route::get('/penerimaan-reagen/export-pdf', [PenerimaanReagenController::class, 'exportPdf']);
