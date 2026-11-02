@@ -179,10 +179,30 @@ class PermintaanBakuPembandingController extends Controller
             $data->save();
 
             foreach ($listBarang as $value) {
+                $barangId = $value['id'] ?? null;
+                $jumlahMinta = (int) ($value['jumlah'] ?? 0);
+
+                if (!$barangId || $jumlahMinta < 1) {
+                    throw new \Exception('Item Baku Pembanding atau jumlah permintaan tidak valid.');
+                }
+
+                $barang = BakuPembanding::find($barangId);
+                if (!$barang) {
+                    throw new \Exception('Baku Pembanding tidak ditemukan.');
+                }
+
+                if ((int) $barang->stock <= 0) {
+                    throw new \Exception("Stok Baku Pembanding {$barang->name} sudah habis (0) dan tidak dapat diminta lagi.");
+                }
+
+                if ($jumlahMinta > (int) $barang->stock) {
+                    throw new \Exception("Jumlah permintaan untuk {$barang->name} ({$jumlahMinta}) melebihi stok yang tersedia ({$barang->stock}).");
+                }
+
                 $newInventory = new PermintaanListBakuPembanding();
                 $newInventory->permintaan_id = $data->id;
-                $newInventory->baku_pembanding_id = $value['id'];
-                $newInventory->jumlahpermintaan = $value['jumlah'];
+                $newInventory->baku_pembanding_id = $barangId;
+                $newInventory->jumlahpermintaan = $jumlahMinta;
                 $newInventory->keterangan = $value['keterangan'] ?? null;
                 $newInventory->save();
             }
@@ -220,13 +240,35 @@ class PermintaanBakuPembandingController extends Controller
             $data->status_id = 1;
             $data->save();
 
+            foreach ($listBarang as $value) {
+                $barangId = $value['id'] ?? null;
+                $jumlahMinta = (int) ($value['jumlah'] ?? 0);
+
+                if (!$barangId || $jumlahMinta < 1) {
+                    throw new \Exception('Item Baku Pembanding atau jumlah permintaan tidak valid.');
+                }
+
+                $barang = BakuPembanding::find($barangId);
+                if (!$barang) {
+                    throw new \Exception('Baku Pembanding tidak ditemukan.');
+                }
+
+                if ((int) $barang->stock <= 0) {
+                    throw new \Exception("Stok Baku Pembanding {$barang->name} sudah habis (0) dan tidak dapat diminta lagi.");
+                }
+
+                if ($jumlahMinta > (int) $barang->stock) {
+                    throw new \Exception("Jumlah permintaan untuk {$barang->name} ({$jumlahMinta}) melebihi stok yang tersedia ({$barang->stock}).");
+                }
+            }
+
             PermintaanListBakuPembanding::where('permintaan_id', $data->id)->delete();
 
             foreach ($listBarang as $value) {
                 $newInventory = new PermintaanListBakuPembanding();
                 $newInventory->permintaan_id    = $data->id;
                 $newInventory->baku_pembanding_id = $value['id'];
-                $newInventory->jumlahpermintaan = $value['jumlah'];
+                $newInventory->jumlahpermintaan = (int) $value['jumlah'];
                 $newInventory->keterangan       = $value['keterangan'] ?? null;
                 $newInventory->save();
             }
@@ -244,6 +286,17 @@ class PermintaanBakuPembandingController extends Controller
         }
 
         DB::transaction(function () use ($permintaan) {
+            $lists = PermintaanListBakuPembanding::where('permintaan_id', $permintaan->id)->get();
+            // Rollback stok jika permintaan yang dihapus sudah berstatus 4 (diserahkan)
+            if ($permintaan->status_id == 4) {
+                foreach ($lists as $item) {
+                    $val = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+                    if ($val > 0) {
+                        BakuPembanding::where('id', $item->baku_pembanding_id)->increment('stock', $val);
+                    }
+                }
+            }
+
             PermintaanListBakuPembanding::where('permintaan_id', $permintaan->id)->delete();
             $permintaan->delete();
         });

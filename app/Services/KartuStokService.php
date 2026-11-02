@@ -87,17 +87,34 @@ class KartuStokService
                     ];
                 });
 
-            $permintaan = PermintaanList::where('barang_id', $id)
+            // Hanya permintaan yang sudah diverifikasi & diserahkan (status_id = 4)
+            // agar permohonan baru / draf tidak mengurangi stok pada Kartu Stok
+            $permintaan = PermintaanList::with('permintaan')
+                ->where('barang_id', $id)
+                ->whereHas('permintaan', function ($q) {
+                    $q->where('status_id', 4);
+                })
                 ->whereNotNull('created_at')
                 ->orderBy('created_at', 'asc')
                 ->get()
                 ->map(function ($item) {
+                    $p = $item->permintaan;
+                    $tgl = $p?->tgl_penyerahan ?? $item->created_at;
+                    $ket = trim((string) ($item->keterangan ?? ''));
+                    if ($ket === '') {
+                        $ket = $p?->bidang_name_auth_external ?: 'Permintaan';
+                    }
+                    $jumlah = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+
                     return [
-                        'tanggal' => $item->created_at->toDateTimeString(),
-                        'keterangan' => $item->keterangan ?? 'Permintaan',
+                        'tanggal' => $tgl ? \Carbon\Carbon::parse($tgl)->toDateTimeString() : $item->created_at->toDateTimeString(),
+                        'keterangan' => $ket,
                         'tipe' => 'keluar',
-                        'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
+                        'jumlah' => $jumlah,
                     ];
+                })
+                ->filter(function ($item) {
+                    return $item['jumlah'] > 0;
                 });
         } elseif ($barangType === 'baku-pembanding') {
             $penerimaan = PenerimaanBakuPembanding::where('baku_pembanding_id', $id)
@@ -113,17 +130,32 @@ class KartuStokService
                     ];
                 });
 
-            $permintaan = PermintaanListBakuPembanding::where('baku_pembanding_id', $id)
+            $permintaan = PermintaanListBakuPembanding::with('permintaan')
+                ->where('baku_pembanding_id', $id)
+                ->whereHas('permintaan', function ($q) {
+                    $q->where('status_id', 4);
+                })
                 ->whereNotNull('created_at')
                 ->orderBy('created_at', 'asc')
                 ->get()
                 ->map(function ($item) {
+                    $p = $item->permintaan;
+                    $tgl = $p?->tgl_penyerahan ?? $item->created_at;
+                    $ket = trim((string) ($item->keterangan ?? ''));
+                    if ($ket === '') {
+                        $ket = $p?->bidang_name_auth_external ?: 'Permintaan';
+                    }
+                    $jumlah = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+
                     return [
-                        'tanggal' => $item->created_at->toDateTimeString(),
-                        'keterangan' => $item->keterangan ?? 'Permintaan',
+                        'tanggal' => $tgl ? \Carbon\Carbon::parse($tgl)->toDateTimeString() : $item->created_at->toDateTimeString(),
+                        'keterangan' => $ket,
                         'tipe' => 'keluar',
-                        'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
+                        'jumlah' => $jumlah,
                     ];
+                })
+                ->filter(function ($item) {
+                    return $item['jumlah'] > 0;
                 });
         } elseif ($barangType === 'atk') {
             $penerimaan = PenerimaanAtk::where('atk_id', $id)
@@ -139,17 +171,32 @@ class KartuStokService
                     ];
                 });
 
-            $permintaan = PermintaanListAtk::where('atk_id', $id)
+            $permintaan = PermintaanListAtk::with('permintaan')
+                ->where('atk_id', $id)
+                ->whereHas('permintaan', function ($q) {
+                    $q->where('status_id', 4);
+                })
                 ->whereNotNull('created_at')
                 ->orderBy('created_at', 'asc')
                 ->get()
                 ->map(function ($item) {
+                    $p = $item->permintaan;
+                    $tgl = $p?->tgl_penyerahan ?? $item->created_at;
+                    $ket = trim((string) ($item->keterangan ?? ''));
+                    if ($ket === '') {
+                        $ket = $p?->bidang_name_auth_external ?: 'Usulan';
+                    }
+                    $jumlah = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+
                     return [
-                        'tanggal' => $item->created_at->toDateTimeString(),
-                        'keterangan' => $item->keterangan ?? 'Usulan',
+                        'tanggal' => $tgl ? \Carbon\Carbon::parse($tgl)->toDateTimeString() : $item->created_at->toDateTimeString(),
+                        'keterangan' => $ket,
                         'tipe' => 'keluar',
-                        'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
+                        'jumlah' => $jumlah,
                     ];
+                })
+                ->filter(function ($item) {
+                    return $item['jumlah'] > 0;
                 });
         } elseif ($barangType === 'perlengkapan') {
             $penerimaan = PenerimaanPerlengkapanKebersihan::where('perlengkapan_kebersihan_id', $id)
@@ -165,17 +212,32 @@ class KartuStokService
                     ];
                 });
 
-            $permintaan = PermintaanListPerlengkapanKebersihan::where('perlengkapan_kebersihan_id', $id)
+            $permintaan = PermintaanListPerlengkapanKebersihan::with('permintaan')
+                ->where('perlengkapan_kebersihan_id', $id)
+                ->whereHas('permintaan', function ($q) {
+                    $q->where('status_id', 4);
+                })
                 ->whereNotNull('created_at')
                 ->orderBy('created_at', 'asc')
                 ->get()
                 ->map(function ($item) {
+                    $p = $item->permintaan;
+                    $tgl = $p?->tgl_penyerahan ?? $item->created_at;
+                    $ket = trim((string) ($item->keterangan ?? ''));
+                    if ($ket === '') {
+                        $ket = $p?->bidang_name_auth_external ?: 'Permintaan';
+                    }
+                    $jumlah = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+
                     return [
-                        'tanggal' => $item->created_at->toDateTimeString(),
-                        'keterangan' => $item->keterangan ?? 'Permintaan',
+                        'tanggal' => $tgl ? \Carbon\Carbon::parse($tgl)->toDateTimeString() : $item->created_at->toDateTimeString(),
+                        'keterangan' => $ket,
                         'tipe' => 'keluar',
-                        'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
+                        'jumlah' => $jumlah,
                     ];
+                })
+                ->filter(function ($item) {
+                    return $item['jumlah'] > 0;
                 });
         } elseif ($barangType === 'suku-cadang') {
             $penerimaan = PenerimaanSukuCadang::where('suku_cadang_id', $id)
@@ -191,17 +253,32 @@ class KartuStokService
                     ];
                 });
 
-            $permintaan = PermintaanListSukuCadang::where('suku_cadang_id', $id)
+            $permintaan = PermintaanListSukuCadang::with('permintaan')
+                ->where('suku_cadang_id', $id)
+                ->whereHas('permintaan', function ($q) {
+                    $q->where('status_id', 4);
+                })
                 ->whereNotNull('created_at')
                 ->orderBy('created_at', 'asc')
                 ->get()
                 ->map(function ($item) {
+                    $p = $item->permintaan;
+                    $tgl = $p?->tgl_penyerahan ?? $item->created_at;
+                    $ket = trim((string) ($item->keterangan ?? ''));
+                    if ($ket === '') {
+                        $ket = $p?->bidang_name_auth_external ?: 'Permintaan';
+                    }
+                    $jumlah = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+
                     return [
-                        'tanggal' => $item->created_at->toDateTimeString(),
-                        'keterangan' => $item->keterangan ?? 'Permintaan',
+                        'tanggal' => $tgl ? \Carbon\Carbon::parse($tgl)->toDateTimeString() : $item->created_at->toDateTimeString(),
+                        'keterangan' => $ket,
                         'tipe' => 'keluar',
-                        'jumlah' => (int) ($item->jumlahrealisasi ?? $item->jumlahpermintaan),
+                        'jumlah' => $jumlah,
                     ];
+                })
+                ->filter(function ($item) {
+                    return $item['jumlah'] > 0;
                 });
         }
 

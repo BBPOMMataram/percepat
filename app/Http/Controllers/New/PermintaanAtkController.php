@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
+use App\Models\Atk;
 use App\Models\Permintaan;
 use App\Models\PermintaanListAtk;
 use App\Models\User;
@@ -181,12 +182,31 @@ class PermintaanAtkController extends Controller
 
             // STORE LIST BARANG
             foreach ($listBarang as $value) {
-                $newInventory = new PermintaanListAtk();
-                $newInventory->permintaan_id = $data->id; //permintaan id
-                $newInventory->atk_id = $value['id'];
-                $newInventory->jumlahpermintaan = $value['jumlah'];
-                $newInventory->keterangan = $value['keterangan'];
+                $barangId = $value['id'] ?? null;
+                $jumlahMinta = (int) ($value['jumlah'] ?? 0);
 
+                if (!$barangId || $jumlahMinta < 1) {
+                    throw new \Exception('Item ATK atau jumlah permintaan tidak valid.');
+                }
+
+                $barang = Atk::find($barangId);
+                if (!$barang) {
+                    throw new \Exception('Barang ATK tidak ditemukan.');
+                }
+
+                if ((int) $barang->stock <= 0) {
+                    throw new \Exception("Stok ATK {$barang->name} sudah habis (0) dan tidak dapat diminta lagi.");
+                }
+
+                if ($jumlahMinta > (int) $barang->stock) {
+                    throw new \Exception("Jumlah permintaan untuk {$barang->name} ({$jumlahMinta}) melebihi stok yang tersedia ({$barang->stock}).");
+                }
+
+                $newInventory = new PermintaanListAtk();
+                $newInventory->permintaan_id = $data->id;
+                $newInventory->atk_id = $barangId;
+                $newInventory->jumlahpermintaan = $jumlahMinta;
+                $newInventory->keterangan = $value['keterangan'] ?? null;
                 $newInventory->save();
             }
         });
@@ -250,10 +270,17 @@ class PermintaanAtkController extends Controller
         }
 
         DB::transaction(function () use ($permintaan) {
-            // Hapus list barang terlebih dahulu
-            PermintaanListAtk::where('permintaan_id', $permintaan->id)->delete();
+            $lists = PermintaanListAtk::where('permintaan_id', $permintaan->id)->get();
+            if ($permintaan->status_id == 4) {
+                foreach ($lists as $item) {
+                    $val = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+                    if ($val > 0) {
+                        Atk::where('id', $item->atk_id)->increment('stock', $val);
+                    }
+                }
+            }
 
-            // Hapus permintaan
+            PermintaanListAtk::where('permintaan_id', $permintaan->id)->delete();
             $permintaan->delete();
         });
 

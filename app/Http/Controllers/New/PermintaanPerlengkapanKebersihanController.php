@@ -182,12 +182,31 @@ class PermintaanPerlengkapanKebersihanController extends Controller
 
             // STORE LIST BARANG
             foreach ($listBarang as $value) {
-                $newInventory = new PermintaanListPerlengkapanKebersihan();
-                $newInventory->permintaan_id = $data->id; //permintaan id
-                $newInventory->perlengkapan_kebersihan_id = $value['id'];
-                $newInventory->jumlahpermintaan = $value['jumlah'];
-                $newInventory->keterangan = $value['keterangan'];
+                $barangId = $value['id'] ?? null;
+                $jumlahMinta = (int) ($value['jumlah'] ?? 0);
 
+                if (!$barangId || $jumlahMinta < 1) {
+                    throw new \Exception('Item Perlengkapan Kebersihan atau jumlah permintaan tidak valid.');
+                }
+
+                $barang = PerlengkapanKebersihan::find($barangId);
+                if (!$barang) {
+                    throw new \Exception('Perlengkapan kebersihan tidak ditemukan.');
+                }
+
+                if ((int) $barang->stock <= 0) {
+                    throw new \Exception("Stok Perlengkapan {$barang->name} sudah habis (0) dan tidak dapat diminta lagi.");
+                }
+
+                if ($jumlahMinta > (int) $barang->stock) {
+                    throw new \Exception("Jumlah permintaan untuk {$barang->name} ({$jumlahMinta}) melebihi stok yang tersedia ({$barang->stock}).");
+                }
+
+                $newInventory = new PermintaanListPerlengkapanKebersihan();
+                $newInventory->permintaan_id = $data->id;
+                $newInventory->perlengkapan_kebersihan_id = $barangId;
+                $newInventory->jumlahpermintaan = $jumlahMinta;
+                $newInventory->keterangan = $value['keterangan'] ?? null;
                 $newInventory->save();
             }
         });
@@ -250,10 +269,17 @@ class PermintaanPerlengkapanKebersihanController extends Controller
         }
 
         DB::transaction(function () use ($permintaan) {
-            // Hapus list barang terlebih dahulu
-            PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->delete();
+            $lists = PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->get();
+            if ($permintaan->status_id == 4) {
+                foreach ($lists as $item) {
+                    $val = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+                    if ($val > 0) {
+                        PerlengkapanKebersihan::where('id', $item->perlengkapan_kebersihan_id)->increment('stock', $val);
+                    }
+                }
+            }
 
-            // Hapus permintaan
+            PermintaanListPerlengkapanKebersihan::where('permintaan_id', $permintaan->id)->delete();
             $permintaan->delete();
         });
 

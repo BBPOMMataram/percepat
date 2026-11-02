@@ -655,15 +655,35 @@ class StokOpnameController extends Controller
         \App\Services\KartuStokService::ensureTablesExist();
 
         $request->validate([
-            'file' => 'required|file|mimes:pdf|max:51200',
+            'file' => 'required|file|max:51200',
             'judul' => 'nullable|string|max:255',
             'nomor_ba' => 'nullable|string|max:150',
             'tanggal_ba' => 'nullable|date',
             'uploaded_by' => 'nullable|string|max:255',
         ]);
 
+        if (!$request->hasFile('file')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File PDF Berita Acara tidak terdeteksi dalam request unggahan.',
+            ], 422);
+        }
+
         $file = $request->file('file');
         $originalName = $file->getClientOriginalName();
+        $ext = strtolower($file->getClientOriginalExtension());
+        if ($ext !== 'pdf') {
+            return response()->json([
+                'success' => false,
+                'message' => 'File yang diunggah harus berformat PDF (.pdf).',
+            ], 422);
+        }
+
+        $destinationDir = storage_path('app/public/berita-acara-so');
+        if (!file_exists($destinationDir)) {
+            @mkdir($destinationDir, 0775, true);
+        }
+
         $safeFileName = time() . '_' . preg_replace('/[^A-Za-z0-9._-]/', '_', $originalName);
         $storedPath = $file->storeAs('berita-acara-so', $safeFileName, 'public');
 

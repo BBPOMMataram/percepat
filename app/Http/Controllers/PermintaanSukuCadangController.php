@@ -157,6 +157,16 @@ class PermintaanSukuCadangController extends Controller
             $data->save();
 
             foreach ($listBarang as $value) {
+                $barang = SukuCadang::find($value['id']);
+                if ($barang) {
+                    if ($barang->stock <= 0) {
+                        throw new \Exception("Stok barang '{$barang->name}' sudah habis (0) dan tidak dapat diminta.");
+                    }
+                    if ($value['jumlah'] > $barang->stock) {
+                        throw new \Exception("Jumlah permintaan untuk '{$barang->name}' ({$value['jumlah']}) melebihi stok yang tersedia ({$barang->stock}).");
+                    }
+                }
+
                 $newInventory = new PermintaanListSukuCadang();
                 $newInventory->permintaan_id = $data->id;
                 $newInventory->suku_cadang_id = $value['id'];
@@ -202,6 +212,16 @@ class PermintaanSukuCadangController extends Controller
             PermintaanListSukuCadang::where('permintaan_id', $data->id)->delete();
 
             foreach ($listBarang as $value) {
+                $barang = SukuCadang::find($value['id']);
+                if ($barang) {
+                    if ($barang->stock <= 0) {
+                        throw new \Exception("Stok barang '{$barang->name}' sudah habis (0) dan tidak dapat diminta.");
+                    }
+                    if ($value['jumlah'] > $barang->stock) {
+                        throw new \Exception("Jumlah permintaan untuk '{$barang->name}' ({$value['jumlah']}) melebihi stok yang tersedia ({$barang->stock}).");
+                    }
+                }
+
                 $newInventory = new PermintaanListSukuCadang();
                 $newInventory->permintaan_id = $data->id;
                 $newInventory->suku_cadang_id = $value['id'];
@@ -217,9 +237,28 @@ class PermintaanSukuCadangController extends Controller
 
     public function destroy($id)
     {
-        PermintaanListSukuCadang::where('permintaan_id', $id)->delete();
-        Permintaan::destroy($id);
-        return response()->json(['status' => 1]);
+        $permintaan = Permintaan::find($id);
+        if (!$permintaan) {
+            return response()->json(['status' => 0, 'msg' => 'Data tidak ditemukan!'], 404);
+        }
+
+        DB::transaction(function () use ($permintaan) {
+            $lists = PermintaanListSukuCadang::where('permintaan_id', $permintaan->id)->get();
+            // Rollback stok jika permintaan yang dihapus sudah berstatus 4 (diserahkan)
+            if ($permintaan->status_id == 4) {
+                foreach ($lists as $item) {
+                    $val = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+                    if ($val > 0) {
+                        SukuCadang::where('id', $item->suku_cadang_id)->increment('stock', $val);
+                    }
+                }
+            }
+
+            PermintaanListSukuCadang::where('permintaan_id', $permintaan->id)->delete();
+            $permintaan->delete();
+        });
+
+        return response()->json(['status' => 1, 'msg' => 'Data berhasil dihapus!']);
     }
 
     public function download_permintaan_suku_cadang($permintaanId)

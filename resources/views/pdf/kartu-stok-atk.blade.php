@@ -194,7 +194,7 @@
                     if (!empty($item['is_opname']) && isset($item['stok_akhir'])) {
                         $total = (int) $item['stok_akhir'];
                     } else {
-                        $total = $total + $masuk - $keluar;
+                        $total = max(0, $total + $masuk - $keluar);
                     }
                 @endphp
                 <tr>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\New;
 
 use App\Http\Controllers\Controller;
+use App\Models\Barang;
 use App\Models\Permintaan;
 use App\Models\PermintaanList;
 use App\Models\User;
@@ -181,12 +182,31 @@ class PermintaanReagenController extends Controller
 
             // STORE LIST BARANG
             foreach ($listBarang as $value) {
-                $newInventory = new PermintaanList();
-                $newInventory->permintaan_id = $data->id; //permintaan id
-                $newInventory->barang_id = $value['id'];
-                $newInventory->jumlahpermintaan = $value['jumlah'];
-                $newInventory->keterangan = $value['keterangan'];
+                $barangId = $value['id'] ?? null;
+                $jumlahMinta = (int) ($value['jumlah'] ?? 0);
 
+                if (!$barangId || $jumlahMinta < 1) {
+                    throw new \Exception('Item reagen atau jumlah permintaan tidak valid.');
+                }
+
+                $barang = Barang::find($barangId);
+                if (!$barang) {
+                    throw new \Exception('Barang reagen tidak ditemukan.');
+                }
+
+                if ((int) $barang->stock <= 0) {
+                    throw new \Exception("Stok reagen {$barang->name} sudah habis (0) dan tidak dapat diminta lagi.");
+                }
+
+                if ($jumlahMinta > (int) $barang->stock) {
+                    throw new \Exception("Jumlah permintaan untuk {$barang->name} ({$jumlahMinta}) melebihi stok yang tersedia ({$barang->stock}).");
+                }
+
+                $newInventory = new PermintaanList();
+                $newInventory->permintaan_id = $data->id;
+                $newInventory->barang_id = $barangId;
+                $newInventory->jumlahpermintaan = $jumlahMinta;
+                $newInventory->keterangan = $value['keterangan'] ?? null;
                 $newInventory->save();
             }
         });
@@ -223,6 +243,29 @@ class PermintaanReagenController extends Controller
             $data->status_id = 1; // set status kembali ke "Permohonan" setiap kali data diupdate
             $data->save();
 
+            // Validasi stok sebelum update
+            foreach ($listBarang as $value) {
+                $barangId = $value['id'] ?? null;
+                $jumlahMinta = (int) ($value['jumlah'] ?? 0);
+
+                if (!$barangId || $jumlahMinta < 1) {
+                    throw new \Exception('Item reagen atau jumlah permintaan tidak valid.');
+                }
+
+                $barang = Barang::find($barangId);
+                if (!$barang) {
+                    throw new \Exception('Barang reagen tidak ditemukan.');
+                }
+
+                if ((int) $barang->stock <= 0) {
+                    throw new \Exception("Stok reagen {$barang->name} sudah habis (0) dan tidak dapat diminta lagi.");
+                }
+
+                if ($jumlahMinta > (int) $barang->stock) {
+                    throw new \Exception("Jumlah permintaan untuk {$barang->name} ({$jumlahMinta}) melebihi stok yang tersedia ({$barang->stock}).");
+                }
+            }
+
             // HAPUS LIST BARANG LAMA LALU INSERT ULANG
             PermintaanList::where('permintaan_id', $data->id)->delete();
 
@@ -230,9 +273,8 @@ class PermintaanReagenController extends Controller
                 $newInventory = new PermintaanList();
                 $newInventory->permintaan_id    = $data->id;
                 $newInventory->barang_id        = $value['id'];
-                $newInventory->jumlahpermintaan = $value['jumlah'];
-                $newInventory->keterangan       = $value['keterangan'];
-
+                $newInventory->jumlahpermintaan = (int) $value['jumlah'];
+                $newInventory->keterangan       = $value['keterangan'] ?? null;
                 $newInventory->save();
             }
         });
@@ -249,10 +291,18 @@ class PermintaanReagenController extends Controller
         }
 
         DB::transaction(function () use ($permintaan) {
-            // Hapus list barang terlebih dahulu
-            PermintaanList::where('permintaan_id', $permintaan->id)->delete();
+            $lists = PermintaanList::where('permintaan_id', $permintaan->id)->get();
+            // Rollback stok jika permintaan yang dihapus sudah berstatus 4 (diserahkan)
+            if ($permintaan->status_id == 4) {
+                foreach ($lists as $item) {
+                    $val = (int) ($item->jumlahrealisasi ?: $item->jumlahpermintaan);
+                    if ($val > 0) {
+                        Barang::where('id', $item->barang_id)->increment('stock', $val);
+                    }
+                }
+            }
 
-            // Hapus permintaan
+            PermintaanList::where('permintaan_id', $permintaan->id)->delete();
             $permintaan->delete();
         });
 
