@@ -298,6 +298,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/penerimaan-baku-pembanding/export-pdf', [PenerimaanBakuPembandingController::class, 'exportPdf']);
         Route::get('/penerimaan-atk/export-pdf', [NewPenerimaanAtkController::class, 'exportPdf']);
         Route::get('/penerimaan-perlengkapan/export-pdf', [PenerimaanPerlengkapanController::class, 'exportPdf']);
+        Route::get('/penerimaan-suku-cadang/export-pdf', [PenerimaanSukuCadangController::class, 'exportPdf']);
 
         // PENERIMAAN
         Route::apiResource('penerimaan-perlengkapan', PenerimaanPerlengkapanController::class);
